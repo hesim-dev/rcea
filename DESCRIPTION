@@ -1,0 +1,23 @@
+Package: learnCEA
+Type: Package
+Title: Learn Cost-effectiveness Modeling with R
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Devin", "Incerti", , "devin.incerti@gmail.com", role = c("aut", "cre")),
+    person("Jeroen P.", "Jansen", role = "aut")
+    )
+Description: A companion package for the Professional Society for Health Economics 
+  and Outcomes Research (ISPOR) short course "Applied cost-effectiveness modeling with R".
+URL: https://github.com/hesim-dev/ispor-short-course
+BugReports: https://github.com/hesim-dev/ispor-short-course/issues
+License: GPL-3
+LazyData: true
+Depends:
+    R (>= 3.5.0)
+Imports:
+    stats
+Suggests:
+  knitr
+VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.1

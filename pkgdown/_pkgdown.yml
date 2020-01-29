@@ -1,0 +1,28 @@
+template:
+  params:
+    bootswatch: simplex
+    
+development:
+  mode: auto    
+
+articles:
+- title: "Using hesim"
+  contents:
+  - deterministic-markov-cohort
+  - psa-markov-cohort
+  - individual-level-simulation
+  - decision-analysis
+
+navbar:
+  title: learnCEA
+  left:
+  - text: "Tutorials"
+    menu:
+      - text: "Deterministic Markov Cohort Models"
+        href: articles/deterministic-markov-cohort.html
+      - text: "Probabilistic Sensitivity Analysis for Markov Cohort Models"
+        href: articles/psa-markov-cohort.html 
+      - text: "Semi-Markov Individual Level Simulation"
+        href: articles/individual-level-simulation.html
+      - text: "Decision Analysis"
+        href: articles/decision-analysis.html       
