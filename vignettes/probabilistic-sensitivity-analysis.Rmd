@@ -1,5 +1,5 @@
 ---
-title: Deterministic Markov Cohort Models
+title: Probabilistic Sensitivity Analysis  
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -9,7 +9,7 @@ output:
 pkgdown:
   as_is: true
 vignette: >
-  %\VignetteIndexEntry{Deterministic Markov Models}
+  %\VignetteIndexEntry{Probabilistic Sensitivity Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
