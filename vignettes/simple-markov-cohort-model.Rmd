@@ -1,0 +1,31 @@
+---
+title: "Simple Markov cohort model"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 2
+    number_sections: TRUE
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Deterministic Markov Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# This is a header
+dkfjladskf
+
+```{r}
+library(expm)
+
+transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
+                        0, 0.581, 0.407, 0.012,
+                        0, 0, 0.750, 0.250,
+                        0, 0, 0, 1), 
+                        ncol = 4, nrow = 4, byrow = TRUE)
+
+RR<-0.509
+```
+
