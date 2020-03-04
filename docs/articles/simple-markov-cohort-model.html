@@ -48,16 +48,16 @@
       <a href="../articles/simple-markov-cohort-model.html">Simple Markov Cohort Model</a>
     </li>
     <li>
-      <a href="../articles/deterministic-markov-cohort.html">Deterministic Markov Cohort Models</a>
+      <a href="../articles/a.html">Deterministic Markov Cohort Models</a>
     </li>
     <li>
-      <a href="../articles/psa-markov-cohort.html">Probabilistic Sensitivity Analysis for Markov Cohort Models</a>
+      <a href="../articles/b.html">Probabilistic Sensitivity Analysis for Markov Cohort Models</a>
     </li>
     <li>
-      <a href="../articles/individual-level-simulation.html">Semi-Markov Individual Level Simulation</a>
+      <a href="../articles/c.html">Semi-Markov Individual Level Simulation</a>
     </li>
     <li>
-      <a href="../articles/decision-analysis.html">Decision Analysis</a>
+      <a href="../articles/d.html">Decision Analysis</a>
     </li>
   </ul>
 </li>
@@ -170,6 +170,74 @@ expected_LY_mono</code></pre></div>
 expected_total_cost_mono</code></pre></div>
 <pre><code>## [1] 25501.45</code></pre>
 </div>
+<div id="calculation-of-trace" class="section level2">
+<h2 class="hasAnchor">
+<a href="#calculation-of-trace" class="anchor"></a><span class="header-section-number">3.3</span> Calculation of trace</h2>
+<p>Health state occupancy, discounted life years and discounted costs with monotherapy for a time-horizon of 20 years</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">follow_up &lt;-<span class="st"> </span><span class="dv">20</span>
+trace_mono&lt;-<span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, <span class="dv">6</span> <span class="op">*</span><span class="st"> </span>follow_up), <span class="dt">nrow=</span>follow_up)
+<span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>follow_up){
+trace_mono[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] &lt;-<span class="st"> </span>initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span>t)
+trace_mono[t,<span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_mono[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span>t  )
+trace_mono[t,<span class="dv">6</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_mono[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span>t  )
+}
+trace_mono</code></pre></div>
+<pre><code>##              [,1]        [,2]       [,3]       [,4]       [,5]      [,6]
+##  [1,] 0.721000000 0.202000000 0.06700000 0.01000000 0.99000000 5153.0840
+##  [2,] 0.519841000 0.263004000 0.18077100 0.03638400 0.96361600 5392.2140
+##  [3,] 0.374805361 0.257813206 0.27745022 0.08993121 0.91006879 5366.7964
+##  [4,] 0.270234665 0.225500156 0.33812960 0.16613558 0.83386442 5052.0286
+##  [5,] 0.194839194 0.185602993 0.36348149 0.25607633 0.74392367 4537.3315
+##  [6,] 0.140479059 0.147192856 0.36120576 0.35112233 0.64887767 3925.1614
+##  [7,] 0.101285401 0.113895819 0.34022391 0.44459487 0.55540513 3296.2640
+##  [8,] 0.073026774 0.086633122 0.30830965 0.53203045 0.46796955 2703.2976
+##  [9,] 0.052652304 0.065085252 0.27138471 0.61087773 0.38912227 2174.9502
+## [10,] 0.037962311 0.048450297 0.23355594 0.68003145 0.31996855 1722.6597
+## [11,] 0.027370827 0.035818009 0.19742970 0.73938147 0.26061853 1346.8318
+## [12,] 0.019734366 0.026339170 0.16448405 0.78944241 0.21055759 1041.6145
+## [13,] 0.014228478 0.019289400 0.13540528 0.83107684 0.16892316  798.1925
+## [14,] 0.010258733 0.014081294 0.11035806 0.86530192 0.13469808  606.8751
+## [15,] 0.007396546 0.010253496 0.08918696 0.89316300 0.10683700  458.3073
+## [16,] 0.005332910 0.007451383 0.07155896 0.91565674 0.08434326  344.0880
+## [17,] 0.003845028 0.005406501 0.05705924 0.93368923 0.06631077  257.0161
+## [18,] 0.002772265 0.003917873 0.04525249 0.94805737 0.05194263  191.1168
+## [19,] 0.001998803 0.002836282 0.03571969 0.95944523 0.04055477  141.5508
+## [20,] 0.001441137 0.002051638 0.02807805 0.96842917 0.03157083  104.4704</code></pre>
+<p>Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Combination therapy is only provided for 2 years</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trace_combi&lt;-<span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, <span class="dv">6</span> <span class="op">*</span><span class="st"> </span>follow_up), <span class="dt">nrow=</span>follow_up)
+<span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>){
+  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] &lt;-<span class="st"> </span>initial <span class="op">%*%</span><span class="st"> </span>(transitions_combi <span class="op">%^%</span>t)
+  trace_combi[t,<span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span>t  )
+  trace_combi[t,<span class="dv">6</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">*</span><span class="st"> </span>(drug_cost_combi <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span>t  )
+}
+<span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">3</span><span class="op">:</span>follow_up){
+  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] &lt;-<span class="st"> </span>trace_combi[<span class="dv">2</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span>(t<span class="op">-</span><span class="dv">2</span>))
+  trace_combi[t,<span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span>t  )
+  trace_combi[t,<span class="dv">6</span>] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span>t  )
+}
+trace_combi</code></pre></div>
+<pre><code>##              [,1]        [,2]       [,3]       [,4]       [,5]      [,6]
+##  [1,] 0.857989000 0.102818000 0.03410300 0.00509000 0.99491000 6913.5529
+##  [2,] 0.736145124 0.169106615 0.08032348 0.01442478 0.98557522 6737.6635
+##  [3,] 0.530760634 0.246952259 0.17839072 0.04389638 0.95610362 5038.7601
+##  [4,] 0.382678417 0.250692910 0.26986357 0.09676510 0.90323490 4996.5322
+##  [5,] 0.275911139 0.222953621 0.33006915 0.17106609 0.82893391 4709.3031
+##  [6,] 0.198931931 0.185270104 0.35678003 0.25901793 0.74098207 4240.4615
+##  [7,] 0.143429922 0.147826181 0.35631840 0.35242550 0.64757450 3678.4262
+##  [8,] 0.103412974 0.114859855 0.33701386 0.44471331 0.55528669 3096.8983
+##  [9,] 0.074560754 0.087622997 0.30643702 0.53137923 0.46862077 2545.4660
+## [10,] 0.053758304 0.065970233 0.27048590 0.60978557 0.39021443 2051.9188
+## [11,] 0.038759737 0.049187883 0.23331611 0.67873627 0.32126373 1627.9106
+## [12,] 0.027945770 0.036407627 0.19760346 0.73804315 0.26195685 1274.5707
+## [13,] 0.020148900 0.026797877 0.16489286 0.78816036 0.21183964  986.9428
+## [14,] 0.014527357 0.019639644 0.13592636 0.82990664 0.17009336  757.1038
+## [15,] 0.010474225 0.014345160 0.11091144 0.86426918 0.13573082  576.1690
+## [16,] 0.007551916 0.010450331 0.08972383 0.89227392 0.10772608  435.4712
+## [17,] 0.005444931 0.007597129 0.07205214 0.91490580 0.08509420  327.1761
+## [18,] 0.003925796 0.005513808 0.05749594 0.93306445 0.06693555  244.5374
+## [19,] 0.002830499 0.003996533 0.04562911 0.94754386 0.05245614  181.9391
+## [20,] 0.002040789 0.002893747 0.03603806 0.95902740 0.04097260  134.8202</code></pre>
+</div>
 </div>
   </div>
 
@@ -184,6 +252,7 @@ expected_total_cost_mono</code></pre></div>
 <a href="#model-calculation"><span class="toc-section-number">3</span> Model Calculation</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#health-state-occupancy"><span class="toc-section-number">3.1</span> Health state occupancy</a></li>
       <li><a href="#calculation-of-expected-life-years-and-costs"><span class="toc-section-number">3.2</span> Calculation of expected life years and costs</a></li>
+      <li><a href="#calculation-of-trace"><span class="toc-section-number">3.3</span> Calculation of trace</a></li>
       </ul>
 </li>
       </ul>

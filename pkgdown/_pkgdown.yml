@@ -9,10 +9,10 @@ articles:
 - title: "Using hesim"
   contents:
   - simple-markov-cohort-model
-  - deterministic-markov-cohort
-  - psa-markov-cohort
-  - individual-level-simulation
-  - decision-analysis
+  - a
+  - b
+  - c
+  - d
 
 navbar:
   title: learnCEA
@@ -22,10 +22,10 @@ navbar:
       - text: "Simple Markov Cohort Model"
         href: articles/simple-markov-cohort-model.html
       - text: "Deterministic Markov Cohort Models"
-        href: articles/deterministic-markov-cohort.html
+        href: articles/a.html
       - text: "Probabilistic Sensitivity Analysis for Markov Cohort Models"
-        href: articles/psa-markov-cohort.html 
+        href: articles/b.html 
       - text: "Semi-Markov Individual Level Simulation"
-        href: articles/individual-level-simulation.html
+        href: articles/c.html
       - text: "Decision Analysis"
-        href: articles/decision-analysis.html       
+        href: articles/d.html       
