@@ -1,5 +1,5 @@
 ---
-title: a
+title: Simple Markov Cohort Models (HESIM)
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -9,7 +9,7 @@ output:
 pkgdown:
   as_is: true
 vignette: >
-  %\VignetteIndexEntry{a}
+  %\VignetteIndexEntry{Simple Markov Cohort Models (HESIM)}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
