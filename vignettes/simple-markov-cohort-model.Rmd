@@ -100,7 +100,35 @@ expected_total_cost_mono
 ```
 
 
+## Calculation of trace
+Health state occupancy, discounted life years and discounted costs with monotherapy for a time-horizon of 20 years
+```{r, message=FALSE}
+follow_up <- 20
+trace_mono<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
+for(t in 1:follow_up){
+trace_mono[t,1:4] <- initial %*% (transitions_mono %^%t)
+trace_mono[t,5] <- sum(  trace_mono[t,1:4] * LY * 1/(1+discount_LY)^t  )
+trace_mono[t,6] <- sum(  trace_mono[t,1:4] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
+}
+trace_mono
+```
 
+
+Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Combination therapy is only provided for 2 years
+```{r, message=FALSE}
+trace_combi<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
+for(t in 1:2){
+  trace_combi[t,1:4] <- initial %*% (transitions_combi %^%t)
+  trace_combi[t,5] <- sum(  trace_combi[t,1:4] * LY * 1/(1+discount_LY)^t  )
+  trace_combi[t,6] <- sum(  trace_combi[t,1:4] * (drug_cost_combi + other_cost) * 1/(1+discount_cost)^t  )
+}
+for(t in 3:follow_up){
+  trace_combi[t,1:4] <- trace_combi[2,1:4] %*% (transitions_mono %^% (t-2))
+  trace_combi[t,5] <- sum(  trace_combi[t,1:4] * LY * 1/(1+discount_LY)^t  )
+  trace_combi[t,6] <- sum(  trace_combi[t,1:4] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
+}
+trace_combi
+```
 
 
 
