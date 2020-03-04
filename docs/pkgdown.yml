@@ -1,9 +1,5 @@
-pandoc: 2.7.3
-pkgdown: 1.3.0
+pandoc: 1.19.2.1
+pkgdown: 1.4.1
 pkgdown_sha: ~
-articles:
-  decision-analysis: decision-analysis.html
-  deterministic-markov-cohort: deterministic-markov-cohort.html
-  individual-level-simulation: individual-level-simulation.html
-  psa-markov-cohort: psa-markov-cohort.html
+articles: []
 
