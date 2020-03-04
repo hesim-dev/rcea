@@ -13,11 +13,18 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
+# Overview
+We illustrate the implementation of a simple Markov cohort model by replicating the HIV model developed by [Chancellor et al.](https://link.springer.com/article/10.2165/00019053-199712010-00006) and used for didactic purposes in the [*Decision Modeling for Health Economic Evaluation*](https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation). The analysis compares two treatment strategies, zidovudine monotherapy and zidovudine + lamivudine combination therapy. The model is time-inhomogeneous because patients are assumed to only use lamivudine for 2 years before switching back to monotherapy.
 
-# This is a header
-dkfjladskf
+The model consists 4 health states. Ordered from worst to best to worst, they are: State A (CD4 cells > 200 and < 500 cells/mm3), State B (CD4 < 200 cells/mm3), State C (AIDS), and State D (death). The model assumes that patients can transition to any state that is more severe (i.e., progress) but cannot transition back to a more severe state.
 
-```{r}
+```{r, out.width = "700px", echo = FALSE}
+knitr::include_graphics("simple-markov-cohort-model.png")
+```
+
+# Parameters
+Define transition matrix with monotherapy
+```{r, message=FALSE}
 library(expm)
 
 transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
@@ -25,7 +32,78 @@ transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
                         0, 0, 0.750, 0.250,
                         0, 0, 0, 1), 
                         ncol = 4, nrow = 4, byrow = TRUE)
-
-RR<-0.509
 ```
+
+Define relative treatment effect and transition matrix with combination therapy
+```{r, message=FALSE}
+RR<-0.509
+
+transitions_combi <- matrix(c((1-0.202*RR-0.067*RR-0.010*RR), 0.202*RR, 0.067*RR, 0.010*RR,
+                                      0, (1-0.407*RR-0.012*RR), 0.407*RR, 0.012*RR,
+                                      0, 0, (1-0.250*RR), 0.250*RR,
+                                      0, 0, 0, 1),
+                                      ncol = 4, nrow = 4, byrow = TRUE)
+```
+
+Lifeyears and costs by health state and discount rates
+```{r, message=FALSE}
+LY <- matrix(c(1, 1, 1, 0),nrow=1)
+
+drug_cost_mono <- matrix(c(2278, 2278, 2278, 0),nrow=1)
+drug_cost_combi <- matrix(c(2278+2087, 2278+2087, 2278+2087, 0),nrow=1)
+other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
+
+discount_LY <- 0.00
+discount_cost <- 0.06
+```
+
+Define initial distribution 
+```{r, message=FALSE}
+initial<-matrix(c(1,0,0,0),nrow=1)
+```
+
+# Model Calculation 
+## Health state occupancy
+State occupancy with monotherapy at 1 year
+```{r, message=FALSE}
+initial %*% (transitions_mono %^% 1)
+```
+
+State occupancy with monotherapy at 5 years
+```{r, message=FALSE}
+initial %*% (transitions_mono %^% 5)
+```
+
+## Calculation of expected life years and costs
+The discounted expected life years after 5 years of follow-up can be calculated as follows:
+```{r, message=FALSE}
+expected_LY_mono <- sum(
+            initial %*% (transitions_mono %^% 1) * LY * 1/(1+discount_LY)^1,
+            initial %*% (transitions_mono %^% 2) * LY * 1/(1+discount_LY)^2,
+            initial %*% (transitions_mono %^% 3) * LY * 1/(1+discount_LY)^3,
+            initial %*% (transitions_mono %^% 4) * LY * 1/(1+discount_LY)^4,
+            initial %*% (transitions_mono %^% 5) * LY * 1/(1+discount_LY)^5 
+            )
+expected_LY_mono
+```
+
+The discounted expected costs after 5 years of follow-up can be calculated as follows:
+```{r, message=FALSE}
+expected_total_cost_mono <- sum(
+            initial %*% (transitions_mono %^% 1) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^1,
+            initial %*% (transitions_mono %^% 2) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^2,
+            initial %*% (transitions_mono %^% 3) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^3,
+            initial %*% (transitions_mono %^% 4) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^4,
+            initial %*% (transitions_mono %^% 5) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^5  
+            ) 
+expected_total_cost_mono
+```
+
+
+
+
+
+
+
+
 
