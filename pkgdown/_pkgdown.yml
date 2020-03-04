@@ -8,6 +8,7 @@ development:
 articles:
 - title: "Using hesim"
   contents:
+  - simple-markov-cohort-model
   - deterministic-markov-cohort
   - psa-markov-cohort
   - individual-level-simulation
@@ -18,6 +19,8 @@ navbar:
   left:
   - text: "Tutorials"
     menu:
+      - text: "Simple Markov Cohort Model"
+        href: articles/simple-markov-cohort-model.html
       - text: "Deterministic Markov Cohort Models"
         href: articles/deterministic-markov-cohort.html
       - text: "Probabilistic Sensitivity Analysis for Markov Cohort Models"
