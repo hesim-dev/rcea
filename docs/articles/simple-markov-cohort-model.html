@@ -93,24 +93,83 @@
 
     
     
-<div id="this-is-a-header" class="section level1">
+<div id="overview" class="section level1">
 <h1 class="hasAnchor">
-<a href="#this-is-a-header" class="anchor"></a><span class="header-section-number">1</span> This is a header</h1>
-<p>dkfjladskf</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(expm)</code></pre></div>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre><code>## 
-## Attaching package: 'expm'</code></pre>
-<pre><code>## The following object is masked from 'package:Matrix':
-## 
-##     expm</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">transitions_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.721</span>, <span class="fl">0.202</span>, <span class="fl">0.067</span>, <span class="fl">0.010</span>,
+<a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
+<p>We illustrate the implementation of a simple Markov cohort model by replicating the HIV model developed by <a href="https://link.springer.com/article/10.2165/00019053-199712010-00006">Chancellor et al.</a> and used for didactic purposes in the <a href="https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation"><em>Decision Modeling for Health Economic Evaluation</em></a>. The analysis compares two treatment strategies, zidovudine monotherapy and zidovudine + lamivudine combination therapy. The model is time-inhomogeneous because patients are assumed to only use lamivudine for 2 years before switching back to monotherapy.</p>
+<p>The model consists 4 health states. Ordered from worst to best to worst, they are: State A (CD4 cells &gt; 200 and &lt; 500 cells/mm3), State B (CD4 &lt; 200 cells/mm3), State C (AIDS), and State D (death). The model assumes that patients can transition to any state that is more severe (i.e., progress) but cannot transition back to a more severe state.</p>
+<p><img src="../../../../../Jeroen%20Jansen/PERSONAL/GitHub/ispor-short-course/vignettes/simple-markov-cohort-model.png" width="700px"></p>
+</div>
+<div id="parameters" class="section level1">
+<h1 class="hasAnchor">
+<a href="#parameters" class="anchor"></a><span class="header-section-number">2</span> Parameters</h1>
+<p>Define transition matrix with monotherapy</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(expm)
+
+transitions_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.721</span>, <span class="fl">0.202</span>, <span class="fl">0.067</span>, <span class="fl">0.010</span>,
                         <span class="dv">0</span>, <span class="fl">0.581</span>, <span class="fl">0.407</span>, <span class="fl">0.012</span>,
                         <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.750</span>, <span class="fl">0.250</span>,
                         <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), 
-                        <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
+                        <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>Define relative treatment effect and transition matrix with combination therapy</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RR&lt;-<span class="fl">0.509</span>
 
-RR&lt;-<span class="fl">0.509</span></code></pre></div>
+transitions_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>((<span class="dv">1</span><span class="op">-</span><span class="fl">0.202</span><span class="op">*</span>RR<span class="op">-</span><span class="fl">0.067</span><span class="op">*</span>RR<span class="op">-</span><span class="fl">0.010</span><span class="op">*</span>RR), <span class="fl">0.202</span><span class="op">*</span>RR, <span class="fl">0.067</span><span class="op">*</span>RR, <span class="fl">0.010</span><span class="op">*</span>RR,
+                                      <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span><span class="fl">0.407</span><span class="op">*</span>RR<span class="op">-</span><span class="fl">0.012</span><span class="op">*</span>RR), <span class="fl">0.407</span><span class="op">*</span>RR, <span class="fl">0.012</span><span class="op">*</span>RR,
+                                      <span class="dv">0</span>, <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span><span class="fl">0.250</span><span class="op">*</span>RR), <span class="fl">0.250</span><span class="op">*</span>RR,
+                                      <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),
+                                      <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>Lifeyears and costs by health state and discount rates</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LY &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
+
+drug_cost_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2278</span>, <span class="dv">2278</span>, <span class="dv">2278</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
+drug_cost_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2278</span><span class="op">+</span><span class="dv">2087</span>, <span class="dv">2278</span><span class="op">+</span><span class="dv">2087</span>, <span class="dv">2278</span><span class="op">+</span><span class="dv">2087</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
+other_cost &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2756</span>, <span class="dv">3052</span>, <span class="dv">9007</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
+
+discount_LY &lt;-<span class="st"> </span><span class="fl">0.00</span>
+discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code></pre></div>
+<p>Define initial distribution</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial&lt;-<span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)</code></pre></div>
+</div>
+<div id="model-calculation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#model-calculation" class="anchor"></a><span class="header-section-number">3</span> Model Calculation</h1>
+<div id="health-state-occupancy" class="section level2">
+<h2 class="hasAnchor">
+<a href="#health-state-occupancy" class="anchor"></a><span class="header-section-number">3.1</span> Health state occupancy</h2>
+<p>State occupancy with monotherapy at 1 year</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+<pre><code>##       [,1]  [,2]  [,3] [,4]
+## [1,] 0.721 0.202 0.067 0.01</code></pre>
+<p>State occupancy with monotherapy at 5 years</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">5</span>)</code></pre></div>
+<pre><code>##           [,1]     [,2]      [,3]      [,4]
+## [1,] 0.1948392 0.185603 0.3634815 0.2560763</code></pre>
+</div>
+<div id="calculation-of-expected-life-years-and-costs" class="section level2">
+<h2 class="hasAnchor">
+<a href="#calculation-of-expected-life-years-and-costs" class="anchor"></a><span class="header-section-number">3.2</span> Calculation of expected life years and costs</h2>
+<p>The discounted expected life years after 5 years of follow-up can be calculated as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">expected_LY_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span><span class="dv">1</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span><span class="dv">2</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">3</span>) <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span><span class="dv">3</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">4</span>) <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span><span class="dv">4</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">5</span>) <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span><span class="dv">5</span> 
+            )
+expected_LY_mono</code></pre></div>
+<pre><code>## [1] 4.441473</code></pre>
+<p>The discounted expected costs after 5 years of follow-up can be calculated as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">expected_total_cost_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span><span class="dv">1</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span><span class="dv">2</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">3</span>) <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span><span class="dv">3</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">4</span>) <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span><span class="dv">4</span>,
+            initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">5</span>) <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span><span class="dv">5</span>  
+            ) 
+expected_total_cost_mono</code></pre></div>
+<pre><code>## [1] 25501.45</code></pre>
+</div>
 </div>
   </div>
 
@@ -119,7 +178,14 @@ RR&lt;-<span class="fl">0.509</span></code></pre></div>
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#this-is-a-header"><span class="toc-section-number">1</span> This is a header</a></li>
+<li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
+      <li><a href="#parameters"><span class="toc-section-number">2</span> Parameters</a></li>
+      <li>
+<a href="#model-calculation"><span class="toc-section-number">3</span> Model Calculation</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#health-state-occupancy"><span class="toc-section-number">3.1</span> Health state occupancy</a></li>
+      <li><a href="#calculation-of-expected-life-years-and-costs"><span class="toc-section-number">3.2</span> Calculation of expected life years and costs</a></li>
+      </ul>
+</li>
       </ul>
 </div>
       </div>
