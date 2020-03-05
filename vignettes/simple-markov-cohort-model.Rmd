@@ -114,7 +114,7 @@ trace_mono
 ```
 
 
-Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Combination therapy is only provided for 2 years
+Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles). 
 ```{r, message=FALSE}
 trace_combi<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
 for(t in 1:2){
