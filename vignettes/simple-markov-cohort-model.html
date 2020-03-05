@@ -130,8 +130,8 @@ $(document).ready(function () {
 <ul>
 <li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
 <li><a href="#required-r-package"><span class="toc-section-number">2</span> Required R-package</a></li>
-<li><a href="#parameters"><span class="toc-section-number">3</span> Parameters</a></li>
-<li><a href="#model-calculation"><span class="toc-section-number">4</span> Model Calculation</a><ul>
+<li><a href="#define-parameters"><span class="toc-section-number">3</span> Define parameters</a></li>
+<li><a href="#model-calculation"><span class="toc-section-number">4</span> Model calculation</a><ul>
 <li><a href="#health-state-occupancy"><span class="toc-section-number">4.1</span> Health state occupancy</a></li>
 <li><a href="#calculation-of-expected-life-years-and-costs"><span class="toc-section-number">4.2</span> Calculation of expected life years and costs</a></li>
 <li><a href="#calculation-of-trace"><span class="toc-section-number">4.3</span> Calculation of trace</a></li>
@@ -152,14 +152,20 @@ $(document).ready(function () {
 <pre class="r"><code>install.packages(&quot;expm&quot;,repos = &quot;http://cran.us.r-project.org&quot;)
 library(expm)</code></pre>
 </div>
-<div id="parameters" class="section level1">
-<h1><span class="header-section-number">3</span> Parameters</h1>
+<div id="define-parameters" class="section level1">
+<h1><span class="header-section-number">3</span> Define parameters</h1>
 <p>Define transition matrix with monotherapy</p>
 <pre class="r"><code>transitions_mono &lt;- matrix(c(0.721, 0.202, 0.067, 0.010,
                         0, 0.581, 0.407, 0.012,
                         0, 0, 0.750, 0.250,
                         0, 0, 0, 1), 
-                        ncol = 4, nrow = 4, byrow = TRUE)</code></pre>
+                        ncol = 4, nrow = 4, byrow = TRUE)
+transitions_mono</code></pre>
+<pre><code>##       [,1]  [,2]  [,3]  [,4]
+## [1,] 0.721 0.202 0.067 0.010
+## [2,] 0.000 0.581 0.407 0.012
+## [3,] 0.000 0.000 0.750 0.250
+## [4,] 0.000 0.000 0.000 1.000</code></pre>
 <p>Define relative treatment effect and transition matrix with combination therapy</p>
 <pre class="r"><code>RR&lt;-0.509
 
@@ -167,7 +173,13 @@ transitions_combi &lt;- matrix(c((1-0.202*RR-0.067*RR-0.010*RR), 0.202*RR, 0.067
                                       0, (1-0.407*RR-0.012*RR), 0.407*RR, 0.012*RR,
                                       0, 0, (1-0.250*RR), 0.250*RR,
                                       0, 0, 0, 1),
-                                      ncol = 4, nrow = 4, byrow = TRUE)</code></pre>
+                                      ncol = 4, nrow = 4, byrow = TRUE)
+transitions_combi</code></pre>
+<pre><code>##          [,1]     [,2]     [,3]     [,4]
+## [1,] 0.857989 0.102818 0.034103 0.005090
+## [2,] 0.000000 0.786729 0.207163 0.006108
+## [3,] 0.000000 0.000000 0.872750 0.127250
+## [4,] 0.000000 0.000000 0.000000 1.000000</code></pre>
 <p>Lifeyears and costs by health state and discount rates</p>
 <pre class="r"><code>LY &lt;- matrix(c(1, 1, 1, 0),nrow=1)
 
@@ -181,7 +193,7 @@ discount_cost &lt;- 0.06</code></pre>
 <pre class="r"><code>initial&lt;-matrix(c(1,0,0,0),nrow=1)</code></pre>
 </div>
 <div id="model-calculation" class="section level1">
-<h1><span class="header-section-number">4</span> Model Calculation</h1>
+<h1><span class="header-section-number">4</span> Model calculation</h1>
 <div id="health-state-occupancy" class="section level2">
 <h2><span class="header-section-number">4.1</span> Health state occupancy</h2>
 <p>State occupancy with monotherapy at 1 year</p>
@@ -220,14 +232,16 @@ expected_total_cost_mono</code></pre>
 <h2><span class="header-section-number">4.3</span> Calculation of trace</h2>
 <p>Health state occupancy, discounted life years and discounted costs with monotherapy for a time-horizon of 20 years</p>
 <pre class="r"><code>follow_up &lt;- 20
-trace_mono&lt;-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
+trace_mono&lt;-matrix(rep(NA, 6 * follow_up), nrow=follow_up)  #create empty trace for 6 variables and 20 cycles
+colnames(trace_mono) &lt;- c(&quot;State A&quot;, &quot;State B&quot;, &quot;State C&quot;, &quot;Death&quot;, &quot;Disc LY&quot;, &quot;Disc cost&quot;) #create column headings
+
 for(t in 1:follow_up){
 trace_mono[t,1:4] &lt;- initial %*% (transitions_mono %^%t)
 trace_mono[t,5] &lt;- sum(  trace_mono[t,1:4] * LY * 1/(1+discount_LY)^t  )
 trace_mono[t,6] &lt;- sum(  trace_mono[t,1:4] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
 }
 trace_mono</code></pre>
-<pre><code>##              [,1]        [,2]       [,3]       [,4]       [,5]      [,6]
+<pre><code>##           State A     State B    State C      Death    Disc LY Disc cost
 ##  [1,] 0.721000000 0.202000000 0.06700000 0.01000000 0.99000000 5153.0840
 ##  [2,] 0.519841000 0.263004000 0.18077100 0.03638400 0.96361600 5392.2140
 ##  [3,] 0.374805361 0.257813206 0.27745022 0.08993121 0.91006879 5366.7964
@@ -250,6 +264,8 @@ trace_mono</code></pre>
 ## [20,] 0.001441137 0.002051638 0.02807805 0.96842917 0.03157083  104.4704</code></pre>
 <p>Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles).</p>
 <pre class="r"><code>trace_combi&lt;-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
+colnames(trace_combi) &lt;- c(&quot;State A&quot;, &quot;State B&quot;, &quot;State C&quot;, &quot;Death&quot;, &quot;Disc LY&quot;, &quot;Disc cost&quot;)
+
 for(t in 1:2){
   trace_combi[t,1:4] &lt;- initial %*% (transitions_combi %^%t)
   trace_combi[t,5] &lt;- sum(  trace_combi[t,1:4] * LY * 1/(1+discount_LY)^t  )
@@ -261,7 +277,7 @@ for(t in 3:follow_up){
   trace_combi[t,6] &lt;- sum(  trace_combi[t,1:4] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
 }
 trace_combi</code></pre>
-<pre><code>##              [,1]        [,2]       [,3]       [,4]       [,5]      [,6]
+<pre><code>##           State A     State B    State C      Death    Disc LY Disc cost
 ##  [1,] 0.857989000 0.102818000 0.03410300 0.00509000 0.99491000 6913.5529
 ##  [2,] 0.736145124 0.169106615 0.08032348 0.01442478 0.98557522 6737.6635
 ##  [3,] 0.530760634 0.246952259 0.17839072 0.04389638 0.95610362 5038.7601
