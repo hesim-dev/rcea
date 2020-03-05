@@ -206,7 +206,7 @@ trace_mono</code></pre></div>
 ## [18,] 0.002772265 0.003917873 0.04525249 0.94805737 0.05194263  191.1168
 ## [19,] 0.001998803 0.002836282 0.03571969 0.95944523 0.04055477  141.5508
 ## [20,] 0.001441137 0.002051638 0.02807805 0.96842917 0.03157083  104.4704</code></pre>
-<p>Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Combination therapy is only provided for 2 years</p>
+<p>Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trace_combi&lt;-<span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, <span class="dv">6</span> <span class="op">*</span><span class="st"> </span>follow_up), <span class="dt">nrow=</span>follow_up)
 <span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>){
   trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] &lt;-<span class="st"> </span>initial <span class="op">%*%</span><span class="st"> </span>(transitions_combi <span class="op">%^%</span>t)
