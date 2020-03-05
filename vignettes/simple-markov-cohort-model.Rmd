@@ -1,5 +1,5 @@
 ---
-title: "Simple Markov Cohort model"
+title: "Simple Markov Cohort Model"
 date: "`r Sys.Date()`"
 output: 
   html_document:
