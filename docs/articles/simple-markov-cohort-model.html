@@ -241,6 +241,30 @@ trace_combi</code></pre></div>
 ## [19,] 0.002830499 0.003996533 0.04562911 0.94754386 0.05245614  181.9391
 ## [20,] 0.002040789 0.002893747 0.03603806 0.95902740 0.04097260  134.8202</code></pre>
 </div>
+<div id="calculation-of-expected-life-years-costs-and-incremental-cost-effectiveness-ratio" class="section level2">
+<h2 class="hasAnchor">
+<a href="#calculation-of-expected-life-years-costs-and-incremental-cost-effectiveness-ratio" class="anchor"></a><span class="header-section-number">3.4</span> Calculation of expected life years, costs, and incremental cost-effectiveness ratio</h2>
+<p>Expected discounted life years with monotherapy for a 20-year time horizon</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_LY_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_mono[,<span class="dv">5</span>])
+Expected_LY_mono</code></pre></div>
+<pre><code>## [1] 7.979173</code></pre>
+<p>Expected discounted total costs with with monotherapy for a 20-year time horizon</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_total_cost_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_mono[,<span class="dv">6</span>])
+Expected_total_cost_mono</code></pre></div>
+<pre><code>## [1] 44613.85</code></pre>
+<p>Expected discounted life years with combination treatment for a 20-year time horizon</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_LY_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_combi[,<span class="dv">5</span>])
+Expected_LY_combi</code></pre></div>
+<pre><code>## [1] 8.925505</code></pre>
+<p>Expected discounted total costs with combination treatment for a 20-year time horizon</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_total_cost_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_combi[,<span class="dv">6</span>])
+Expected_total_cost_combi</code></pre></div>
+<pre><code>## [1] 50555.62</code></pre>
+<p>Incremental cost-effectiveness ratio in terms costs per life years with combination therapy relative to monotherapy</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ICER  &lt;-<span class="st"> </span>(Expected_total_cost_combi <span class="op">-</span><span class="st"> </span>Expected_total_cost_mono) <span class="op">/</span><span class="st"> </span>(Expected_LY_combi <span class="op">-</span><span class="st"> </span>Expected_LY_mono)
+ICER</code></pre></div>
+<pre><code>## [1] 6278.737</code></pre>
+</div>
 </div>
   </div>
 
@@ -256,6 +280,7 @@ trace_combi</code></pre></div>
 <li><a href="#health-state-occupancy"><span class="toc-section-number">3.1</span> Health state occupancy</a></li>
       <li><a href="#calculation-of-expected-life-years-and-costs"><span class="toc-section-number">3.2</span> Calculation of expected life years and costs</a></li>
       <li><a href="#calculation-of-trace"><span class="toc-section-number">3.3</span> Calculation of trace</a></li>
+      <li><a href="#calculation-of-expected-life-years-costs-and-incremental-cost-effectiveness-ratio"><span class="toc-section-number">3.4</span> Calculation of expected life years, costs, and incremental cost-effectiveness ratio</a></li>
       </ul>
 </li>
       </ul>

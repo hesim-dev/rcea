@@ -130,8 +130,35 @@ for(t in 3:follow_up){
 trace_combi
 ```
 
+## Calculation of expected life years, costs, and incremental cost-effectiveness ratio
+Expected discounted life years with monotherapy for a 20-year time horizon
+```{r, message=FALSE}
+Expected_LY_mono <- sum(trace_mono[,5])
+Expected_LY_mono
+```
 
+Expected discounted total costs with with monotherapy for a 20-year time horizon
+```{r, message=FALSE}
+Expected_total_cost_mono <- sum(trace_mono[,6])
+Expected_total_cost_mono
+```
 
+Expected discounted life years with combination treatment for a 20-year time horizon
+```{r, message=FALSE}
+Expected_LY_combi <- sum(trace_combi[,5])
+Expected_LY_combi
+```
 
+Expected discounted total costs with combination treatment for a 20-year time horizon
+```{r, message=FALSE}
+Expected_total_cost_combi <- sum(trace_combi[,6])
+Expected_total_cost_combi
+```
+
+Incremental cost-effectiveness ratio in terms costs per life years with combination therapy relative to monotherapy
+```{r, message=FALSE}
+ICER  <- (Expected_total_cost_combi - Expected_total_cost_mono) / (Expected_LY_combi - Expected_LY_mono)
+ICER
+```
 
 
