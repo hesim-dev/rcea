@@ -74,8 +74,8 @@ knitr::include_graphics("getting-started.png")
 Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We set up the analysis for two treatment strategies and one representative patient.
 
 ```{r, warning = FALSE, message = FALSE}
-library("hesim")
-library("data.table")
+library(hesim)
+library(data.table)
 strategies <- data.table(strategy_id = 1:2,
                          strategy_name = c("Monotherapy", "Combination therapy"))
 patients <- data.table(patient_id = 1)
