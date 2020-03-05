@@ -23,9 +23,9 @@ knitr::include_graphics("simple-markov-cohort-model.png")
 ```
 
 # Required R-package 
-Load and install R Package ‘expm’ to compute the k-th power of a matrix
-```{r, message=FALSE}
-install.packages("expm")
+Install and load R Package ‘expm’ to compute the k-th power of a matrix
+```{r, message = FALSE, warning=FALSE, results='hide'}
+install.packages("expm",repos = "http://cran.us.r-project.org")
 library(expm)
 ```
 
