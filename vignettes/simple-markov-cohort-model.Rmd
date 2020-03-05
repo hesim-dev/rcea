@@ -37,6 +37,7 @@ transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
                         0, 0, 0.750, 0.250,
                         0, 0, 0, 1), 
                         ncol = 4, nrow = 4, byrow = TRUE)
+transitions_mono
 ```
 
 Define relative treatment effect and transition matrix with combination therapy
@@ -48,6 +49,7 @@ transitions_combi <- matrix(c((1-0.202*RR-0.067*RR-0.010*RR), 0.202*RR, 0.067*RR
                                       0, 0, (1-0.250*RR), 0.250*RR,
                                       0, 0, 0, 1),
                                       ncol = 4, nrow = 4, byrow = TRUE)
+transitions_combi
 ```
 
 Lifeyears and costs by health state and discount rates

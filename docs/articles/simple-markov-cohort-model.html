@@ -118,7 +118,13 @@
                         <span class="dv">0</span>, <span class="fl">0.581</span>, <span class="fl">0.407</span>, <span class="fl">0.012</span>,
                         <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.750</span>, <span class="fl">0.250</span>,
                         <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), 
-                        <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</code></pre></div>
+                        <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
+transitions_mono</code></pre></div>
+<pre><code>##       [,1]  [,2]  [,3]  [,4]
+## [1,] 0.721 0.202 0.067 0.010
+## [2,] 0.000 0.581 0.407 0.012
+## [3,] 0.000 0.000 0.750 0.250
+## [4,] 0.000 0.000 0.000 1.000</code></pre>
 <p>Define relative treatment effect and transition matrix with combination therapy</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RR&lt;-<span class="fl">0.509</span>
 
@@ -126,7 +132,13 @@ transitions_combi &lt;-<span class="st"> </span><span class="kw"><a href="https:
                                       <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span><span class="fl">0.407</span><span class="op">*</span>RR<span class="op">-</span><span class="fl">0.012</span><span class="op">*</span>RR), <span class="fl">0.407</span><span class="op">*</span>RR, <span class="fl">0.012</span><span class="op">*</span>RR,
                                       <span class="dv">0</span>, <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span><span class="fl">0.250</span><span class="op">*</span>RR), <span class="fl">0.250</span><span class="op">*</span>RR,
                                       <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),
-                                      <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</code></pre></div>
+                                      <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
+transitions_combi</code></pre></div>
+<pre><code>##          [,1]     [,2]     [,3]     [,4]
+## [1,] 0.857989 0.102818 0.034103 0.005090
+## [2,] 0.000000 0.786729 0.207163 0.006108
+## [3,] 0.000000 0.000000 0.872750 0.127250
+## [4,] 0.000000 0.000000 0.000000 1.000000</code></pre>
 <p>Lifeyears and costs by health state and discount rates</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LY &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
 
