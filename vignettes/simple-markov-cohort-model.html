@@ -232,7 +232,7 @@ expected_total_cost_mono</code></pre>
 <h2><span class="header-section-number">4.3</span> Calculation of trace</h2>
 <p>Health state occupancy, discounted life years and discounted costs with monotherapy for a time-horizon of 20 years</p>
 <pre class="r"><code>follow_up &lt;- 20
-trace_mono&lt;-matrix(rep(NA, 6 * follow_up), nrow=follow_up)  #create empty trace for 6 variables and 20 cycles
+trace_mono&lt;-matrix(rep(NA, 6 * follow_up), nrow=follow_up)  #create empty trace matrix for 6 variables and 20 cycles
 colnames(trace_mono) &lt;- c(&quot;State A&quot;, &quot;State B&quot;, &quot;State C&quot;, &quot;Death&quot;, &quot;Disc LY&quot;, &quot;Disc cost&quot;) #create column headings
 
 for(t in 1:follow_up){
