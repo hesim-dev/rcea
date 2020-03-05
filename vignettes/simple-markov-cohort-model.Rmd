@@ -29,7 +29,7 @@ install.packages("expm",repos = "http://cran.us.r-project.org")
 library(expm)
 ```
 
-# Parameters
+# Define parameters
 Define transition matrix with monotherapy
 ```{r, message=FALSE}
 transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
