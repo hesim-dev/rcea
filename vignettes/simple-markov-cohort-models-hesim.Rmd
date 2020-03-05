@@ -14,8 +14,46 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+# hesim
+`hesim` is a modular and computationally efficient R package for health economic simulation modeling and decision analysis that provides a general framework for integrating statistical analyses with economic evaluation. The package supports cohort discrete time state transition models (DTSTMs), N-state partitioned survival models (PSMs), and individual-level continuous time state transition models (CTSTMs), encompassing both Markov (time-homogeneous and time-inhomogeneous) and semi-Markov processes. It heavily utilizes `Rcpp` and `data.table`, making individual-patient simulation, probabilistic sensitivity analysis (PSA), and incorporation of patient heterogeneity fast.
 
-# Overview
+Features of the current version can be summarized as follows:
+
+- Cohort DTSTMs, N-state PSMs, and individual-level CTSTMs that encompass Markov and semi-Markov processes
+- Options to build models via mathematical expressions using nonstandard evaluation or directly from fitted statistical models
+- Parameter estimates from either an R based model or from an external source
+- Convenience functions for sampling model parameters from parametric distributions or via bootstrapping
+- Parameter uncertainty propagated with PSA
+- Modeling patient heterogeneity
+- Performing cost-effectiveness analyses and representing decision uncertainty from PSAs
+- Simulation code written in C++ to boost performance
+
+With `hesim` an economic model is constructed by combining statistical models for disease progression, costs, and utilities. As shown in the figure, a typical analysis proceeds in a 3-step process as follows:
+
+<br>
+```{r, out.width = "600px", echo = FALSE}
+knitr::include_graphics("econ-eval-process-hesim.png")
+```
+<br>
+<br>
+
+1. **Parameterization**: An economic model is parameterized by estimating statistical models for disease progression, costs, and utilities using "estimation" datasets, such as extracted data from published studies for a meta-analysis or multi-state survival data from a clinical trial. 
+2. **Simulation**: The statistical models estimated in Step 1 are combined to construct an economic model. For a given model structure, disease progression, QALYs, and costs are simulated from "input data", based on the target population and treatment strategies of interest.
+3. **Decision analysis**: Simulated outcomes from Step 2 are used to perform decision analysis using approaches such as [cost-effectiveness analysis (CEA)](https://en.wikipedia.org/wiki/Cost-effectiveness_analysis) and [multi-criteria decision analysis (MCDA)](https://en.wikipedia.org/wiki/Multiple-criteria_decision_analysis). 
+
+The entire analysis is inherently Bayesian, as uncertainty in the parameters from the statistical models is propagated throughout the economic model and decision analysis with probabilistic sensitivity analysis (PSA). Furthermore, since the statistical and economic models are integrated, patient heterogeneity can be easily introduced with patient level covariates.
+
+#Installation of hesim
+```{r, warning = FALSE, results='hide'}
+# Install from CRAN:
+# install.packages("hesim")
+
+# Install the most up to date development version from GitHub:
+# install.packages("devtools")
+# devtools::install_github("hesim-dev/hesim")
+```
+
+# Simple Markov cohort model
 The simplest models in `hesim` are cohort discrete time state transitions models (cDTSTMs), which encompass both time-homogeneous and time-inhomogeneous Markov models. cDTSTMs (that can easily incorporate patient heterogeneity and parameter uncertainty) are most conveniently simulated with a four step process specifying:
 
 1. *Data* consisting of the treatment strategies and patient population
@@ -33,7 +71,7 @@ knitr::include_graphics("getting-started.png")
 
 # Define the model
 ## Data
-We set up the model for two treatment strategies and one representative patient.
+Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We set up the analysis for two treatment strategies and one representative patient.
 
 ```{r, warning = FALSE, message = FALSE}
 library("hesim")
@@ -46,7 +84,7 @@ hesim_dat <- hesim_data(strategies = strategies,
 print(hesim_dat)
 ```
 
-The model will be simulated for each treatment strategy and patient combination. Such data containing treatment strategy and patient characteristics can be generated using `expand()`. 
+The model will be simulated for each treatment strategy and representative patient combination. Such data containing treatment strategy and patient characteristics can be generated using `expand()`. 
 
 ```{r}
 data <- expand(hesim_dat, by = c("strategies", "patients"))
@@ -155,7 +193,6 @@ mod_def <- define_model(tparams_def = tparams_def,
                         params = params)
 ```
 
-
 # Simulation
 A economic model (of class `CohortDtstm`) can be created from a defined model (of class `model_def`) and data using the generic function `create_CohortDtstm()`. The economic model is an `R6` object consisting of a transition model (`trans_model`) for simulating transition probabilities with `sim_stateprobs()`, a utility model for simulating quality-adjusted life-years with `sim_qalys()`, and a set of cost models (for each cost category) for simulating costs with `sim_costs()`. 
 
@@ -196,6 +233,8 @@ econmod$sim_costs(dr = 0.06, integrate_method = "riemann_right")
 ```
 
 # Decision analysis
+Once output has been generated with an economic model, a decision analysis can be performed. Cost-effectiveness analyses can be performed using other R packages such as [BCEA](https://sites.google.com/a/statistica.it/gianluca/bcea) or directly with `hesim` as described in more detail [here](icea.html). `hesim` does not currently provide support for MCDA. 
+
 A decision analysis is performed by comparing combination therapy to monotherapy. 
 
 ```{r icea}
