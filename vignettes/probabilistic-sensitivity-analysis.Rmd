@@ -74,10 +74,10 @@ print(p_combi[, , 1:10])
 
 # Parameters for which no uncertainty is propagated
 ```{r, message=FALSE}
-## define LY by health state per cycle
+# define LY by health state per cycle
 LY <- matrix(c(1, 1, 1, 0),nrow=1)
 
-## define costs 
+# define costs by health state per cycle
 drug_cost_mono <- matrix(c(2278, 2278, 2278, 0),nrow=1)
 drug_cost_combi <- matrix(c(2278+2087, 2278+2087, 2278+2087, 0),nrow=1)
 other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
@@ -85,28 +85,28 @@ other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
 
 # Model simulation settings
 ```{r, message=FALSE}
-## discount rates
+# discount rates
 discount_LY <- 0.00
 discount_cost <- 0.06
 
-## define starting distribution
+# define starting distribution
 initial<-matrix(c(1,0,0,0),nrow=1)
 
-## define duration of follow-up
+# define duration of follow-up
 follow_up <- 20
 ```
 
 
 # Monotherapy results
 ```{r, message=FALSE}
-## data format
+# Data format
 trace_mono <- array(NA, dim = c(follow_up, 6, PSA_samples))
 colnames(trace_mono) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
 
 Expected_LY_mono <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 Expected_total_cost_mono <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 
-## trace and expected LY and cost by PSA sample
+# Trace and expected LY and cost by PSA sample
 for(i in 1:PSA_samples){
 for(t in 1:follow_up){
 trace_mono[t,1:4,i] <- initial %*% (p_mono[,,i] %^%t)
@@ -117,7 +117,7 @@ Expected_LY_mono[i] <- sum(trace_mono[,5,i])
 Expected_total_cost_mono[i] <- sum(trace_mono[,6,i])
 }
 
-#Presentation of results for first 10 PSA samples
+# Presentation of results for first 10 PSA samples
 trace_mono[,,1:10]
 Expected_LY_mono[1:10]
 Expected_total_cost_mono[1:10]
@@ -126,14 +126,14 @@ Expected_total_cost_mono[1:10]
 
 # Combination therapy results
 ```{r, message=FALSE}
-## data format
+# Data format
 trace_combi <- array(NA, dim = c(follow_up, 6, PSA_samples))
 colnames(trace_combi) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
 
 Expected_LY_combi <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 Expected_total_cost_combi <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 
-## trace and expected LY and cost by PSA sample
+# Trace and expected LY and cost by PSA sample
 for(i in 1:PSA_samples){
 for(t in 1:2){
 trace_combi[t,1:4,i] <- initial %*% (p_combi[,,i] %^%t)
@@ -149,13 +149,13 @@ Expected_LY_combi[i] <- sum(trace_combi[,5,i])
 Expected_total_cost_combi[i] <- sum(trace_combi[,6,i])
 }
 
-#Presentation of results for first 10 PSA samples
+# Presentation of results for first 10 PSA samples
 trace_combi[,,1:10]
 Expected_LY_combi[1:10]
 Expected_total_cost_combi[1:10]
 ```
 
-# ICER
+# Incremental Cost-Effectiveness Ratio
 ```{r, message=FALSE}
 ICER <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 for(i in 1:PSA_samples){
@@ -171,6 +171,6 @@ ICER[1:10]
 Results_by_PSA_sample <- cbind(Expected_LY_mono, Expected_LY_combi, Expected_total_cost_mono, Expected_total_cost_combi, ICER)
 colnames(Results_by_PSA_sample) <- c("Disc LY mono", "Disc LY combi", "Disc cost mono", "Disc cost combi", "ICER")
 
-#Presentation of results first 10 PSA samples
+# Presentation of results first 10 PSA samples
 Results_by_PSA_sample[1:10,]
 ```
