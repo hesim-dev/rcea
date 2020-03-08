@@ -262,13 +262,4 @@ ggplot(icea_pw_out$ceac,
   theme(legend.position = "bottom") + scale_colour_discrete(name = "Strategy")
 ```
 
-# Appendix: Dirichlet distribution
-The multinomial distribution is a discrete probability distribution for the number of successes for each of k mutually exclusive categories in n trials. The probabilities of the categories are given by $\pi_1,\ldots, \pi_k$ with $\sum_{j=1}^k \pi_j=1$ and each $\pi_j$ defined on $[0,1]$. The Dirichlet distribution is parameterized by the concentration parameters $\alpha_1,\ldots, \alpha_k$ with $\alpha_j > 0$. Letting $x_1,\ldots, x_k$ denote the number of successes in each category, the prior distribution and likelihood are,
-
-$$
-\begin{aligned}
-p(\pi_1,\ldots,\pi_k |\alpha_1,\ldots, \alpha_k) = \text{Dirichlet}(\alpha_1,\ldots,\alpha_k) \\
-p(x_1,\ldots,x_k | \pi_1,\ldots,\pi_k) = \text{Multin}(n, \pi_1,\ldots,\pi_k).
-\end{aligned}
-$$
 
