@@ -323,15 +323,15 @@ econmod<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/he
 wtp &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="dv">25000</span>, <span class="dv">500</span>)
 icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(ce_sim, <span class="dt">comparator =</span> <span class="dv">1</span>, <span class="dt">dr_qalys =</span> <span class="dv">0</span>, <span class="dt">dr_costs =</span> .<span class="dv">06</span>,
                        <span class="dt">k =</span> wtp)</code></pre></div>
-<p>The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $6,312, which is very close to the estimate from the deterministic analysis from Chancellor et al.</p>
+<p>The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $6,334, which is very close to the estimate from the deterministic analysis from Chancellor et al.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(icea_pw_out)</code></pre></div>
 <pre><code>##                   1   2                        
-## Incremental QALYs "-" "0.94 (0.56, 1.22)"      
-## Incremental costs "-" "5,915 (2,848, 9,751)"   
-## Incremental NMB   "-" "40,937 (22,486, 55,877)"
-## ICER              "-" "6,312"                  
+## Incremental QALYs "-" "0.93 (0.57, 1.20)"      
+## Incremental costs "-" "5,873 (2,980, 9,935)"   
+## Incremental NMB   "-" "40,493 (23,085, 54,581)"
+## ICER              "-" "6,334"                  
 ## Conclusion        "-" "Cost-effective"</code></pre>
-<p>A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is 0.953 and approaches 1 at slightly higher WTP values.</p>
+<p>A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is 0.946 and approaches 1 at slightly higher WTP values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(icea_pw_out<span class="op">$</span>ceac, 
        <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> k, <span class="dt">y =</span> prob, 
            <span class="dt">col =</span> <span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id, <span class="dt">labels =</span> strategies<span class="op">$</span>strategy_name[<span class="op">-</span><span class="dv">1</span>]))) <span class="op">+</span>
@@ -340,17 +340,6 @@ icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr
 <span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="dt">breaks =</span> <span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(wtp), <span class="dv">5000</span>), <span class="dt">label =</span> scales<span class="op">::</span>dollar) <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="dt">name =</span> <span class="st">"Strategy"</span>)</code></pre></div>
 <p><img src="simple-markov-cohort-models-hesim_files/figure-html/ceac-1.png" width="672"></p>
-</div>
-<div id="appendix-dirichlet-distribution" class="section level1">
-<h1 class="hasAnchor">
-<a href="#appendix-dirichlet-distribution" class="anchor"></a><span class="header-section-number">7</span> Appendix: Dirichlet distribution</h1>
-<p>The multinomial distribution is a discrete probability distribution for the number of successes for each of k mutually exclusive categories in n trials. The probabilities of the categories are given by <span class="math inline">\(\pi_1,\ldots, \pi_k\)</span> with <span class="math inline">\(\sum_{j=1}^k \pi_j=1\)</span> and each <span class="math inline">\(\pi_j\)</span> defined on <span class="math inline">\([0,1]\)</span>. The Dirichlet distribution is parameterized by the concentration parameters <span class="math inline">\(\alpha_1,\ldots, \alpha_k\)</span> with <span class="math inline">\(\alpha_j &gt; 0\)</span>. Letting <span class="math inline">\(x_1,\ldots, x_k\)</span> denote the number of successes in each category, the prior distribution and likelihood are,</p>
-<p><span class="math display">\[
-\begin{aligned}
-p(\pi_1,\ldots,\pi_k |\alpha_1,\ldots, \alpha_k) = \text{Dirichlet}(\alpha_1,\ldots,\alpha_k) \\
-p(x_1,\ldots,x_k | \pi_1,\ldots,\pi_k) = \text{Multin}(n, \pi_1,\ldots,\pi_k).
-\end{aligned}
-\]</span></p>
 </div>
   </div>
 
@@ -378,7 +367,6 @@ p(x_1,\ldots,x_k | \pi_1,\ldots,\pi_k) = \text{Multin}(n, \pi_1,\ldots,\pi_k).
       </ul>
 </li>
       <li><a href="#decision-analysis"><span class="toc-section-number">6</span> Decision analysis</a></li>
-      <li><a href="#appendix-dirichlet-distribution"><span class="toc-section-number">7</span> Appendix: Dirichlet distribution</a></li>
       </ul>
 </div>
       </div>
