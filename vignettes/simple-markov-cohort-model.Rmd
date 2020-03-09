@@ -73,10 +73,13 @@ initial<-matrix(c(1,0,0,0),nrow=1)
 ## Health state occupancy
 State occupancy with monotherapy at 1 year
 ```{r, message=FALSE}
-initial %*% (transitions_mono %^% 1)
+initial %*% transitions_mono
 ```
-
 State occupancy with monotherapy at 5 years
+```{r, message=FALSE}
+initial %*% transitions_mono %*% transitions_mono %*% transitions_mono %*% transitions_mono %*% transitions_mono
+```
+State occupancy with monotherapy at 5 years (efficient)
 ```{r, message=FALSE}
 initial %*% (transitions_mono %^% 5)
 ```
