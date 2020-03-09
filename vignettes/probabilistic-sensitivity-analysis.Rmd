@@ -27,20 +27,20 @@ rm(list=ls())
 ```
 
 # Model settings
-set starting distribution over the 4 health states
+Set starting distribution over the 4 health states
 ```{r, message=FALSE}
 initial<-matrix(c(1,0,0,0),nrow=1)
 ```
-set duration of follow-up
+Set duration of follow-up
 ```{r, message=FALSE}
 follow_up <- 20
 ```
-set discount rates
+Set discount rates
 ```{r, message=FALSE}
 discount_LY <- 0.00
 discount_cost <- 0.06
 ```
-number of PSA simulations
+Number of PSA simulations
 ```{r, message=FALSE}
 PSA_samples  <- 1000
 ```

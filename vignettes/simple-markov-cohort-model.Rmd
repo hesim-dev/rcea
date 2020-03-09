@@ -38,7 +38,7 @@ Show initial distribution
 ```{r, message=FALSE}
 initial
 ```
-set duration of follow-up
+Set duration of follow-up
 ```{r, message=FALSE}
 follow_up <- 20
 ```
