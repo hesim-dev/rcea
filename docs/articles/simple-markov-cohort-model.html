@@ -158,10 +158,14 @@ discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code><
 <h2 class="hasAnchor">
 <a href="#health-state-occupancy" class="anchor"></a><span class="header-section-number">4.1</span> Health state occupancy</h2>
 <p>State occupancy with monotherapy at 1 year</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial <span class="op">%*%</span><span class="st"> </span>transitions_mono</code></pre></div>
 <pre><code>##       [,1]  [,2]  [,3] [,4]
 ## [1,] 0.721 0.202 0.067 0.01</code></pre>
 <p>State occupancy with monotherapy at 5 years</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial <span class="op">%*%</span><span class="st"> </span>transitions_mono <span class="op">%*%</span><span class="st"> </span>transitions_mono <span class="op">%*%</span><span class="st"> </span>transitions_mono <span class="op">%*%</span><span class="st"> </span>transitions_mono <span class="op">%*%</span><span class="st"> </span>transitions_mono</code></pre></div>
+<pre><code>##           [,1]     [,2]      [,3]      [,4]
+## [1,] 0.1948392 0.185603 0.3634815 0.2560763</code></pre>
+<p>State occupancy with monotherapy at 5 years (efficient)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial <span class="op">%*%</span><span class="st"> </span>(transitions_mono <span class="op">%^%</span><span class="st"> </span><span class="dv">5</span>)</code></pre></div>
 <pre><code>##           [,1]     [,2]      [,3]      [,4]
 ## [1,] 0.1948392 0.185603 0.3634815 0.2560763</code></pre>
