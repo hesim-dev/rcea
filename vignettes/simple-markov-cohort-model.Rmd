@@ -29,7 +29,27 @@ install.packages("expm",repos = "http://cran.us.r-project.org")
 library(expm)
 ```
 
-# Define parameters
+# Model settings
+Define initial distribution over the 4 health stattes
+```{r, message=FALSE}
+initial<-matrix(c(1,0,0,0),nrow=1)
+```
+Show initial distribution
+```{r, message=FALSE}
+initial
+```
+set duration of follow-up
+```{r, message=FALSE}
+follow_up <- 20
+```
+Set discount rates for life years and costs
+```{r, message=FALSE}
+discount_LY <- 0.00
+discount_cost <- 0.06
+```
+
+# Model parameters
+## Transition matrix monotherapy
 Define transition matrix with monotherapy
 ```{r, message=FALSE}
 transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
@@ -37,54 +57,64 @@ transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
                         0, 0, 0.750, 0.250,
                         0, 0, 0, 1), 
                         ncol = 4, nrow = 4, byrow = TRUE)
+```
+Show transition matrix
+```{r, message=FALSE}
 transitions_mono
 ```
 
-Define relative treatment effect and transition matrix with combination therapy
+## Relative treatment effect with combination therapy
+Define relative treatment effect with combination therapy relative to monotherapy
 ```{r, message=FALSE}
 RR<-0.509
+```
 
+## Transition matrix combination therapy
+Create transition matrix for combination therapy based on matrix for monotherapy and RR
+```{r, message=FALSE}
 transitions_combi <- matrix(c((1-0.202*RR-0.067*RR-0.010*RR), 0.202*RR, 0.067*RR, 0.010*RR,
                                       0, (1-0.407*RR-0.012*RR), 0.407*RR, 0.012*RR,
                                       0, 0, (1-0.250*RR), 0.250*RR,
                                       0, 0, 0, 1),
                                       ncol = 4, nrow = 4, byrow = TRUE)
+```
+Show transition matrix
+```{r, message=FALSE}
 transitions_combi
 ```
 
-Lifeyears and costs by health state and discount rates
+## Lifeyears and costs by health state
 ```{r, message=FALSE}
 LY <- matrix(c(1, 1, 1, 0),nrow=1)
 
 drug_cost_mono <- matrix(c(2278, 2278, 2278, 0),nrow=1)
 drug_cost_combi <- matrix(c(2278+2087, 2278+2087, 2278+2087, 0),nrow=1)
 other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
-
-discount_LY <- 0.00
-discount_cost <- 0.06
 ```
-
-Define initial distribution 
+Show matrices
 ```{r, message=FALSE}
-initial<-matrix(c(1,0,0,0),nrow=1)
+LY
+drug_cost_mono
+drug_cost_combi
+other_cost
 ```
 
-# Model calculation 
-## Health state occupancy
-State occupancy with monotherapy at 1 year
+# Basic example calculations
+## Health state occupancy with monotherapy
+State occupancy at 1 year
 ```{r, message=FALSE}
 initial %*% transitions_mono
 ```
-State occupancy with monotherapy at 5 years
+State occupancy at 5 years
 ```{r, message=FALSE}
 initial %*% transitions_mono %*% transitions_mono %*% transitions_mono %*% transitions_mono %*% transitions_mono
 ```
-State occupancy with monotherapy at 5 years (efficient)
+State occupancy at 5 years (efficient)
 ```{r, message=FALSE}
 initial %*% (transitions_mono %^% 5)
 ```
 
-## Calculation of expected life years and costs
+## Expected life years and costs with monotherapy
 The discounted expected life years after 5 years of follow-up can be calculated as follows:
 ```{r, message=FALSE}
 expected_LY_mono <- sum(
@@ -109,14 +139,18 @@ expected_total_cost_mono <- sum(
 expected_total_cost_mono
 ```
 
-
-## Calculation of trace
-Health state occupancy, discounted life years and discounted costs with monotherapy for a time-horizon of 20 years
+# Model output
+## Monotherapy
+Create an empty trace matrix for 6 variables and 20 cycles to record health occupancy and outcomes
 ```{r, message=FALSE}
-follow_up <- 20
-trace_mono<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)  #create empty trace matrix for 6 variables and 20 cycles
-colnames(trace_mono) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost") #create column headings
-
+trace_mono<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)  
+```
+Create column headings
+```{r, message=FALSE}
+colnames(trace_mono) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost") 
+```
+Trace health state occupancy for a time-horizon of 20 years
+```{r, message=FALSE}
 for(t in 1:follow_up){
 trace_mono[t,1:4] <- initial %*% (transitions_mono %^%t)
 trace_mono[t,5] <- sum(  trace_mono[t,1:4] * LY * 1/(1+discount_LY)^t  )
@@ -124,9 +158,19 @@ trace_mono[t,6] <- sum(  trace_mono[t,1:4] * (drug_cost_mono + other_cost) * 1/(
 }
 trace_mono
 ```
+Expected discounted life years with monotherapy for a 20-year time horizon
+```{r, message=FALSE}
+Expected_LY_mono <- sum(trace_mono[,5])
+Expected_LY_mono
+```
+Expected discounted total costs with with monotherapy for a 20-year time horizon
+```{r, message=FALSE}
+Expected_total_cost_mono <- sum(trace_mono[,6])
+Expected_total_cost_mono
+```
 
-
-Health state occupancy, discounted life years and discounted costs with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles). 
+## Combination therapy
+Health state occupancy with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles). 
 ```{r, message=FALSE}
 trace_combi<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
 colnames(trace_combi) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
@@ -143,32 +187,18 @@ for(t in 3:follow_up){
 }
 trace_combi
 ```
-
-## Calculation of expected life years, costs, and incremental cost-effectiveness ratio
-Expected discounted life years with monotherapy for a 20-year time horizon
-```{r, message=FALSE}
-Expected_LY_mono <- sum(trace_mono[,5])
-Expected_LY_mono
-```
-
-Expected discounted total costs with with monotherapy for a 20-year time horizon
-```{r, message=FALSE}
-Expected_total_cost_mono <- sum(trace_mono[,6])
-Expected_total_cost_mono
-```
-
 Expected discounted life years with combination treatment for a 20-year time horizon
 ```{r, message=FALSE}
 Expected_LY_combi <- sum(trace_combi[,5])
 Expected_LY_combi
 ```
-
 Expected discounted total costs with combination treatment for a 20-year time horizon
 ```{r, message=FALSE}
 Expected_total_cost_combi <- sum(trace_combi[,6])
 Expected_total_cost_combi
 ```
 
+## Incremental Cost-Effectiveness Ratio
 Incremental cost-effectiveness ratio in terms costs per life years with combination therapy relative to monotherapy
 ```{r, message=FALSE}
 ICER  <- (Expected_total_cost_combi - Expected_total_cost_mono) / (Expected_LY_combi - Expected_LY_mono)

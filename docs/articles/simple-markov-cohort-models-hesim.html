@@ -323,15 +323,15 @@ econmod<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/he
 wtp &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="dv">25000</span>, <span class="dv">500</span>)
 icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(ce_sim, <span class="dt">comparator =</span> <span class="dv">1</span>, <span class="dt">dr_qalys =</span> <span class="dv">0</span>, <span class="dt">dr_costs =</span> .<span class="dv">06</span>,
                        <span class="dt">k =</span> wtp)</code></pre></div>
-<p>The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $6,191, which is very close to the estimate from the deterministic analysis from Chancellor et al.</p>
+<p>The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $6,219, which is very close to the estimate from the deterministic analysis from Chancellor et al.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(icea_pw_out)</code></pre></div>
 <pre><code>##                   1   2                        
-## Incremental QALYs "-" "0.93 (0.56, 1.21)"      
-## Incremental costs "-" "5,782 (2,804, 10,151)"  
-## Incremental NMB   "-" "40,919 (22,367, 54,776)"
-## ICER              "-" "6,191"                  
+## Incremental QALYs "-" "0.93 (0.56, 1.22)"      
+## Incremental costs "-" "5,804 (2,807, 9,894)"   
+## Incremental NMB   "-" "40,865 (23,174, 55,029)"
+## ICER              "-" "6,219"                  
 ## Conclusion        "-" "Cost-effective"</code></pre>
-<p>A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is 0.949 and approaches 1 at slightly higher WTP values.</p>
+<p>A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is 0.943 and approaches 1 at slightly higher WTP values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(icea_pw_out<span class="op">$</span>ceac, 
        <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> k, <span class="dt">y =</span> prob, 
            <span class="dt">col =</span> <span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id, <span class="dt">labels =</span> strategies<span class="op">$</span>strategy_name[<span class="op">-</span><span class="dv">1</span>]))) <span class="op">+</span>
