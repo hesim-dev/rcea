@@ -7,7 +7,7 @@ Authors@R: c(
     person("Jeroen P.", "Jansen", role = "aut")
     )
 Description: A companion package for the Professional Society for Health Economics 
-  and Outcomes Research (ISPOR) short course "Applied cost-effectiveness modeling with R".
+and Outcomes Research (ISPOR) short course "Applied cost-effectiveness modeling with R".
 URL: https://github.com/hesim-dev/ispor-short-course
 BugReports: https://github.com/hesim-dev/ispor-short-course/issues
 License: GPL-3
