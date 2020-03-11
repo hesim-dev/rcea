@@ -35,4 +35,5 @@ navbar:
         href: articles/decision-analysis.html  
       - text: "Supporting material"     
       - text: "Overview hesim"
-        href: articles/hesim-overview.html    
+        href: articles/hesim-overview.html
+           
