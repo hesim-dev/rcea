@@ -14,6 +14,7 @@ articles:
   - partitioned-survival-model
   - individual-patient-simulation
   - decision-analysis
+  - hesim-overview
 
 navbar:
   title: learnCEA
@@ -31,4 +32,7 @@ navbar:
       - text: "Individual Patient Simulation"
         href: articles/individual-patient-simulation.html 
       - text: "Decision Analysis"
-        href: articles/decision-analysis.html       
+        href: articles/decision-analysis.html  
+      - text: "Supporting material"     
+      - text: "Overview hesim"
+        href: articles/hesim-overview.html    
