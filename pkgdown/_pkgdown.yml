@@ -6,7 +6,7 @@ development:
   mode: auto    
 
 articles:
-- title: "Using hesim"
+- title: "Using R for CEA"
   contents:
   - simple-markov-cohort-model
   - probabilistic-sensitivity-analysis
@@ -38,3 +38,4 @@ navbar:
       - text: "Overview hesim"
         href: articles/hesim-overview.html
       - text: "---"
+      
