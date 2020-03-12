@@ -1,17 +1,18 @@
 ---
-title: Partitioned Survival Model
-date: "`r Sys.Date()`"
-output: 
+title: "Partitioned Survival Model"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
   html_document:
+    number_sections: yes
     toc: yes
     toc_depth: 2
-    number_sections: TRUE
+date: "`r Sys.Date()`"
 pkgdown:
-  as_is: true
-vignette: >
-  %\VignetteIndexEntry{Partitioned Survival Model}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  as_is: yes
+vignette: |
+  %\VignetteIndexEntry{Partitioned Survival Model} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
 ---
 
 # Overview
