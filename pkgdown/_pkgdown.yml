@@ -10,7 +10,7 @@ articles:
   contents:
   - simple-markov-cohort-model
   - probabilistic-sensitivity-analysis
-  - simple-markov-cohort-models-hesim
+  - simple-markov-cohort-model-hesim
   - partitioned-survival-model-simple
   - individual-patient-simulation
   - decision-analysis
@@ -25,8 +25,8 @@ navbar:
         href: articles/simple-markov-cohort-model.html
       - text: "Incorporating Probabilistic Sensitivity Analysis"
         href: articles/probabilistic-sensitivity-analysis.html 
-      - text: "Simple Markov Cohort Models (hesim)"
-        href: articles/simple-markov-cohort-models-hesim.html
+      - text: "Simple Markov Cohort Model (hesim)"
+        href: articles/simple-markov-cohort-model-hesim.html
       - text: "Partitioned Survival Model"
         href: articles/partitioned-survival-model-simple.html
       - text: "Individual Patient Simulation"

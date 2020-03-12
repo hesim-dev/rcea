@@ -1,5 +1,5 @@
 ---
-title: "Simple Markov Cohort Models (hesim)"
+title: "Simple Markov Cohort Model (hesim)"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -9,7 +9,7 @@ output:
 pkgdown:
   as_is: true
 vignette: >
-  %\VignetteIndexEntry{Simple Markov Cohort Models (hesim)}
+  %\VignetteIndexEntry{Simple Markov Cohort Model (hesim)}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -32,7 +32,7 @@ With `hesim` an economic model is constructed by combining statistical models fo
 
 <br>
 ```{r, out.width = "600px", echo = FALSE}
-knitr::include_graphics("econ-eval-process-hesim.png")
+knitr::include_graphics("/Users/jeroenjansen/.CMVolumes/Jeroen Jansen/PERSONAL/GitHub/ispor-short-course/vignettes/econ-eval-process-hesim.png")
 ```
 <br>
 <br>
@@ -66,7 +66,7 @@ We illustrate by replicating the HIV model developed by [Chancellor et al.](http
 The model consists 4 health states. Ordered from worst to best to worst, they are: State A (CD4 cells > 200 and < 500 cells/mm3), State B (CD4 < 200 cells/mm3), State C (AIDS), and State D (death). The model assumes that patients can transition to any state that is more severe (i.e., progress) but cannot transition back to a more severe state.
 
 ```{r, out.width = "700px", echo = FALSE}
-knitr::include_graphics("getting-started.png")
+knitr::include_graphics("/Users/jeroenjansen/.CMVolumes/Jeroen Jansen/PERSONAL/GitHub/ispor-short-course/vignettes/hiv-model.png")
 ```
 
 # Define the model
