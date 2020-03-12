@@ -95,8 +95,8 @@
             
             <h4 class="date">2020-03-11</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/partitioned-survival-model.Rmd"><code>vignettes/partitioned-survival-model.Rmd</code></a></small>
-      <div class="hidden name"><code>partitioned-survival-model.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/partitioned-survival-model-simple.Rmd"><code>vignettes/partitioned-survival-model-simple.Rmd</code></a></small>
+      <div class="hidden name"><code>partitioned-survival-model-simple.Rmd</code></div>
 
     </div>
 
@@ -131,14 +131,12 @@ S_{n}(t|\alpha_{1n}(x_{1n, ik}), \ldots, \alpha_{Ln}(x_{Ln, ik})).
 <li>Progressed on second line treatment</li>
 <li>Death</li>
 </ul>
-<p>We begin by defining the population, treatment strategies, and model structure. In this example, we model three treatment strategies, three distinct patients (that differ in age and gender), and four health states (death and three non-death states). This information is combined using <code><a href="https://rdrr.io/pkg/hesim/man/hesim_data.html">hesim_data()</a></code>, which creates a general object of class <code>hesim_data</code>.</p>
+<p>We begin by defining the population, treatment strategies, and model structure. In this example, we model three treatment strategies and four health states (death and three non-death states). This information is combined using <code><a href="https://rdrr.io/pkg/hesim/man/hesim_data.html">hesim_data()</a></code>, which creates a general object of class <code>hesim_data</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">101</span>)
 strategies_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/data.table.html">data.table</a></span>(<span class="dt">strategy_id =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))
-patients_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/data.table.html">data.table</a></span>(<span class="dt">patient_id =</span> <span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">1</span>, <span class="dv">3</span>),
-                          <span class="dt">age =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">45</span>, <span class="dv">50</span>, <span class="dv">60</span>),
-                          <span class="dt">female =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>))
+patients_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/data.table.html">data.table</a></span>(<span class="dt">patient_id =</span> <span class="dv">1</span>)
 states_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="dt">state_id =</span>  <span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">1</span>, <span class="dv">3</span>),
                         <span class="dt">state_name =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Progression free (1st line)"</span>,
                                        <span class="st">"Progression free (2nd line)"</span>,
@@ -155,10 +153,8 @@ hesim_dat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
 ## 3:           3
 ## 
 ## $patients
-##    patient_id age female
-## 1:          1  45      0
-## 2:          2  50      0
-## 3:          3  60      1
+##    patient_id
+## 1:          1
 ## 
 ## $states
 ##   state_id                  state_name
@@ -180,16 +176,13 @@ hesim_dat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
 <p>Survival models in <code>hesim</code> can be fit using either <code>flexsurvreg</code> or <code>flexsurvspline</code> from the <code>flexsurv</code> package. <code>hesim</code> currently supports parametric (exponential, Weibull, Gompertz, gamma, log-logistic, lognormal, and generalized gamma), splines, and fractional polynomial survival models (see <a href="https://hesim-dev.github.io/hesim/reference/params_surv.html">params_surv</a>). In this example, we fit a Weibull model to each of the three survival endpoints.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"flexsurv"</span>)
 surv_est_data &lt;-<span class="st"> </span>psm4_exdata<span class="op">$</span>survival
-fit1 &lt;-<span class="st"> </span>flexsurv<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(<span class="kw">Surv</span>(endpoint1_time, endpoint1_status) <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>
-<span class="st">                                   </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id),
+fit1 &lt;-<span class="st"> </span>flexsurv<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(<span class="kw">Surv</span>(endpoint1_time, endpoint1_status) <span class="op">~</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id),
                               <span class="dt">data =</span> surv_est_data,
                               <span class="dt">dist =</span> <span class="st">"weibull"</span>)
-fit2 &lt;-<span class="st"> </span>flexsurv<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(<span class="kw">Surv</span>(endpoint2_time, endpoint2_status) <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>female <span class="op">+</span>
-<span class="st">                                   </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id),
+fit2 &lt;-<span class="st"> </span>flexsurv<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(<span class="kw">Surv</span>(endpoint2_time, endpoint2_status) <span class="op">~</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id),
                               <span class="dt">data =</span> surv_est_data,
                               <span class="dt">dist =</span> <span class="st">"weibull"</span>)
-fit3 &lt;-<span class="st"> </span>flexsurv<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(<span class="kw">Surv</span>(endpoint3_time, endpoint3_status) <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>female <span class="op">+</span>
-<span class="st">                                   </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id),
+fit3 &lt;-<span class="st"> </span>flexsurv<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(<span class="kw">Surv</span>(endpoint3_time, endpoint3_status) <span class="op">~</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id),
                               <span class="dt">data =</span> surv_est_data,
                               <span class="dt">dist =</span> <span class="st">"weibull"</span>)
 psfit_wei &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/flexsurvreg_list.html">flexsurvreg_list</a></span>(fit1, fit2, fit3)</code></pre></div>
@@ -209,7 +202,7 @@ psfit_wei &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
                           <span class="dt">dist =</span> <span class="st">"fixed"</span>,
                           <span class="dt">hesim_data =</span> hesim_dat)</code></pre></div>
 <p>For cases in which we want to use a regression model to simulate costs, <code>hesim</code> supports parameterizing a cost or utility model using linear models. Here, we fit a model for medical costs as a function of the three non-death health states using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function in R.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">medcosts_fit &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(costs <span class="op">~</span><span class="st"> </span>female <span class="op">+</span><span class="st"> </span>state_name, <span class="dt">data =</span> psm4_exdata<span class="op">$</span>costs<span class="op">$</span>medical)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">medcosts_fit &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(costs <span class="op">~</span><span class="st"> </span>state_name, <span class="dt">data =</span> psm4_exdata<span class="op">$</span>costs<span class="op">$</span>medical)</code></pre></div>
 </div>
 </div>
 <div id="simulation" class="section level1">
@@ -257,7 +250,7 @@ medcostmod &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.
 <div id="simulating-survival-curves" class="section level3">
 <h3 class="hasAnchor">
 <a href="#simulating-survival-curves" class="anchor"></a><span class="header-section-number">4.2.1</span> Simulating survival curves</h3>
-<p>Survival curves are predicted by treatment strategy and patient with the function <code>$sim_survival()</code>. The predicted curves are returned as a tidy <code>data.table</code> to facilitate plotting and stored as a field in the class named <code>survival_</code>. Below we plot the mean survival curve for patient 2 with treatment strategy 3.</p>
+<p>Survival curves are predicted by treatment strategy with the function <code>$sim_survival()</code>. The predicted curves are returned as a tidy <code>data.table</code> to facilitate plotting and stored as a field in the class named <code>survival_</code>. Below we plot the mean survival curve for treatment strategy 3.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Simulate</span>
 times &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">by =</span> .<span class="dv">1</span>)
 psm<span class="op">$</span><span class="kw">sim_survival</span>(<span class="dt">t =</span> times)
@@ -265,9 +258,9 @@ psm<span class="op">$</span><span class="kw">sim_survival</span>(<span class="dt
 <span class="co"># Plot</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
 surv_means &lt;-<span class="st"> </span>psm<span class="op">$</span>survival_[, .(<span class="dt">mean_surv =</span> <span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(survival)),
-                                      by =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"curve"</span>, <span class="st">"strategy_id"</span>, <span class="st">"patient_id"</span>, <span class="st">"t"</span>)]
+                                      by =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"curve"</span>, <span class="st">"strategy_id"</span>, <span class="st">"t"</span>)]
 <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>())
-p_data &lt;-<span class="st"> </span>surv_means[strategy_id <span class="op">==</span><span class="st"> </span><span class="dv">3</span> <span class="op">&amp;</span><span class="st"> </span>patient_id <span class="op">==</span><span class="st"> </span><span class="dv">2</span>]
+p_data &lt;-<span class="st"> </span>surv_means[strategy_id <span class="op">==</span><span class="st"> </span><span class="dv">3</span>]
 p_data[, curve <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(curve)]
 p_data[, mean_surv_min <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="dv">0</span>, <span class="kw"><a href="https://rdrr.io/r/base/length.html">length</a></span>(times)), p_data[curve <span class="op">!=</span><span class="dv">3</span>, mean_surv])]
 <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(p_data, <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> t, <span class="dt">y =</span> mean_surv, <span class="dt">fill =</span> curve)) <span class="op">+</span><span class="st"> </span>
@@ -277,22 +270,22 @@ p_data[, mean_surv_min <span class="op">:</span><span class="er">=</span><span c
 <span class="st">      </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_color_discrete</a></span>(<span class="dt">name =</span> <span class="st">"Survival curve"</span>) <span class="op">+</span>
 <span class="st">      </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides</a></span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
 <span class="st">      </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>)</code></pre></div>
-<p><img src="partitioned-survival-model_files/figure-html/survcurves-1.png" width="672"></p>
+<p><img src="partitioned-survival-model-simple_files/figure-html/survcurves-1.png" width="672"></p>
 </div>
 <div id="simulating-health-state-probabilities" class="section level3">
 <h3 class="hasAnchor">
 <a href="#simulating-health-state-probabilities" class="anchor"></a><span class="header-section-number">4.2.2</span> Simulating health state probabilities</h3>
-<p>After simulating survival, we can calculate the probability of being in each of the four health states using <code>$sim_stateprobs()</code>. At a given point in time, the probability of being in state 1 is the survival probability from the first survival curve, the probability of being in state 2 is the difference in survival probabilities between the 2nd and 1st curves, the probability of being in state 3 is the difference in survival probabilities between the 3rd and 2nd curves, and the probability of death is 1 minus the survival probability from curve 3. We plot these state probabilities for the first patient with the 30th randomly sampled parameter set.</p>
+<p>After simulating survival, we can calculate the probability of being in each of the four health states using <code>$sim_stateprobs()</code>. At a given point in time, the probability of being in state 1 is the survival probability from the first survival curve, the probability of being in state 2 is the difference in survival probabilities between the 2nd and 1st curves, the probability of being in state 3 is the difference in survival probabilities between the 3rd and 2nd curves, and the probability of death is 1 minus the survival probability from curve 3. We plot these state probabilities for the 30th randomly sampled parameter set.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Simulate</span>
 psm<span class="op">$</span><span class="kw">sim_stateprobs</span>()
 
 <span class="co"># Plot</span>
-stateprobs &lt;-<span class="st"> </span>psm<span class="op">$</span>stateprobs_[sample <span class="op">==</span><span class="st"> </span><span class="dv">30</span> <span class="op">&amp;</span><span class="st"> </span>patient_id <span class="op">==</span><span class="st"> </span><span class="dv">1</span>]
+stateprobs &lt;-<span class="st"> </span>psm<span class="op">$</span>stateprobs_[sample <span class="op">==</span><span class="st"> </span><span class="dv">30</span>]
 stateprobs[, state <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(state_id, 
                              <span class="dt">levels =</span> <span class="kw"><a href="https://rdrr.io/r/base/rev.html">rev</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/data.table/man/duplicated.html">unique</a></span>(state_id)))]
 stateprobs[, strategy <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id, <span class="dt">labels =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Strategy 1"</span>, <span class="st">"Strategy 2"</span>, 
                                                         <span class="st">"Strategy 3"</span>))]
-<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(stateprobs[strategy_id <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>)],
+<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(stateprobs[strategy_id <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)],
             <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> t, <span class="dt">y =</span> prob, <span class="dt">fill =</span> state, <span class="dt">group =</span> state)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_area</a></span>(<span class="dt">alpha =</span> .<span class="dv">65</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(<span class="op">~</span>strategy) <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Years"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Proportion in state"</span>) <span class="op">+</span>
@@ -303,7 +296,7 @@ stateprobs[, strategy <span class="op">:</span><span class="er">=</span><span cl
 <span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides</a></span>(<span class="dt">fill =</span> <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html">guide_legend</a></span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>,
                              <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>)</code></pre></div>
-<p><img src="partitioned-survival-model_files/figure-html/stateprobs-1.png" width="672"></p>
+<p><img src="partitioned-survival-model-simple_files/figure-html/stateprobs-1.png" width="672"></p>
 </div>
 <div id="simulating-costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -316,53 +309,41 @@ psm<span class="op">$</span>costs_</code></pre></div>
 ##    1:      1           1          1      1        1 0.03  medical
 ##    2:      1           1          1      1        2 0.03  medical
 ##    3:      1           1          1      1        3 0.03  medical
-##    4:      1           1          2      1        1 0.03  medical
-##    5:      1           1          2      1        2 0.03  medical
+##    4:      1           2          1      1        1 0.03  medical
+##    5:      1           2          1      1        2 0.03  medical
 ##   ---                                                            
-## 5396:    100           3          2      1        2 0.03     drug
-## 5397:    100           3          2      1        3 0.03     drug
-## 5398:    100           3          3      1        1 0.03     drug
-## 5399:    100           3          3      1        2 0.03     drug
-## 5400:    100           3          3      1        3 0.03     drug
+## 1796:    100           2          1      1        2 0.03     drug
+## 1797:    100           2          1      1        3 0.03     drug
+## 1798:    100           3          1      1        1 0.03     drug
+## 1799:    100           3          1      1        2 0.03     drug
+## 1800:    100           3          1      1        3 0.03     drug
 ##            costs
-##    1:  16701.379
-##    2:   7633.707
-##    3:  17411.772
-##    4:  15929.483
-##    5:   7408.622
+##    1:  16248.557
+##    2:   8958.603
+##    3:  13131.554
+##    4:  17219.546
+##    5:  15427.168
 ##   ---           
-## 5396: 137821.223
-## 5397:  93084.043
-## 5398: 110155.713
-## 5399: 116442.929
-## 5400:  84985.693</code></pre>
+## 1796:  62250.319
+## 1797:  59250.178
+## 1798: 113526.879
+## 1799: 124824.428
+## 1800:  90295.158</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># QALYs</span>
 psm<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="dt">dr =</span> .<span class="dv">03</span>)
 psm<span class="op">$</span>qalys_</code></pre></div>
-<pre><code>##       sample strategy_id patient_id grp_id state_id   dr category
-##    1:      1           1          1      1        1 0.03    qalys
-##    2:      1           1          1      1        2 0.03    qalys
-##    3:      1           1          1      1        3 0.03    qalys
-##    4:      1           1          2      1        1 0.03    qalys
-##    5:      1           1          2      1        2 0.03    qalys
-##   ---                                                            
-## 2696:    100           3          2      1        2 0.03    qalys
-## 2697:    100           3          2      1        3 0.03    qalys
-## 2698:    100           3          3      1        1 0.03    qalys
-## 2699:    100           3          3      1        2 0.03    qalys
-## 2700:    100           3          3      1        3 0.03    qalys
-##           qalys
-##    1: 0.5285081
-##    2: 0.1752568
-##    3: 0.3472255
-##    4: 0.5040817
-##    5: 0.1700892
-##   ---          
-## 2696: 0.5388693
-## 2697: 0.3036987
-## 2698: 0.4549230
-## 2699: 0.4552820
-## 2700: 0.2772768</code></pre>
+<pre><code>##      sample strategy_id patient_id grp_id state_id   dr category     qalys
+##   1:      1           1          1      1        1 0.03    qalys 0.4782362
+##   2:      1           1          1      1        2 0.03    qalys 0.1911580
+##   3:      1           1          1      1        3 0.03    qalys 0.2487619
+##   4:      1           2          1      1        1 0.03    qalys 0.5068149
+##   5:      1           2          1      1        2 0.03    qalys 0.3291838
+##  ---                                                                      
+## 896:    100           2          1      1        2 0.03    qalys 0.3744515
+## 897:    100           2          1      1        3 0.03    qalys 0.2974021
+## 898:    100           3          1      1        1 0.03    qalys 0.4688453
+## 899:    100           3          1      1        2 0.03    qalys 0.4880530
+## 900:    100           3          1      1        3 0.03    qalys 0.2945996</code></pre>
 </div>
 </div>
 </div>
@@ -374,16 +355,16 @@ psm<span class="op">$</span>qalys_</code></pre></div>
 icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(ce_sim, <span class="dt">comparator =</span> <span class="dv">1</span>, <span class="dt">dr_qalys =</span> .<span class="dv">03</span>, <span class="dt">dr_costs =</span> .<span class="dv">03</span>, <span class="dt">k=</span><span class="dv">100000</span>)
 <span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(icea_pw_out)</code></pre></div>
 <pre><code>##                   1   2                           
-## Incremental QALYs "-" "0.33 (0.22, 0.44)"         
-## Incremental costs "-" "84,761 (58,721, 112,236)"  
-## Incremental NMB   "-" "-68,482 (-90,460, -47,487)"
-## ICER              "-" "260,340"                   
+## Incremental QALYs "-" "0.32 (0.21, 0.43)"         
+## Incremental costs "-" "82,413 (56,496, 111,176)"  
+## Incremental NMB   "-" "-66,597 (-89,314, -45,783)"
+## ICER              "-" "260,537"                   
 ## Conclusion        "-" "Not cost-effective"        
 ##                   3                              
-## Incremental QALYs "0.30 (0.19, 0.42)"            
-## Incremental costs "198,079 (161,198, 234,286)"   
-## Incremental NMB   "-182,998 (-213,704, -151,814)"
-## ICER              "656,715"                      
+## Incremental QALYs "0.29 (0.18, 0.40)"            
+## Incremental costs "190,024 (155,754, 223,248)"   
+## Incremental NMB   "-175,532 (-204,018, -146,835)"
+## ICER              "655,626"                      
 ## Conclusion        "Not cost-effective"</code></pre>
 </div>
   </div>

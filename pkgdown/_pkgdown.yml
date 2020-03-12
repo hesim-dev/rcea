@@ -6,12 +6,12 @@ development:
   mode: auto    
 
 articles:
-- title: "Using R for CEA"
+- title: "Learn CEA in R"
   contents:
   - simple-markov-cohort-model
   - probabilistic-sensitivity-analysis
   - simple-markov-cohort-models-hesim
-  - partitioned-survival-model
+  - partitioned-survival-model-simple
   - individual-patient-simulation
   - decision-analysis
   - hesim-overview
@@ -28,7 +28,7 @@ navbar:
       - text: "Simple Markov Cohort Models (hesim)"
         href: articles/simple-markov-cohort-models-hesim.html
       - text: "Partitioned Survival Model"
-        href: articles/partitioned-survival-model.html
+        href: articles/partitioned-survival-model-simple.html
       - text: "Individual Patient Simulation"
         href: articles/individual-patient-simulation.html 
       - text: "Decision Analysis"
