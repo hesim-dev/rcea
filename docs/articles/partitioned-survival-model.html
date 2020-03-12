@@ -311,24 +311,58 @@ stateprobs[, strategy <span class="op">:</span><span class="er">=</span><span cl
 <p>Finally, we can simulate discounted costs and QALYs by numerically integrating the “weighted” probabilities in <code>$stateprobs_</code> as described above. Costs and QALYs are produced for each treatment strategy, patient, health state, and sampled parameter set.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Costs</span>
 psm<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="dt">dr =</span> .<span class="dv">03</span>)
-<span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(psm<span class="op">$</span>costs_)</code></pre></div>
-<pre><code>##    sample strategy_id patient_id grp_id state_id   dr category     costs
-## 1:      1           1          1      1        1 0.03  medical 16701.379
-## 2:      1           1          1      1        2 0.03  medical  7633.707
-## 3:      1           1          1      1        3 0.03  medical 17411.772
-## 4:      1           1          2      1        1 0.03  medical 15929.483
-## 5:      1           1          2      1        2 0.03  medical  7408.622
-## 6:      1           1          2      1        3 0.03  medical 16593.823</code></pre>
+psm<span class="op">$</span>costs_</code></pre></div>
+<pre><code>##       sample strategy_id patient_id grp_id state_id   dr category
+##    1:      1           1          1      1        1 0.03  medical
+##    2:      1           1          1      1        2 0.03  medical
+##    3:      1           1          1      1        3 0.03  medical
+##    4:      1           1          2      1        1 0.03  medical
+##    5:      1           1          2      1        2 0.03  medical
+##   ---                                                            
+## 5396:    100           3          2      1        2 0.03     drug
+## 5397:    100           3          2      1        3 0.03     drug
+## 5398:    100           3          3      1        1 0.03     drug
+## 5399:    100           3          3      1        2 0.03     drug
+## 5400:    100           3          3      1        3 0.03     drug
+##            costs
+##    1:  16701.379
+##    2:   7633.707
+##    3:  17411.772
+##    4:  15929.483
+##    5:   7408.622
+##   ---           
+## 5396: 137821.223
+## 5397:  93084.043
+## 5398: 110155.713
+## 5399: 116442.929
+## 5400:  84985.693</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># QALYs</span>
 psm<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="dt">dr =</span> .<span class="dv">03</span>)
-<span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(psm<span class="op">$</span>qalys_)</code></pre></div>
-<pre><code>##    sample strategy_id patient_id grp_id state_id   dr category     qalys
-## 1:      1           1          1      1        1 0.03    qalys 0.5285081
-## 2:      1           1          1      1        2 0.03    qalys 0.1752568
-## 3:      1           1          1      1        3 0.03    qalys 0.3472255
-## 4:      1           1          2      1        1 0.03    qalys 0.5040817
-## 5:      1           1          2      1        2 0.03    qalys 0.1700892
-## 6:      1           1          2      1        3 0.03    qalys 0.3309139</code></pre>
+psm<span class="op">$</span>qalys_</code></pre></div>
+<pre><code>##       sample strategy_id patient_id grp_id state_id   dr category
+##    1:      1           1          1      1        1 0.03    qalys
+##    2:      1           1          1      1        2 0.03    qalys
+##    3:      1           1          1      1        3 0.03    qalys
+##    4:      1           1          2      1        1 0.03    qalys
+##    5:      1           1          2      1        2 0.03    qalys
+##   ---                                                            
+## 2696:    100           3          2      1        2 0.03    qalys
+## 2697:    100           3          2      1        3 0.03    qalys
+## 2698:    100           3          3      1        1 0.03    qalys
+## 2699:    100           3          3      1        2 0.03    qalys
+## 2700:    100           3          3      1        3 0.03    qalys
+##           qalys
+##    1: 0.5285081
+##    2: 0.1752568
+##    3: 0.3472255
+##    4: 0.5040817
+##    5: 0.1700892
+##   ---          
+## 2696: 0.5388693
+## 2697: 0.3036987
+## 2698: 0.4549230
+## 2699: 0.4552820
+## 2700: 0.2772768</code></pre>
 </div>
 </div>
 </div>
@@ -337,8 +371,20 @@ psm<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/hesim/
 <a href="#decision-analysis" class="anchor"></a><span class="header-section-number">5</span> Decision analysis</h1>
 <p>A cost-effectiveness analysis can be performed with the <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea()</a></code> and <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw()</a></code> functions (see <a href="icea.html">here</a>) after using the <code>$summarize()</code> method to create a <a href="https://hesim-dev.github.io/hesim/reference/ce.html">“cost-effectiveness”</a> object with mean costs and QALYs computed for each PSA sample.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ce_sim &lt;-<span class="st"> </span>psm<span class="op">$</span><span class="kw">summarize</span>()
-icea_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea</a></span>(ce_sim, <span class="dt">dr_qalys =</span> .<span class="dv">03</span>, <span class="dt">dr_costs =</span> .<span class="dv">03</span>)
-icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(ce_sim, <span class="dt">comparator =</span> <span class="dv">1</span>, <span class="dt">dr_qalys =</span> .<span class="dv">03</span>, <span class="dt">dr_costs =</span> .<span class="dv">03</span>)</code></pre></div>
+icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(ce_sim, <span class="dt">comparator =</span> <span class="dv">1</span>, <span class="dt">dr_qalys =</span> .<span class="dv">03</span>, <span class="dt">dr_costs =</span> .<span class="dv">03</span>, <span class="dt">k=</span><span class="dv">100000</span>)
+<span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(icea_pw_out)</code></pre></div>
+<pre><code>##                   1   2                           
+## Incremental QALYs "-" "0.33 (0.22, 0.44)"         
+## Incremental costs "-" "84,761 (58,721, 112,236)"  
+## Incremental NMB   "-" "-68,482 (-90,460, -47,487)"
+## ICER              "-" "260,340"                   
+## Conclusion        "-" "Not cost-effective"        
+##                   3                              
+## Incremental QALYs "0.30 (0.19, 0.42)"            
+## Incremental costs "198,079 (161,198, 234,286)"   
+## Incremental NMB   "-182,998 (-213,704, -151,814)"
+## ICER              "656,715"                      
+## Conclusion        "Not cost-effective"</code></pre>
 </div>
   </div>
 
