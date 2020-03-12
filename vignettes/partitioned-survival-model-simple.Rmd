@@ -235,8 +235,17 @@ A cost-effectiveness analysis can be performed with the `icea()` and `icea_pw()`
 
 ```{r}
 ce_sim <- psm$summarize()
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03, k=100000)
+wtp <- seq(0, 500000, 4000)
+icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = 0.03, dr_costs = .03,k = wtp)
 icer_tbl(icea_pw_out)
 ```
 
-
+```{r ceac}
+ggplot(icea_pw_out$ceac, 
+       aes(x = k, y = prob, 
+           col = factor(strategy_id))) +
+  geom_line()  + xlab("Willingness to pay") +
+  ylab("Probability cost-effective") +
+  scale_x_continuous(breaks = seq(0, max(wtp), 100000), label = scales::dollar) +
+  theme(legend.position = "bottom") + scale_colour_discrete(name = "Strategy")
+```
