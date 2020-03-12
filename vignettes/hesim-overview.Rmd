@@ -19,10 +19,10 @@ vignette: >
 
 ```{r  echo = FALSE, message = FALSE, warning = FALSE}
 library("kableExtra")
-psm <- c("N-state partitioned survival model (PSM)", "`hesim::Psm`")
 cdtstm <- c("Cohort discrete time state transition model (cDTSTM)", "`hesim::CohortDtstm`")
+psm <- c("N-state partitioned survival model (PSM)", "`hesim::Psm`")
 ictstm <- c("Individual-level continuous time state transition model (iCTSTM)", "`hesim::IndivCtstm`")
-tbl <- rbind(psm, cdtstm, ictstm)
+tbl <- rbind(cdtstm, psm,  ictstm)
 colnames(tbl) <- c("Economic model", "R6 class")
 knitr::kable(tbl, row.names = FALSE)  %>% # Pipe imported from kableExtra
   kableExtra::kable_styling()

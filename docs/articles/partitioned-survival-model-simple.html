@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1>Partitioned Survival Model</h1>
             
-            <h4 class="date">2020-03-11</h4>
+            <h4 class="date">2020-03-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/partitioned-survival-model-simple.Rmd"><code>vignettes/partitioned-survival-model-simple.Rmd</code></a></small>
       <div class="hidden name"><code>partitioned-survival-model-simple.Rmd</code></div>
@@ -135,8 +135,8 @@ S_{n}(t|\alpha_{1n}(x_{1n, ik}), \ldots, \alpha_{Ln}(x_{Ln, ik})).
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">101</span>)
-strategies_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/data.table.html">data.table</a></span>(<span class="dt">strategy_id =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))
-patients_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/data.table.html">data.table</a></span>(<span class="dt">patient_id =</span> <span class="dv">1</span>)
+strategies_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="dt">strategy_id =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))
+patients_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="dt">patient_id =</span> <span class="dv">1</span>)
 states_dt &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="dt">state_id =</span>  <span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">1</span>, <span class="dv">3</span>),
                         <span class="dt">state_name =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Progression free (1st line)"</span>,
                                        <span class="st">"Progression free (2nd line)"</span>,
@@ -282,7 +282,7 @@ psm<span class="op">$</span><span class="kw">sim_stateprobs</span>()
 <span class="co"># Plot</span>
 stateprobs &lt;-<span class="st"> </span>psm<span class="op">$</span>stateprobs_[sample <span class="op">==</span><span class="st"> </span><span class="dv">30</span>]
 stateprobs[, state <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(state_id, 
-                             <span class="dt">levels =</span> <span class="kw"><a href="https://rdrr.io/r/base/rev.html">rev</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/data.table/man/duplicated.html">unique</a></span>(state_id)))]
+                             <span class="dt">levels =</span> <span class="kw"><a href="https://rdrr.io/r/base/rev.html">rev</a></span>(<span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">unique</a></span>(state_id)))]
 stateprobs[, strategy <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id, <span class="dt">labels =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Strategy 1"</span>, <span class="st">"Strategy 2"</span>, 
                                                         <span class="st">"Strategy 3"</span>))]
 <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(stateprobs[strategy_id <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)],
