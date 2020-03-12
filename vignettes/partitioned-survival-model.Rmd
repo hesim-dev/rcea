@@ -228,11 +228,11 @@ Finally, we can simulate discounted costs and QALYs by numerically integrating t
 ```{r, warning = FALSE, message = FALSE}
 # Costs
 psm$sim_costs(dr = .03)
-head(psm$costs_)
+psm$costs_
 
 # QALYs
 psm$sim_qalys(dr = .03)
-head(psm$qalys_)
+psm$qalys_
 ```
 
 # Decision analysis
@@ -240,8 +240,8 @@ A cost-effectiveness analysis can be performed with the `icea()` and `icea_pw()`
 
 ```{r}
 ce_sim <- psm$summarize()
-icea_out <- icea(ce_sim, dr_qalys = .03, dr_costs = .03)
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03)
+icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03, k=100000)
+icer_tbl(icea_pw_out)
 ```
 
 
