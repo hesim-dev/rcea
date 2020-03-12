@@ -32,7 +32,7 @@ Economic models can, in general, be created in two ways: first, with mathematica
 
 <br>
 ```{r, out.width = "600px", echo = FALSE}
-knitr::include_graphics("/Users/jeroenjansen/.CMVolumes/Jeroen Jansen/PERSONAL/GitHub/ispor-short-course/vignettes/econ-eval-process-hesim.png")
+knitr::include_graphics("econ-eval-process-hesim.png")
 ```
 <br>
 <br>
