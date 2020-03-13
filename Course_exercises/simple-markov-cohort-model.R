@@ -2,6 +2,8 @@
 #install.packages("expm",repos = "http://cran.us.r-project.org")
 library(expm)
 
+
+
 # Model settings
 initial<-matrix(c(1,0,0,0),nrow=1)
 initial
@@ -70,6 +72,7 @@ expected_total_cost_mono <- sum(
             initial %*% (transitions_mono %^% 5) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^5  
             ) 
 expected_total_cost_mono
+
 
 
 # Model output
