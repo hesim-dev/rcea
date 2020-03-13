@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1>Simple Markov Cohort Model (hesim)</h1>
             
-            <h4 class="date">2020-03-12</h4>
+            <h4 class="date">2020-03-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/simple-markov-cohort-model-hesim.Rmd"><code>vignettes/simple-markov-cohort-model-hesim.Rmd</code></a></small>
       <div class="hidden name"><code>simple-markov-cohort-model-hesim.Rmd</code></div>
@@ -194,7 +194,7 @@ hesim_dat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
 <div id="parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#parameters" class="anchor"></a><span class="header-section-number">4.2</span> Parameters</h2>
-<p>Counts of transitions at yearly intervals between each of the 4 health states were available from a longitudinal dataset from Chelsea and Westminister hospital.</p>
+<p>Counts of transitions at yearly intervals between each of the 4 health states were available from a longitudinal dataset from Chelsea and Westminister hospital, which will be used to define the transition probabilities from state <span class="math inline">\(r\)</span> to each of the 4 states (State A, State B, State C, and State D).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trans_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1251</span>, <span class="dv">350</span>, <span class="dv">116</span>, <span class="dv">17</span>,
                        <span class="dv">0</span>, <span class="dv">731</span>, <span class="dv">512</span>, <span class="dv">15</span>,
                        <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1312</span>, <span class="dv">437</span>,
@@ -207,8 +207,7 @@ hesim_dat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
 ## B    0 731  512  15
 ## C    0   0 1312 437
 ## D    0   0    0 469</code></pre>
-<p>The transition probabilities from state <span class="math inline">\(r\)</span> to each of the 4 states (State A, State B, State C, and State D) can be modeled using Dirichlet distributions, which are parameterized by a vector of concentration parameters <span class="math inline">\(\alpha = (\alpha_{r1}, \alpha_{r2}, \alpha_{r3}, \alpha_{r4})\)</span>. The Dirichlet distribution is particularly useful for modeling uncertainty in the transition probabilities because it is a conjugate prior for the multinomial distribution. The posterior distribution of <span class="math inline">\(\alpha\)</span> consequently follows a Dirichlet distribution which can be thought of as the “effective sample size” for each transition (see Appendix).</p>
-<p>Treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. We work with the log relative risk since it is approximately normally distributed. The estimated relative risk of disease progression is 0.509 (95% CI 0.365 to 0.710). We can then calculate the mean and standard error on the log scale.</p>
+<p>Treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. We work with the log relative risk since it is approximately normally distributed. The estimated relative risk of disease progression is 0.509 (95% CI 0.365 to 0.710).</p>
 <p>The cost-effectiveness analysis is based on life-years, meaning that each health state is assigned a utility value of 1. The costs of zidovudine and lamivudine are $2,278 and $2,086.50, respectively. Medical costs are split into direct medical and community medical costs.</p>
 <p>The parameter estimates are stored in a list.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">params &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
@@ -216,19 +215,19 @@ hesim_dat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
   <span class="dt">lrr_mean =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(.<span class="dv">509</span>), 
   lrr_lower &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(.<span class="dv">365</span>),
   <span class="dt">lrr_upper =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(.<span class="dv">710</span>),
-  <span class="dt">c_dmed_mean =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">A =</span> <span class="dv">1701</span>, <span class="dt">B =</span> <span class="dv">1774</span>, <span class="dt">C =</span> <span class="dv">6948</span>),
-  <span class="dt">c_cmed_mean =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">A =</span> <span class="dv">1055</span>, <span class="dt">B =</span> <span class="dv">1278</span>, <span class="dt">C =</span> <span class="dv">2059</span>),
+  <span class="dt">u =</span> <span class="dv">1</span>,
   <span class="dt">c_zido =</span> <span class="dv">2278</span>,
   <span class="dt">c_lam =</span> <span class="fl">2086.50</span>,
-  <span class="dt">u =</span> <span class="dv">1</span>
+  <span class="dt">c_dmed_mean =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">A =</span> <span class="dv">1701</span>, <span class="dt">B =</span> <span class="dv">1774</span>, <span class="dt">C =</span> <span class="dv">6948</span>),
+  <span class="dt">c_cmed_mean =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">A =</span> <span class="dv">1055</span>, <span class="dt">B =</span> <span class="dv">1278</span>, <span class="dt">C =</span> <span class="dv">2059</span>)
 )</code></pre></div>
 </div>
 <div id="random-number-generation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#random-number-generation" class="anchor"></a><span class="header-section-number">4.3</span> Random number generation</h2>
 <p>To perform a PSA, it is necessary to draw samples of the parameters from suitable probability distributions. While the probability distributions could have been drawn manually and stored in the <code>params</code> object above, it can be more easily done by using random number generation functions with <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng()</a></code>.</p>
-<p>As noted above, we draw the transition probabilities with monotherapy from a dirichlet distribution and the relative risk (of a transition to a worse state with combination therapy relative to monotherapy) from a lognormal distribution. Drug costs and utility are assumed to be fixed while medical costs are drawn from gamma distributions.</p>
-<p>Sampled parameters values are stored in a list, meaning that samples for each parameter can be stored as either a vector or matrix. For instance, we sample medical costs for each (non-death) health state from gamma distributions and they a stored in a matrix (one row for each sample and one column for each health state). Likewise, the parameters of each cell in the transition probability matrix are store in a matrix, with parameters of the matrix ordered rowwise across the columns. On the other hand, samples of the relatve risk are stored in a vector.</p>
+<p>We draw the transition probabilities with monotherapy from a dirichlet distribution and the relative risk from a lognormal distribution. Drug costs and utility are assumed to be fixed while medical costs are drawn from gamma distributions.</p>
+<p>Sampled parameter values are stored in a list, meaning that samples for each parameter can be stored as either a vector or matrix. For instance, we sample medical costs for each (non-death) health state from gamma distributions and they a stored in a matrix (one row for each sample and one column for each health state). Likewise, the parameters of each cell in the transition probability matrix are store in a matrix, with parameters of the matrix ordered rowwise across the columns. On the other hand, samples of the relatve risk are stored in a vector.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rng_def &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng</a></span>({
   lrr_se &lt;-<span class="st"> </span>(lrr_upper <span class="op">-</span><span class="st"> </span>lrr_lower)<span class="op">/</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">qnorm</a></span>(.<span class="dv">975</span>)) <span class="co"># Local object </span>
                                                       <span class="co"># not returned</span>
@@ -246,7 +245,7 @@ hesim_dat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.i
 <div id="transformed-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#transformed-parameters" class="anchor"></a><span class="header-section-number">4.4</span> Transformed parameters</h2>
-<p>The next step is to “transform” the parameters for use in the economic model using <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">define_tparams()</a></code>. This typically involves modeling them as a function of the treatment strategies and patient (i.e., the <code>data</code>). To maximzie computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.</p>
+<p>The next step is to “transform” the parameters for use in the economic model using <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">define_tparams()</a></code>. This typically involves modeling them as a function of the treatment strategies and patient (i.e., the <code>data</code>). To maximize computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.</p>
 <p>An important helper function is <code><a href="https://rdrr.io/pkg/hesim/man/tpmatrix.html">tpmatrix()</a></code>, which allows users to define transition matrices as a function of other parameters. In this example “vectorized” transition probabilities are defined in terms of the transition matrix for monotherapy (<code>p_mono</code>) and the relative risk (<code>rr</code>). The relative risk is simply 1 for monotherapy (since the corresponding transition matrix is just <code>p_mono</code>) and equal to <code>rr_comb</code> for combination therapy.</p>
 <p>The only costs in the model that vary across treatment strategies (rather than just states) are drug costs. The monotherapy treatment strategy include the cost of zidovudine only whereas the combination therapy includes the costs of both zidovudine and lamivudine.</p>
 <p>Parameters may depend on time (since the start of the model) by using the package defined <code>time</code> variable. The <code>time</code> variable corresponds to the starting time of time intervals, which are specified using the <code>times</code> argument in <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">define_tparams()</a></code>. Since patients are only assumed to use lamivudine for two years, <code>rr_comb</code> and the costs of lamivudine are not applied beyond year 2.</p>
@@ -330,15 +329,15 @@ econmod<span class="op">$</span><span class="kw"><a href="https://rdrr.io/pkg/he
 wtp &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="dv">25000</span>, <span class="dv">500</span>)
 icea_pw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(ce_sim, <span class="dt">comparator =</span> <span class="dv">1</span>, <span class="dt">dr_qalys =</span> <span class="dv">0</span>, <span class="dt">dr_costs =</span> .<span class="dv">06</span>,
                        <span class="dt">k =</span> wtp)</code></pre></div>
-<p>The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $6,267, which is very close to the estimate from the deterministic analysis from Chancellor et al.</p>
+<p>The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $6,212, which is very close to the estimate from the deterministic analysis from Chancellor et al.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(icea_pw_out)</code></pre></div>
 <pre><code>##                   1   2                        
-## Incremental QALYs "-" "0.93 (0.56, 1.22)"      
-## Incremental costs "-" "5,842 (2,842, 10,129)"  
-## Incremental NMB   "-" "40,769 (22,905, 55,356)"
-## ICER              "-" "6,267"                  
+## Incremental QALYs "-" "0.93 (0.60, 1.23)"      
+## Incremental costs "-" "5,803 (2,758, 9,833)"   
+## Incremental NMB   "-" "40,904 (24,732, 55,522)"
+## ICER              "-" "6,212"                  
 ## Conclusion        "-" "Cost-effective"</code></pre>
-<p>A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is 0.943 and approaches 1 at slightly higher WTP values.</p>
+<p>A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is 0.958 and approaches 1 at slightly higher WTP values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(icea_pw_out<span class="op">$</span>ceac, 
        <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> k, <span class="dt">y =</span> prob, 
            <span class="dt">col =</span> <span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(strategy_id, <span class="dt">labels =</span> strategies<span class="op">$</span>strategy_name[<span class="op">-</span><span class="dv">1</span>]))) <span class="op">+</span>

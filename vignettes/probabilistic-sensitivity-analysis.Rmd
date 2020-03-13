@@ -47,7 +47,7 @@ PSA_samples  <- 1000
 
 # Model parameters
 ## Transition matrix monotherapy
-Create PSA samples for transition matrix monotherapy based on Dirichlet distribution (using rdirichlet_mat function from hesim package)
+Create PSA samples for transition matrix monotherapy based on Dirichlet distribution (using rdirichlet_mat function from hesim package). See Appendix for more detail. 
 ```{r, message=FALSE}
 transitions_mono <- matrix(c(1251, 350, 116, 17,
                              0, 731, 512, 15,
@@ -62,7 +62,7 @@ print(p_mono[, , 1:10])
 ```
 
 ## Relative treatment effect with combination therapy
-Create PSA samples for relative risk according to normal distribution of log-transformed relative risk
+Create PSA samples for relative risk according to a normal distribution of log-transformed relative risk
 ```{r, message=FALSE}
 RR<-0.509
 RR_low<-0.365
@@ -111,12 +111,12 @@ other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
 
 # Model output
 ## Monotherapy
-Define array for trace and outcomes by follow-up time for each PSA sample
+Define an array for trace and outcomes by follow-up time for each PSA sample
 ```{r, message=FALSE}
 trace_mono <- array(NA, dim = c(follow_up, 6, PSA_samples))
 colnames(trace_mono) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
 ```
-Define matrix for expected outcomes for each PSA sample
+Define a matrix for expected outcomes for each PSA sample
 ```{r, message=FALSE}
 Expected_LY_mono <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 Expected_total_cost_mono <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
@@ -133,7 +133,7 @@ Expected_LY_mono[i] <- sum(trace_mono[,5,i])
 Expected_total_cost_mono[i] <- sum(trace_mono[,6,i])
 }
 ```
-Presentation of results for first 10 PSA samples
+Presentation of results for the first 10 PSA samples
 ```{r, message=FALSE}
 trace_mono[,,1:10]
 Expected_LY_mono[1:10]
@@ -141,12 +141,12 @@ Expected_total_cost_mono[1:10]
 ```
 
 ## Combination therapy
-Define array for trace and outcomes by follow-up time for each PSA sample
+Define an array for trace and outcomes by follow-up time for each PSA sample
 ```{r, message=FALSE}
 trace_combi <- array(NA, dim = c(follow_up, 6, PSA_samples))
 colnames(trace_combi) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
 ```
-Define matrix for expected outcomes for each PSA sample
+Define a matrix for expected outcomes for each PSA sample
 ```{r, message=FALSE}
 Expected_LY_combi <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
 Expected_total_cost_combi <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
@@ -168,7 +168,7 @@ Expected_LY_combi[i] <- sum(trace_combi[,5,i])
 Expected_total_cost_combi[i] <- sum(trace_combi[,6,i])
 }
 ```
-Presentation of results for first 10 PSA samples
+Presentation of results for the first 10 PSA samples
 ```{r, message=FALSE}
 trace_combi[,,1:10]
 Expected_LY_combi[1:10]
