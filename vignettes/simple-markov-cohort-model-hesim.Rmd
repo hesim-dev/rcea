@@ -93,7 +93,8 @@ head(data)
 ```
 
 ## Parameters
-Counts of transitions at yearly intervals between each of the 4 health states were available from a longitudinal dataset from Chelsea and Westminister hospital. 
+Counts of transitions at yearly intervals between each of the 4 health states were available from a longitudinal dataset from Chelsea and Westminister hospital, which will be used to define the transition probabilities from state $r$ to each of the 4 states (State A, State B, State C, and State D). 
+
 
 ```{r}
 trans_mono <- matrix(c(1251, 350, 116, 17,
@@ -105,9 +106,8 @@ colnames(trans_mono) <- rownames(trans_mono) <-  c("A", "B", "C", "D")
 print(trans_mono)
 ```
 
-The transition probabilities from state $r$ to each of the 4 states (State A, State B, State C, and State D) can be modeled using Dirichlet distributions, which are parameterized by a vector of concentration parameters $\alpha = (\alpha_{r1}, \alpha_{r2}, \alpha_{r3}, \alpha_{r4})$. The Dirichlet distribution is particularly useful for modeling uncertainty in the transition probabilities because it is a conjugate prior for the multinomial distribution. The posterior distribution of $\alpha$ consequently follows a Dirichlet distribution which can be thought of as the "effective sample size" for each transition (see Appendix). 
 
-Treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. We work with the log relative risk since it is approximately normally distributed. The estimated relative risk of disease progression is 0.509 (95% CI 0.365 to 0.710). We can then calculate the mean and standard error on the log scale. 
+Treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. We work with the log relative risk since it is approximately normally distributed. The estimated relative risk of disease progression is 0.509 (95% CI 0.365 to 0.710). 
 
 The cost-effectiveness analysis is based on life-years, meaning that each health state is assigned a utility value of 1. The costs of zidovudine and lamivudine are \$2,278 and \$2,086.50, respectively. Medical costs are split into direct medical and community medical costs.
 
@@ -119,20 +119,20 @@ params <- list(
   lrr_mean = log(.509), 
   lrr_lower <- log(.365),
   lrr_upper = log(.710),
-  c_dmed_mean = c(A = 1701, B = 1774, C = 6948),
-  c_cmed_mean = c(A = 1055, B = 1278, C = 2059),
+  u = 1,
   c_zido = 2278,
   c_lam = 2086.50,
-  u = 1
+  c_dmed_mean = c(A = 1701, B = 1774, C = 6948),
+  c_cmed_mean = c(A = 1055, B = 1278, C = 2059)
 )
 ```
 
 ## Random number generation
 To perform a PSA, it is necessary to draw samples of the parameters from suitable probability distributions. While the probability distributions could have been drawn manually and stored in the `params` object above, it can be more easily done by using random number generation functions with `define_rng()`. 
 
-As noted above, we draw the transition probabilities with monotherapy from a dirichlet distribution and the relative risk (of a transition to a worse state with combination therapy relative to monotherapy) from a lognormal distribution. Drug costs and utility are assumed to be fixed while medical costs are drawn from gamma distributions.
+We draw the transition probabilities with monotherapy from a dirichlet distribution and the relative risk  from a lognormal distribution. Drug costs and utility are assumed to be fixed while medical costs are drawn from gamma distributions.
 
-Sampled parameters values are stored in a list, meaning that samples for each parameter can be stored as either a vector or matrix. For instance, we sample medical costs for each (non-death) health state from gamma distributions and they a stored in a matrix (one row for each sample and one column for each health state). Likewise, the parameters of each cell in the transition probability matrix are store in a matrix, with parameters of the matrix ordered rowwise across the columns. On the other hand, samples of the relatve risk are stored in a vector. 
+Sampled parameter values are stored in a list, meaning that samples for each parameter can be stored as either a vector or matrix. For instance, we sample medical costs for each (non-death) health state from gamma distributions and they a stored in a matrix (one row for each sample and one column for each health state). Likewise, the parameters of each cell in the transition probability matrix are store in a matrix, with parameters of the matrix ordered rowwise across the columns. On the other hand, samples of the relatve risk are stored in a vector. 
 
 ```{r}
 rng_def <- define_rng({
@@ -151,7 +151,7 @@ rng_def <- define_rng({
 ```
 
 ## Transformed parameters
-The next step is to "transform" the parameters for use in the economic model using `define_tparams()`. This typically involves modeling them as a function of the treatment strategies and patient (i.e.,  the `data`). To maximzie computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.
+The next step is to "transform" the parameters for use in the economic model using `define_tparams()`. This typically involves modeling them as a function of the treatment strategies and patient (i.e.,  the `data`). To maximize computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.
 
 An important helper function is `tpmatrix()`, which allows users to define transition matrices as a function of other parameters. In this example "vectorized" transition probabilities are defined in terms of the transition matrix for monotherapy (`p_mono`) and the relative risk (`rr`). The relative risk is simply 1 for monotherapy (since the corresponding transition matrix is just `p_mono`) and equal to `rr_comb` for combination therapy. 
 

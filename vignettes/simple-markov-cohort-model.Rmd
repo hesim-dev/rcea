@@ -30,7 +30,7 @@ library(expm)
 ```
 
 # Model settings
-Define initial distribution over the 4 health stattes
+Define initial distribution over the 4 health states
 ```{r, message=FALSE}
 initial<-matrix(c(1,0,0,0),nrow=1)
 ```
@@ -50,7 +50,7 @@ discount_cost <- 0.06
 
 # Model parameters
 ## Transition matrix monotherapy
-Define transition matrix with monotherapy
+Define the transition matrix with monotherapy
 ```{r, message=FALSE}
 transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
                         0, 0.581, 0.407, 0.012,
@@ -64,7 +64,7 @@ transitions_mono
 ```
 
 ## Relative treatment effect with combination therapy
-Define relative treatment effect with combination therapy relative to monotherapy
+Define the relative treatment effect with combination therapy relative to monotherapy
 ```{r, message=FALSE}
 RR<-0.509
 ```
@@ -78,7 +78,7 @@ transitions_combi <- matrix(c((1-0.202*RR-0.067*RR-0.010*RR), 0.202*RR, 0.067*RR
                                       0, 0, 0, 1),
                                       ncol = 4, nrow = 4, byrow = TRUE)
 ```
-Show transition matrix
+Show the transition matrix
 ```{r, message=FALSE}
 transitions_combi
 ```
@@ -199,7 +199,7 @@ Expected_total_cost_combi
 ```
 
 ## Incremental Cost-Effectiveness Ratio
-Incremental cost-effectiveness ratio in terms costs per life years with combination therapy relative to monotherapy
+Incremental cost-effectiveness ratio (ICER) in terms costs per life years with combination therapy relative to monotherapy
 ```{r, message=FALSE}
 ICER  <- (Expected_total_cost_combi - Expected_total_cost_mono) / (Expected_LY_combi - Expected_LY_mono)
 ICER

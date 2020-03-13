@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-03-12</h4>
+            <h4 class="date">2020-03-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/simple-markov-cohort-model.Rmd"><code>vignettes/simple-markov-cohort-model.Rmd</code></a></small>
       <div class="hidden name"><code>simple-markov-cohort-model.Rmd</code></div>
@@ -119,7 +119,7 @@
 <div id="model-settings" class="section level1">
 <h1 class="hasAnchor">
 <a href="#model-settings" class="anchor"></a><span class="header-section-number">3</span> Model settings</h1>
-<p>Define initial distribution over the 4 health stattes</p>
+<p>Define initial distribution over the 4 health states</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial&lt;-<span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)</code></pre></div>
 <p>Show initial distribution</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial</code></pre></div>
@@ -137,7 +137,7 @@ discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code><
 <div id="transition-matrix-monotherapy" class="section level2">
 <h2 class="hasAnchor">
 <a href="#transition-matrix-monotherapy" class="anchor"></a><span class="header-section-number">4.1</span> Transition matrix monotherapy</h2>
-<p>Define transition matrix with monotherapy</p>
+<p>Define the transition matrix with monotherapy</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">transitions_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.721</span>, <span class="fl">0.202</span>, <span class="fl">0.067</span>, <span class="fl">0.010</span>,
                         <span class="dv">0</span>, <span class="fl">0.581</span>, <span class="fl">0.407</span>, <span class="fl">0.012</span>,
                         <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.750</span>, <span class="fl">0.250</span>,
@@ -154,7 +154,7 @@ discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code><
 <div id="relative-treatment-effect-with-combination-therapy" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relative-treatment-effect-with-combination-therapy" class="anchor"></a><span class="header-section-number">4.2</span> Relative treatment effect with combination therapy</h2>
-<p>Define relative treatment effect with combination therapy relative to monotherapy</p>
+<p>Define the relative treatment effect with combination therapy relative to monotherapy</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RR&lt;-<span class="fl">0.509</span></code></pre></div>
 </div>
 <div id="transition-matrix-combination-therapy" class="section level2">
@@ -166,7 +166,7 @@ discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code><
                                       <span class="dv">0</span>, <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span><span class="fl">0.250</span><span class="op">*</span>RR), <span class="fl">0.250</span><span class="op">*</span>RR,
                                       <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),
                                       <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<p>Show transition matrix</p>
+<p>Show the transition matrix</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">transitions_combi</code></pre></div>
 <pre><code>##          [,1]     [,2]     [,3]     [,4]
 ## [1,] 0.857989 0.102818 0.034103 0.005090
@@ -339,7 +339,7 @@ Expected_total_cost_combi</code></pre></div>
 <div id="incremental-cost-effectiveness-ratio" class="section level2">
 <h2 class="hasAnchor">
 <a href="#incremental-cost-effectiveness-ratio" class="anchor"></a><span class="header-section-number">6.3</span> Incremental Cost-Effectiveness Ratio</h2>
-<p>Incremental cost-effectiveness ratio in terms costs per life years with combination therapy relative to monotherapy</p>
+<p>Incremental cost-effectiveness ratio (ICER) in terms costs per life years with combination therapy relative to monotherapy</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ICER  &lt;-<span class="st"> </span>(Expected_total_cost_combi <span class="op">-</span><span class="st"> </span>Expected_total_cost_mono) <span class="op">/</span><span class="st"> </span>(Expected_LY_combi <span class="op">-</span><span class="st"> </span>Expected_LY_mono)
 ICER</code></pre></div>
 <pre><code>## [1] 6278.737</code></pre>
