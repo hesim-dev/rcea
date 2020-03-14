@@ -2,7 +2,7 @@
 #install.packages("expm",repos = "http://cran.us.r-project.org")
 library(expm)
 
-
+rm(list=ls())
 
 # Model settings
 initial<-matrix(c(1,0,0,0),nrow=1)

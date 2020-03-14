@@ -1,12 +1,15 @@
 # Required R-packages
-#install.packages("expm")
-#install.packages("hesim")
-#install.packages("data.table")
+# install.packages("devtools")
+# devtools::install_github("hesim-dev/hesim")
+# install.packages("data.table")
+# install.packages("expm")
 library(expm)
 library(hesim)
 library(data.table)
 
 rm(list=ls())
+
+
 
 # Model settings
 initial<-matrix(c(1,0,0,0),nrow=1)
