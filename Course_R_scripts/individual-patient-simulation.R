@@ -2,6 +2,7 @@
 #install.packages("data.table")
 library("data.table")
 library("hesim")
+library("ggplot2")
 
 
 # Define the population, treatment strategies, and model structure
@@ -86,38 +87,6 @@ transmod_cf <- create_IndivCtstmTrans(wei_fits_cf, transmod_data,
                                       clock = "forward",
                                       start_age = patients$age)
 
-#### Predict hazard
-transmod_data_pat1 <- transmod_data[patient_id == 1]
-predict_haz <- function(fits, clock){
- transmod_cr_pat1 <- create_IndivCtstmTrans(fits, transmod_data_pat1,
-                                            trans_mat = tmat, 
-                                            clock = clock,
-                                            point_estimate = TRUE)
-  haz <- transmod_cr_pat1$hazard(t = seq(0, 20, 1))
-  title_clock <- paste(toupper(substr(clock, 1, 1)), 
-                       substr(clock, 2, nchar(clock)), sep="")
-  haz[, clock := title_clock]
-  return(haz[, ])
-}
-
-library("ggplot2")
-haz <- rbind(predict_haz(wei_fits_cr, "reset"),
-             predict_haz(wei_fits_cf, "forward"))
-haz[, trans_name := factor(trans,
-                           levels = 1:4,
-                           labels = c("Healthy-> Sick", 
-                                      "Healthy -> Dead",
-                                      "Sick -> Healthy",
-                                      "Sick -> Dead"))]
-ggplot(haz[t > 0], 
-       aes(x = t, y = hazard, col = clock, linetype = factor(strategy_id))) + 
-  geom_line() + 
-  facet_wrap(~trans_name) +
-  xlab("Years") + ylab("Hazard") +
-  scale_linetype_discrete(name = "Strategy") +
-  scale_color_discrete(name = "Clock") + theme_bw()
-
-
 ### Utility
 utilitymod <- create_StateVals(utility_tbl, n = n_samples)
 
@@ -154,7 +123,7 @@ econmod_cf$sim_disease()
 
 econmod_cr$sim_stateprobs(t = seq(0, 20 , 1/12)) 
 
-#### Short funtion add create state name variable to data.tabale
+#### Short function to create state name variable to data.tabale
 add_state_name <- function(x){
   x[, state_name := factor(state_id,
                            levels = 1:nrow(tmat),
