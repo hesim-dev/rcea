@@ -49,7 +49,7 @@ $$
 # Probabilistic sensitivity analysis
 Expected health outcomes and costs are subject to uncertainty. The standard methodology for quantifying the impact of parameter uncertainty on model outcomes is probabilistic sensitivity analysis (PSA). Uncertainty in the input parameters is propagated through the model by randomly sampling sets of input values from suitable probability distributions reflecting the uncertainty in those parameters. Probability distributions are determined according to the distributional properties of the statistical estimates, which, in turn, depend on the statistical techniques used and the distributions of the underlying data.
 
-For each treatment strategy and subgroup, PSA produces $n$ random draws from the distribution of health outcomes and costs,
+For each treatment strategy and subgroup, a PSA produces $n$ random draws from the distribution of health outcomes and costs,
 
 $$
 \begin{aligned}
