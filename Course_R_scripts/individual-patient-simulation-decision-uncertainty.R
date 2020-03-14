@@ -1,9 +1,15 @@
-#install.packages("hesim")
-#install.packages("data.table")
+# Required R-packages
+# install.packages("devtools")
+# devtools::install_github("hesim-dev/hesim")
+# install.packages("data.table")
+# install.packages("ggplot2")
+# install.packages("scales")
 library("data.table")
 library("hesim")
 library("ggplot2")
 library("scales")
+
+rm(list=ls())
 
 
 # Define the population, treatment strategies, and model structure

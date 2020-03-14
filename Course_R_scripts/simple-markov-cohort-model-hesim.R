@@ -1,9 +1,11 @@
-#install.packages("hesim")
-#install.packages("data.table")
+# Required R-packages
+# install.packages("devtools")
+# devtools::install_github("hesim-dev/hesim")
+# install.packages("data.table")
 library(hesim)
 library(data.table)
 
-
+rm(list=ls())
 
 
 
