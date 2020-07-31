@@ -16,7 +16,13 @@ Depends:
 Imports:
     stats
 Suggests:
-  knitr
+  data.table,
+  expm,
+  flexsurv,
+  ggplot2,
+  hesim,
+  knitr,
+  scales
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.1

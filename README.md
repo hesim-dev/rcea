@@ -1,2 +1,2 @@
-# ISPOR Short Course
-This repository contains code and course notes for a short course for applied cost-effectiveness modeling with R.
+# Learn CESA
+This repository contains course materials for learning how to perform applied cost-effectiveness analysis with R.

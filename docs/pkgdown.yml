@@ -1,5 +1,12 @@
-pandoc: 1.19.2.1
-pkgdown: 1.4.1
+pandoc: 2.7.3
+pkgdown: 1.5.1
 pkgdown_sha: ~
-articles: []
+articles:
+  decision-analysis: decision-analysis.html
+  individual-patient-simulation: individual-patient-simulation.html
+  partitioned-survival-model: partitioned-survival-model.html
+  probabilistic-sensitivity-analysis: probabilistic-sensitivity-analysis.html
+  simple-markov-cohort-model-hesim: simple-markov-cohort-model-hesim.html
+  simple-markov-cohort-model: simple-markov-cohort-model.html
+last_built: 2020-07-31T04:13Z
 

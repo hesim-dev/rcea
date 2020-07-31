@@ -54,7 +54,7 @@
       <a href="../articles/simple-markov-cohort-model-hesim.html">Simple Markov Cohort Model (hesim)</a>
     </li>
     <li>
-      <a href="../articles/partitioned-survival-model-simple.html">Partitioned Survival Model</a>
+      <a href="../articles/partitioned-survival-model.html">Partitioned Survival Model</a>
     </li>
     <li>
       <a href="../articles/individual-patient-simulation.html">Individual Patient Simulation</a>
@@ -90,8 +90,8 @@
             
             <h4 class="date">2020-07-30</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/partitioned-survival-model-simple.Rmd"><code>vignettes/partitioned-survival-model-simple.Rmd</code></a></small>
-      <div class="hidden name"><code>partitioned-survival-model-simple.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/partitioned-survival-model.Rmd"><code>vignettes/partitioned-survival-model.Rmd</code></a></small>
+      <div class="hidden name"><code>partitioned-survival-model.Rmd</code></div>
 
     </div>
 
@@ -265,7 +265,7 @@ S_{n}(t|\alpha_{1n}(x_{1n, ik}), \ldots, \alpha_{Ln}(x_{Ln, ik})).
       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_color_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Survival curve"</span>) +
       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides</a></span>(<span class="kw">fill</span> <span class="kw">=</span> <span class="fl">FALSE</span>) +
       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>)</pre></body></html></div>
-<p><img src="partitioned-survival-model-simple_files/figure-html/survcurves-1.png" width="672"></p>
+<p><img src="partitioned-survival-model_files/figure-html/survcurves-1.png" width="672"></p>
 </div>
 <div id="simulating-health-state-probabilities" class="section level3">
 <h3 class="hasAnchor">
@@ -291,7 +291,7 @@ S_{n}(t|\alpha_{1n}(x_{1n, ik}), \ldots, \alpha_{Ln}(x_{Ln, ik})).
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides</a></span>(<span class="kw">fill</span> <span class="kw">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html">guide_legend</a></span>(<span class="kw">reverse</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
                              <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>)) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>)</pre></body></html></div>
-<p><img src="partitioned-survival-model-simple_files/figure-html/stateprobs-1.png" width="672"></p>
+<p><img src="partitioned-survival-model_files/figure-html/stateprobs-1.png" width="672"></p>
 </div>
 <div id="simulating-costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -357,7 +357,7 @@ S_{n}(t|\alpha_{1n}(x_{1n, ik}), \ldots, \alpha_{Ln}(x_{Ln, ik})).
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Probability cost-effective"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="fl">100000</span>), <span class="kw">label</span> <span class="kw">=</span> <span class="kw pkg">scales</span><span class="kw ns">::</span><span class="no"><a href="https://scales.r-lib.org//reference/label_dollar.html">dollar</a></span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="partitioned-survival-model-simple_files/figure-html/ceac-1.png" width="672"></p>
+<p><img src="partitioned-survival-model_files/figure-html/ceac-1.png" width="672"></p>
 </div>
   </div>
 

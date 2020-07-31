@@ -9,7 +9,7 @@ output:
 pkgdown:
   as_is: true
 vignette: >
-  %\VignetteIndexEntry{Simple Markov Cohort Model (hesim)}
+  %\VignetteIndexEntry{C0}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -74,8 +74,8 @@ knitr::include_graphics("simple-markov-cohort-model.png")
 Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We set up the analysis for two treatment strategies and one representative patient.
 
 ```{r, warning = FALSE, message = FALSE}
-library(hesim)
-library(data.table)
+library("hesim")
+library("data.table")
 
 strategies <- data.table(strategy_id = 1:2,
                          strategy_name = c("Monotherapy", "Combination therapy"))
@@ -88,7 +88,7 @@ print(hesim_dat)
 The model will be simulated for each treatment strategy and representative patient combination. Such data containing treatment strategy and patient characteristics can be generated using `expand()`. 
 
 ```{r}
-data <- expand(hesim_dat, by = c("strategies", "patients"))
+data <- hesim::expand(hesim_dat, by = c("strategies", "patients"))
 head(data)
 ```
 
@@ -208,7 +208,7 @@ At the start of the model, all patients are assumed to be in State A (the defaul
 econmod$sim_stateprobs(n_cycles = 20)
 
 # Plot
-library(ggplot2)
+library("ggplot2")
 theme_set(theme_bw())
 
 stateprob_summary <- econmod$stateprobs_[, .(prob_mean = mean(prob),

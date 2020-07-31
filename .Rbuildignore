@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^slides$
+^_pkgdown\.yml$
+^docs$
