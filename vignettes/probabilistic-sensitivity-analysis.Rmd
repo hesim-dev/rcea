@@ -19,9 +19,9 @@ vignette: >
 #install.packages("expm")
 #install.packages("hesim")
 #install.packages("data.table")
-library(expm)
-library(hesim)
-library(data.table)
+library("expm")
+library("hesim")
+library("data.table")
 
 rm(list=ls())
 ```

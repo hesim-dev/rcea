@@ -6,19 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Incorporating Probabilistic Sensitivity Analysis • learnCEA</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Incorporating Probabilistic Sensitivity Analysis">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="learnCEA">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -54,7 +54,7 @@
       <a href="../articles/simple-markov-cohort-model-hesim.html">Simple Markov Cohort Model (hesim)</a>
     </li>
     <li>
-      <a href="../articles/partitioned-survival-model-simple.html">Partitioned Survival Model</a>
+      <a href="../articles/partitioned-survival-model.html">Partitioned Survival Model</a>
     </li>
     <li>
       <a href="../articles/individual-patient-simulation.html">Individual Patient Simulation</a>
@@ -63,17 +63,12 @@
       <a href="../articles/decision-analysis.html">Decision Analysis</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Supporting material</li>
-    <li>
-      <a href="../articles/hesim-overview.html">Overview hesim</a>
-    </li>
-    <li class="divider">
   </ul>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/hesim-dev/ispor-short-course">
+  <a href="https://github.com/hesim-dev/ispor-short-course/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -91,9 +86,9 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Incorporating Probabilistic Sensitivity Analysis</h1>
+      <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-03-13</h4>
+            <h4 class="date">2020-07-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/probabilistic-sensitivity-analysis.Rmd"><code>vignettes/probabilistic-sensitivity-analysis.Rmd</code></a></small>
       <div class="hidden name"><code>probabilistic-sensitivity-analysis.Rmd</code></div>
@@ -105,27 +100,27 @@
 <div id="required-r-packages" class="section level1">
 <h1 class="hasAnchor">
 <a href="#required-r-packages" class="anchor"></a><span class="header-section-number">1</span> Required R-packages</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#install.packages("expm")</span>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co">#install.packages("expm")</span>
 <span class="co">#install.packages("hesim")</span>
 <span class="co">#install.packages("data.table")</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(expm)
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(hesim)
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(data.table)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">expm</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">hesim</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)
 
-<span class="kw"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(<span class="dt">list=</span><span class="kw"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>())</code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(<span class="kw">list</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>())</pre></body></html></div>
 </div>
 <div id="model-settings" class="section level1">
 <h1 class="hasAnchor">
 <a href="#model-settings" class="anchor"></a><span class="header-section-number">2</span> Model settings</h1>
 <p>Set starting distribution over the 4 health states</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">initial&lt;-<span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)</code></pre></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">initial</span><span class="kw">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)</pre></body></html></div>
 <p>Set duration of follow-up</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">follow_up &lt;-<span class="st"> </span><span class="dv">20</span></code></pre></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">follow_up</span> <span class="kw">&lt;-</span> <span class="fl">20</span></pre></body></html></div>
 <p>Set discount rates</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">discount_LY &lt;-<span class="st"> </span><span class="fl">0.00</span>
-discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code></pre></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">discount_LY</span> <span class="kw">&lt;-</span> <span class="fl">0.00</span>
+<span class="no">discount_cost</span> <span class="kw">&lt;-</span> <span class="fl">0.06</span></pre></body></html></div>
 <p>Number of PSA simulations</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PSA_samples  &lt;-<span class="st"> </span><span class="dv">1000</span></code></pre></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">PSA_samples</span>  <span class="kw">&lt;-</span> <span class="fl">1000</span></pre></body></html></div>
 </div>
 <div id="model-parameters" class="section level1">
 <h1 class="hasAnchor">
@@ -134,214 +129,214 @@ discount_cost &lt;-<span class="st"> </span><span class="fl">0.06</span></code><
 <h2 class="hasAnchor">
 <a href="#transition-matrix-monotherapy" class="anchor"></a><span class="header-section-number">3.1</span> Transition matrix monotherapy</h2>
 <p>Create PSA samples for transition matrix monotherapy based on Dirichlet distribution (using rdirichlet_mat function from hesim package). See Appendix for more detail.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">transitions_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1251</span>, <span class="dv">350</span>, <span class="dv">116</span>, <span class="dv">17</span>,
-                             <span class="dv">0</span>, <span class="dv">731</span>, <span class="dv">512</span>, <span class="dv">15</span>,
-                             <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1312</span>, <span class="dv">437</span>,
-                             <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">469</span>),
-                             <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
-p_mono =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/hesim/man/rdirichlet_mat.html">rdirichlet_mat</a></span>(<span class="dt">n=</span>PSA_samples,transitions_mono)</code></pre></div>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">transitions_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1251</span>, <span class="fl">350</span>, <span class="fl">116</span>, <span class="fl">17</span>,
+                             <span class="fl">0</span>, <span class="fl">731</span>, <span class="fl">512</span>, <span class="fl">15</span>,
+                             <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1312</span>, <span class="fl">437</span>,
+                             <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">469</span>),
+                             <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="no">p_mono</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rdirichlet_mat.html">rdirichlet_mat</a></span>(<span class="kw">n</span><span class="kw">=</span><span class="no">PSA_samples</span>,<span class="no">transitions_mono</span>)</pre></body></html></div>
 <p>Show first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(p_mono[, , <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>])</code></pre></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">p_mono</span>[, , <span class="fl">1</span>:<span class="fl">10</span>])</pre></body></html></div>
 <pre><code>## , , 1
 ## 
-##           [,1]      [,2]      [,3]       [,4]
-## [1,] 0.7166809 0.2148659 0.0609693 0.00748393
-## [2,] 0.0000000 0.5842855 0.4020423 0.01367220
-## [3,] 0.0000000 0.0000000 0.7594593 0.24054067
-## [4,] 0.0000000 0.0000000 0.0000000 1.00000000
+##           [,1]      [,2]       [,3]       [,4]
+## [1,] 0.7198093 0.1984702 0.07105167 0.01066883
+## [2,] 0.0000000 0.5687482 0.41643874 0.01481311
+## [3,] 0.0000000 0.0000000 0.76279817 0.23720183
+## [4,] 0.0000000 0.0000000 0.00000000 1.00000000
 ## 
 ## , , 2
 ## 
-##           [,1]      [,2]       [,3]       [,4]
-## [1,] 0.7124133 0.2078885 0.06803232 0.01166584
-## [2,] 0.0000000 0.5931842 0.39610950 0.01070627
-## [3,] 0.0000000 0.0000000 0.72702673 0.27297327
-## [4,] 0.0000000 0.0000000 0.00000000 1.00000000
+##          [,1]      [,2]       [,3]        [,4]
+## [1,] 0.740474 0.1786508 0.07204981 0.008825461
+## [2,] 0.000000 0.5618034 0.42336019 0.014836383
+## [3,] 0.000000 0.0000000 0.73776156 0.262238436
+## [4,] 0.000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 3
 ## 
-##           [,1]      [,2]      [,3]        [,4]
-## [1,] 0.7330537 0.1930026 0.0642613 0.009682434
-## [2,] 0.0000000 0.5736590 0.4159393 0.010401647
-## [3,] 0.0000000 0.0000000 0.7457838 0.254216226
-## [4,] 0.0000000 0.0000000 0.0000000 1.000000000
+##          [,1]      [,2]      [,3]       [,4]
+## [1,] 0.729239 0.1988398 0.0622381 0.00968311
+## [2,] 0.000000 0.5666196 0.4179042 0.01547620
+## [3,] 0.000000 0.0000000 0.7619564 0.23804362
+## [4,] 0.000000 0.0000000 0.0000000 1.00000000
 ## 
 ## , , 4
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.7106448 0.1929546 0.08664917 0.009751446
-## [2,] 0.0000000 0.5852118 0.40598605 0.008802183
-## [3,] 0.0000000 0.0000000 0.75409349 0.245906507
+## [1,] 0.7219703 0.2041789 0.06790716 0.005943677
+## [2,] 0.0000000 0.5779670 0.40991363 0.012119344
+## [3,] 0.0000000 0.0000000 0.74939509 0.250604912
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 5
 ## 
-##           [,1]      [,2]       [,3]       [,4]
-## [1,] 0.7128141 0.2188512 0.05817156 0.01016312
-## [2,] 0.0000000 0.5950990 0.39273276 0.01216826
-## [3,] 0.0000000 0.0000000 0.76852116 0.23147884
-## [4,] 0.0000000 0.0000000 0.00000000 1.00000000
+##           [,1]      [,2]       [,3]        [,4]
+## [1,] 0.7095246 0.2140451 0.06816612 0.008264213
+## [2,] 0.0000000 0.5827809 0.40786611 0.009353042
+## [3,] 0.0000000 0.0000000 0.75237405 0.247625953
+## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 6
 ## 
-##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.7397612 0.1918218 0.05858218 0.009834812
-## [2,] 0.0000000 0.5768030 0.40693663 0.016260403
-## [3,] 0.0000000 0.0000000 0.74238856 0.257611443
-## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
+##           [,1]      [,2]      [,3]       [,4]
+## [1,] 0.7227076 0.1924681 0.0746206 0.01020371
+## [2,] 0.0000000 0.5948396 0.3940906 0.01106978
+## [3,] 0.0000000 0.0000000 0.7337880 0.26621198
+## [4,] 0.0000000 0.0000000 0.0000000 1.00000000
 ## 
 ## , , 7
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.7238096 0.1986198 0.06839167 0.009178909
-## [2,] 0.0000000 0.5673485 0.41932868 0.013322864
-## [3,] 0.0000000 0.0000000 0.76494787 0.235052125
+## [1,] 0.7252841 0.1913340 0.07401563 0.009366208
+## [2,] 0.0000000 0.5623616 0.42068966 0.016948723
+## [3,] 0.0000000 0.0000000 0.74547979 0.254520206
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 8
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.7069526 0.2155354 0.06915779 0.008354233
-## [2,] 0.0000000 0.5572754 0.43162763 0.011096972
-## [3,] 0.0000000 0.0000000 0.74938998 0.250610024
+## [1,] 0.7399754 0.1915951 0.06193743 0.006491973
+## [2,] 0.0000000 0.5847929 0.40213513 0.013071966
+## [3,] 0.0000000 0.0000000 0.73668760 0.263312402
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 9
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.7035964 0.2261911 0.06052552 0.009686982
-## [2,] 0.0000000 0.6021072 0.38430482 0.013588031
-## [3,] 0.0000000 0.0000000 0.77343069 0.226569309
+## [1,] 0.7105726 0.2111283 0.06936366 0.008935421
+## [2,] 0.0000000 0.5922550 0.39716494 0.010580093
+## [3,] 0.0000000 0.0000000 0.76348373 0.236516275
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 10
 ## 
 ##           [,1]      [,2]       [,3]       [,4]
-## [1,] 0.7375056 0.1819763 0.06683324 0.01368482
-## [2,] 0.0000000 0.5739464 0.41070603 0.01534753
-## [3,] 0.0000000 0.0000000 0.74429521 0.25570479
+## [1,] 0.7193898 0.2050885 0.06235855 0.01316317
+## [2,] 0.0000000 0.6169066 0.37237895 0.01071447
+## [3,] 0.0000000 0.0000000 0.74779850 0.25220150
 ## [4,] 0.0000000 0.0000000 0.00000000 1.00000000</code></pre>
 </div>
 <div id="relative-treatment-effect-with-combination-therapy" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relative-treatment-effect-with-combination-therapy" class="anchor"></a><span class="header-section-number">3.2</span> Relative treatment effect with combination therapy</h2>
 <p>Create PSA samples for relative risk according to a normal distribution of log-transformed relative risk</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RR&lt;-<span class="fl">0.509</span>
-RR_low&lt;-<span class="fl">0.365</span>
-RR_high&lt;-<span class="fl">0.710</span>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">RR</span><span class="kw">&lt;-</span><span class="fl">0.509</span>
+<span class="no">RR_low</span><span class="kw">&lt;-</span><span class="fl">0.365</span>
+<span class="no">RR_high</span><span class="kw">&lt;-</span><span class="fl">0.710</span>
 
-RR_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>( <span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(PSA_samples, <span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(RR), (<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(RR_high)<span class="op">-</span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(RR_low))<span class="op">/</span><span class="fl">3.92</span> )   )</code></pre></div>
+<span class="no">RR_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>( <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">PSA_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">RR</span>), (<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">RR_high</span>)-<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">RR_low</span>))/<span class="fl">3.92</span> )   )</pre></body></html></div>
 <p>Show first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RR_combi[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] 0.4428662 0.4879749 0.5719761 0.5870349 0.5848334 0.4736686 0.5103366
-##  [8] 0.4902662 0.5259573 0.6589845</code></pre>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">RR_combi</span>[<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
+<pre><code>##  [1] 0.3668203 0.4842062 0.5328439 0.5388386 0.4383977 0.3442814 0.4276820
+##  [8] 0.5523177 0.6656419 0.4663607</code></pre>
 </div>
 <div id="transition-matrix-combination-therapy" class="section level2">
 <h2 class="hasAnchor">
 <a href="#transition-matrix-combination-therapy" class="anchor"></a><span class="header-section-number">3.3</span> Transition matrix combination therapy</h2>
 <p>Define array for transition matrix for combination therapy for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="ot">NA</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">4</span>, PSA_samples))</code></pre></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">p_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="fl">NA</span>, <span class="kw">dim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fl">4</span>, <span class="no">PSA_samples</span>))</pre></body></html></div>
 <p>Create PSA samples for transition matrix for combination therapy based on samples for monotherapy and RR</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>PSA_samples){ 
-p_combi[,,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>((<span class="dv">1</span><span class="op">-</span>p_mono[<span class="dv">1</span>,<span class="dv">2</span>,i]<span class="op">*</span>RR_combi[i]<span class="op">-</span>p_mono[<span class="dv">1</span>,<span class="dv">3</span>,i]<span class="op">*</span>RR_combi[i]<span class="op">-</span>p_mono[<span class="dv">1</span>,<span class="dv">4</span>,i]<span class="op">*</span>RR_combi[i]), p_mono[<span class="dv">1</span>,<span class="dv">2</span>,i]<span class="op">*</span>RR_combi[i], p_mono[<span class="dv">1</span>,<span class="dv">3</span>,i]<span class="op">*</span>RR_combi[i], p_mono[<span class="dv">1</span>,<span class="dv">4</span>,i]<span class="op">*</span>RR_combi[i],
-                                      <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span>p_mono[<span class="dv">2</span>,<span class="dv">3</span>,i]<span class="op">*</span>RR_combi[i]<span class="op">-</span>p_mono[<span class="dv">2</span>,<span class="dv">4</span>,i]<span class="op">*</span>RR_combi[i]), p_mono[<span class="dv">2</span>,<span class="dv">3</span>,i]<span class="op">*</span>RR_combi[i], p_mono[<span class="dv">2</span>,<span class="dv">4</span>,i]<span class="op">*</span>RR_combi[i],
-                                      <span class="dv">0</span>, <span class="dv">0</span>, (<span class="dv">1</span><span class="op">-</span>p_mono[<span class="dv">3</span>,<span class="dv">4</span>,i]<span class="op">*</span>RR_combi[i]), p_mono[<span class="dv">3</span>,<span class="dv">4</span>,i]<span class="op">*</span>RR_combi[i],
-                                      <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),
-                                      <span class="dt">ncol =</span> <span class="dv">4</span>, <span class="dt">nrow =</span> <span class="dv">4</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
-}</code></pre></div>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">PSA_samples</span>){
+<span class="no">p_combi</span>[,,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>((<span class="fl">1</span>-<span class="no">p_mono</span>[<span class="fl">1</span>,<span class="fl">2</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>]-<span class="no">p_mono</span>[<span class="fl">1</span>,<span class="fl">3</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>]-<span class="no">p_mono</span>[<span class="fl">1</span>,<span class="fl">4</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>]), <span class="no">p_mono</span>[<span class="fl">1</span>,<span class="fl">2</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>], <span class="no">p_mono</span>[<span class="fl">1</span>,<span class="fl">3</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>], <span class="no">p_mono</span>[<span class="fl">1</span>,<span class="fl">4</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>],
+                                      <span class="fl">0</span>, (<span class="fl">1</span>-<span class="no">p_mono</span>[<span class="fl">2</span>,<span class="fl">3</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>]-<span class="no">p_mono</span>[<span class="fl">2</span>,<span class="fl">4</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>]), <span class="no">p_mono</span>[<span class="fl">2</span>,<span class="fl">3</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>], <span class="no">p_mono</span>[<span class="fl">2</span>,<span class="fl">4</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>],
+                                      <span class="fl">0</span>, <span class="fl">0</span>, (<span class="fl">1</span>-<span class="no">p_mono</span>[<span class="fl">3</span>,<span class="fl">4</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>]), <span class="no">p_mono</span>[<span class="fl">3</span>,<span class="fl">4</span>,<span class="no">i</span>]*<span class="no">RR_combi</span>[<span class="no">i</span>],
+                                      <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>),
+                                      <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+}</pre></body></html></div>
 <p>Show first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(p_combi[, , <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>])</code></pre></div>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">p_combi</span>[, , <span class="fl">1</span>:<span class="fl">10</span>])</pre></body></html></div>
 <pre><code>## , , 1
 ## 
-##           [,1]       [,2]       [,3]        [,4]
-## [1,] 0.8745275 0.09515686 0.02700124 0.003314380
-## [2,] 0.0000000 0.81589408 0.17805096 0.006054956
-## [3,] 0.0000000 0.00000000 0.89347266 0.106527342
-## [4,] 0.0000000 0.00000000 0.00000000 1.000000000
+##           [,1]       [,2]      [,3]        [,4]
+## [1,] 0.8972204 0.07280291 0.0260632 0.003913543
+## [2,] 0.0000000 0.84180807 0.1527582 0.005433750
+## [3,] 0.0000000 0.00000000 0.9129896 0.087010445
+## [4,] 0.0000000 0.00000000 0.0000000 1.000000000
 ## 
 ## , , 2
 ## 
-##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8596649 0.1014444 0.03319807 0.005692636
-## [2,] 0.0000000 0.8014841 0.19329149 0.005224393
-## [3,] 0.0000000 0.0000000 0.86679589 0.133204106
-## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
+##           [,1]       [,2]       [,3]        [,4]
+## [1,] 0.8743359 0.08650381 0.03488697 0.004273343
+## [2,] 0.0000000 0.78782249 0.20499364 0.007183869
+## [3,] 0.0000000 0.00000000 0.87302252 0.126977483
+## [4,] 0.0000000 0.00000000 0.00000000 1.000000000
 ## 
 ## , , 3
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8473131 0.1103929 0.03675592 0.005538121
-## [2,] 0.0000000 0.7561432 0.23790733 0.005949493
-## [3,] 0.0000000 0.0000000 0.85459440 0.145405599
+## [1,] 0.8557267 0.1059506 0.03316319 0.005159586
+## [2,] 0.0000000 0.7690759 0.22267770 0.008246399
+## [3,] 0.0000000 0.0000000 0.87315990 0.126840095
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 4
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8301384 0.1132711 0.05086609 0.005724439
-## [2,] 0.0000000 0.7565048 0.23832799 0.005167189
-## [3,] 0.0000000 0.0000000 0.85564430 0.144355705
+## [1,] 0.8501869 0.1100194 0.03659099 0.003202683
+## [2,] 0.0000000 0.7725924 0.22087728 0.006530370
+## [3,] 0.0000000 0.0000000 0.86496441 0.135035594
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 5
 ## 
-##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8320441 0.1279915 0.03402067 0.005943733
-## [2,] 0.0000000 0.7632004 0.22968324 0.007116407
-## [3,] 0.0000000 0.0000000 0.86462344 0.135376558
-## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
+##           [,1]       [,2]       [,3]        [,4]
+## [1,] 0.8726562 0.09383687 0.02988387 0.003623012
+## [2,] 0.0000000 0.81709207 0.17880758 0.004100353
+## [3,] 0.0000000 0.00000000 0.89144134 0.108558656
+## [4,] 0.0000000 0.00000000 0.00000000 1.000000000
 ## 
 ## , , 6
 ## 
 ##           [,1]       [,2]       [,3]        [,4]
-## [1,] 0.8767331 0.09085996 0.02774854 0.004658441
-## [2,] 0.0000000 0.79954487 0.19275309 0.007702042
-## [3,] 0.0000000 0.00000000 0.87797756 0.122022443
+## [1,] 0.9045334 0.06626319 0.02569048 0.003512949
+## [2,] 0.0000000 0.86051082 0.13567806 0.003811120
+## [3,] 0.0000000 0.00000000 0.90834817 0.091651833
 ## [4,] 0.0000000 0.00000000 0.00000000 1.000000000
 ## 
 ## , , 7
 ## 
-##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8590499 0.1013630 0.03490277 0.004684333
-## [2,] 0.0000000 0.7792021 0.21399879 0.006799145
-## [3,] 0.0000000 0.0000000 0.88004429 0.119955708
-## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
+##          [,1]       [,2]       [,3]        [,4]
+## [1,] 0.882509 0.08183011 0.03165515 0.004005758
+## [2,] 0.000000 0.81282996 0.17992138 0.007248663
+## [3,] 0.000000 0.00000000 0.89114630 0.108853702
+## [4,] 0.000000 0.00000000 0.00000000 1.000000000
 ## 
 ## , , 8
 ## 
 ##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8563287 0.1056697 0.03390573 0.004095798
-## [2,] 0.0000000 0.7829471 0.21161244 0.005440470
-## [3,] 0.0000000 0.0000000 0.87713437 0.122865626
+## [1,] 0.8563838 0.1058214 0.03420914 0.003585632
+## [2,] 0.0000000 0.7706738 0.22210637 0.007219879
+## [3,] 0.0000000 0.0000000 0.85456789 0.145432109
 ## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 9
 ## 
-##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8441044 0.1189669 0.03183384 0.005094939
-## [2,] 0.0000000 0.7907254 0.20212791 0.007146724
-## [3,] 0.0000000 0.0000000 0.88083423 0.119165773
-## [4,] 0.0000000 0.0000000 0.00000000 1.000000000
+##          [,1]      [,2]       [,3]        [,4]
+## [1,] 0.807345 0.1405358 0.04617136 0.005947791
+## [2,] 0.000000 0.7285878 0.26436962 0.007042553
+## [3,] 0.000000 0.0000000 0.84256486 0.157435142
+## [4,] 0.000000 0.0000000 0.00000000 1.000000000
 ## 
 ## , , 10
 ## 
-##           [,1]      [,2]       [,3]        [,4]
-## [1,] 0.8270203 0.1199196 0.04404207 0.009018085
-## [2,] 0.0000000 0.7192373 0.27064892 0.010113785
-## [3,] 0.0000000 0.0000000 0.83149450 0.168505499
-## [4,] 0.0000000 0.0000000 0.00000000 1.000000000</code></pre>
+##           [,1]       [,2]       [,3]        [,4]
+## [1,] 0.8691344 0.09564521 0.02908158 0.006138783
+## [2,] 0.0000000 0.82134030 0.17366289 0.004996810
+## [3,] 0.0000000 0.00000000 0.88238314 0.117616859
+## [4,] 0.0000000 0.00000000 0.00000000 1.000000000</code></pre>
 </div>
 <div id="other-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#other-parameters" class="anchor"></a><span class="header-section-number">3.4</span> Other parameters</h2>
 <p>Parameters for which no uncertainty is propagated in the model</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define LY by health state per cycle</span>
-LY &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co"># define LY by health state per cycle</span>
+<span class="no">LY</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)
 
 <span class="co"># define costs by health state per cycle</span>
-drug_cost_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2278</span>, <span class="dv">2278</span>, <span class="dv">2278</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
-drug_cost_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2278</span><span class="op">+</span><span class="dv">2087</span>, <span class="dv">2278</span><span class="op">+</span><span class="dv">2087</span>, <span class="dv">2278</span><span class="op">+</span><span class="dv">2087</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)
-other_cost &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2756</span>, <span class="dv">3052</span>, <span class="dv">9007</span>, <span class="dv">0</span>),<span class="dt">nrow=</span><span class="dv">1</span>)</code></pre></div>
+<span class="no">drug_cost_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2278</span>, <span class="fl">2278</span>, <span class="fl">2278</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)
+<span class="no">drug_cost_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2278</span>+<span class="fl">2087</span>, <span class="fl">2278</span>+<span class="fl">2087</span>, <span class="fl">2278</span>+<span class="fl">2087</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)
+<span class="no">other_cost</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2756</span>, <span class="fl">3052</span>, <span class="fl">9007</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)</pre></body></html></div>
 </div>
 </div>
 <div id="model-output" class="section level1">
@@ -351,592 +346,571 @@ other_cost &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.
 <h2 class="hasAnchor">
 <a href="#monotherapy" class="anchor"></a><span class="header-section-number">4.1</span> Monotherapy</h2>
 <p>Define an array for trace and outcomes by follow-up time for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trace_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="ot">NA</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(follow_up, <span class="dv">6</span>, PSA_samples))
-<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(trace_mono) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"State A"</span>, <span class="st">"State B"</span>, <span class="st">"State C"</span>, <span class="st">"Death"</span>, <span class="st">"Disc LY"</span>, <span class="st">"Disc cost"</span>)</code></pre></div>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">trace_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="fl">NA</span>, <span class="kw">dim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">follow_up</span>, <span class="fl">6</span>, <span class="no">PSA_samples</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">trace_mono</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"State A"</span>, <span class="st">"State B"</span>, <span class="st">"State C"</span>, <span class="st">"Death"</span>, <span class="st">"Disc LY"</span>, <span class="st">"Disc cost"</span>)</pre></body></html></div>
 <p>Define a matrix for expected outcomes for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_LY_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, PSA_samples), <span class="dt">nrow=</span>PSA_samples)
-Expected_total_cost_mono &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, PSA_samples), <span class="dt">nrow=</span>PSA_samples)</code></pre></div>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">Expected_LY_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="no">PSA_samples</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">PSA_samples</span>)
+<span class="no">Expected_total_cost_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="no">PSA_samples</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">PSA_samples</span>)</pre></body></html></div>
 <p>Trace and expected LY and cost for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>PSA_samples){
-<span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>follow_up){
-trace_mono[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] &lt;-<span class="st"> </span>initial <span class="op">%*%</span><span class="st"> </span>(p_mono[,,i] <span class="op">%^%</span>t)
-trace_mono[t,<span class="dv">5</span>,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_mono[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span>t  )
-trace_mono[t,<span class="dv">6</span>,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_mono[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span>t  )
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="kw">for</span>(<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">PSA_samples</span>){
+<span class="kw">for</span>(<span class="no">t</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">follow_up</span>){
+<span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">p_mono</span>[,,<span class="no">i</span>] <span class="kw">%^%</span><span class="no">t</span>)
+<span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">5</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="no">t</span>  )
+<span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">6</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="no">t</span>  )
 }
-Expected_LY_mono[i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_mono[,<span class="dv">5</span>,i])
-Expected_total_cost_mono[i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_mono[,<span class="dv">6</span>,i])
-}</code></pre></div>
+<span class="no">Expected_LY_mono</span>[<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_mono</span>[,<span class="fl">5</span>,<span class="no">i</span>])
+<span class="no">Expected_total_cost_mono</span>[<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_mono</span>[,<span class="fl">6</span>,<span class="no">i</span>])
+}</pre></body></html></div>
 <p>Presentation of results for the first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trace_mono[,,<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">trace_mono</span>[,,<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
 <pre><code>## , , 1
 ## 
 ##           State A     State B    State C      Death    Disc LY Disc cost
-##  [1,] 0.716680865 0.214865909 0.06096930 0.00748393 0.99251607 5133.0616
-##  [2,] 0.513631462 0.279533319 0.17638441 0.03045080 0.96954920 5398.7464
-##  [3,] 0.368109840 0.273689155 0.27765676 0.08054425 0.91945575 5411.5013
-##  [4,] 0.263817278 0.239006859 0.34334703 0.15382883 0.84617117 5130.1007
-##  [5,] 0.189072795 0.196333580 0.37293373 0.24165990 0.75834010 4638.0877
-##  [6,] 0.135504854 0.155340161 0.37369004 0.33546494 0.66453506 4037.4406
-##  [7,] 0.097113736 0.119878377 0.35451734 0.42849055 0.57150945 3410.7790
-##  [8,] 0.069599556 0.090909628 0.32335864 0.51613218 0.48386782 2813.3263
-##  [9,] 0.049880670 0.068071749 0.28637069 0.59567689 0.40432311 2276.2136
-## [10,] 0.035748522 0.050490991 0.24789580 0.66586468 0.33413532 1812.8729
-## [11,] 0.025620282 0.037182293 0.21074586 0.72645157 0.27354843 1425.1821
-## [12,] 0.018361566 0.027229999 0.17656381 0.77784462 0.22215538 1108.2867
-## [13,] 0.013159383 0.019855368 0.14616014 0.82082511 0.17917489  853.9859
-## [14,] 0.009431078 0.014428706 0.11978770 0.85635252 0.14364748  652.9181
-## [15,] 0.006759073 0.010456901 0.09734984 0.88543418 0.11456582  495.8584
-## [16,] 0.004844098 0.007562110 0.07854946 0.90904433 0.09095567  374.4056
-## [17,] 0.003471673 0.005459263 0.06299075 0.92807832 0.07192168  281.2806
-## [18,] 0.002488081 0.003935712 0.05024543 0.94333078 0.05666922  210.3892
-## [19,] 0.001783160 0.002834183 0.03989338 0.95548928 0.04451072  156.7555
-## [20,] 0.001277957 0.002039113 0.03154558 0.96513735 0.03486265  116.3947
+##  [1,] 0.719809280 0.198470218 0.07105167 0.01066883 0.98933117 5172.8154
+##  [2,] 0.518125399 0.255740275 0.18799243 0.03814190 0.96185810 5422.6001
+##  [3,] 0.372951470 0.248284269 0.28671411 0.09205015 0.90794985 5404.0933
+##  [4,] 0.268453929 0.215230979 0.34859901 0.16771608 0.83228392 5095.1568
+##  [5,] 0.193235629 0.175692331 0.37461531 0.25645673 0.74354327 4585.7157
+##  [6,] 0.139092799 0.138276206 0.37265068 0.34998031 0.65001969 3977.7880
+##  [7,] 0.100120288 0.106250115 0.35172360 0.44190599 0.55809401 3351.5683
+##  [8,] 0.072067512 0.080300452 0.31965450 0.52797754 0.47202246 2759.4163
+##  [9,] 0.051874864 0.059973988 0.28239260 0.60575854 0.39424146 2230.0366
+## [10,] 0.037340008 0.044405711 0.24406985 0.67418443 0.32581557 1775.1260
+## [11,] 0.026877685 0.032666545 0.20732136 0.73313441 0.26686559 1395.4794
+## [12,] 0.019346807 0.023913457 0.17365768 0.78308206 0.21691794 1085.6681
+## [13,] 0.013926011 0.017440500 0.14379887 0.82483462 0.17516538  837.2676
+## [14,] 0.010024072 0.012683150 0.11794188 0.85935089 0.14064911  640.9103
+## [15,] 0.007215420 0.009202998 0.09595984 0.88762175 0.11237825  487.4829
+## [16,] 0.005193726 0.006666234 0.07754314 0.91059690 0.08940310  368.7484
+## [17,] 0.003738492 0.004822208 0.06229487 0.92914443 0.07085557  277.6021
+## [18,] 0.002691002 0.003484601 0.04979219 0.94403221 0.05596779  208.1127
+## [19,] 0.001937008 0.002515944 0.03962372 0.95592333 0.04407667  155.4451
+## [20,] 0.001394276 0.001815377 0.03141026 0.96538008 0.03461992  115.7293
 ## 
 ## , , 2
 ## 
-##           State A     State B    State C      Death    Disc LY Disc cost
-##  [1,] 0.712413319 0.207888519 0.06803232 0.01166584 0.98833416 5152.9049
-##  [2,] 0.507532737 0.271418741 0.18027507 0.04077345 0.95922655 5372.0059
-##  [3,] 0.361573082 0.266511545 0.27310496 0.09881041 0.90118959 5308.6230
-##  [4,] 0.257589479 0.233257338 0.32872102 0.18043216 0.81956784 4950.2557
-##  [5,] 0.183510176 0.191914470 0.34890883 0.27566653 0.72433347 4396.9646
-##  [6,] 0.130735093 0.151990296 0.34216981 0.37510480 0.62489520 3757.1683
-##  [7,] 0.093137422 0.117336571 0.31786561 0.47166040 0.52833960 3113.3792
-##  [8,] 0.066352340 0.088964404 0.28391128 0.56077198 0.43922802 2517.2642
-##  [9,] 0.047270291 0.066566171 0.24616484 0.63999870 0.36000130 1995.1279
-## [10,] 0.033675985 0.049312954 0.20855182 0.70845924 0.29154076 1555.6154
-## [11,] 0.023991220 0.036252517 0.17344713 0.76630913 0.23369087 1196.5181
-## [12,] 0.017091665 0.026491921 0.14209284 0.81432357 0.18567643  909.8312
-## [13,] 0.012176330 0.019267750 0.11496178 0.85359414 0.14640586  685.1316
-## [14,] 0.008674579 0.013960645 0.09204081 0.88532396 0.11467604  511.6355
-## [15,] 0.006179886 0.010084580 0.07303623 0.91069931 0.08930069  379.3249
-## [16,] 0.004402633 0.007266741 0.05751432 0.93081631 0.06918369  279.4667
-## [17,] 0.003136494 0.005225773 0.04499239 0.94664534 0.05335466  204.7635
-## [18,] 0.002234480 0.003751887 0.03499403 0.95901960 0.04098040  149.3003
-## [19,] 0.001591874 0.002690083 0.02707977 0.96863827 0.03136173  108.3907
-## [20,] 0.001134072 0.001926647 0.02086159 0.97607770 0.02392230   78.3880
+##           State A     State B    State C       Death    Disc LY Disc cost
+##  [1,] 0.740473978 0.178650752 0.07204981 0.008825461 0.99117454 5181.9213
+##  [2,] 0.548301713 0.232652837 0.18214020 0.036905246 0.96309475 5389.5004
+##  [3,] 0.406003151 0.228659673 0.27237703 0.092960150 0.90703985 5320.1222
+##  [4,] 0.300634768 0.200994555 0.32700715 0.171363523 0.82863648 4970.3657
+##  [5,] 0.222612223 0.166628057 0.34800708 0.262752640 0.73724736 4435.7375
+##  [6,] 0.164838558 0.133382054 0.34332910 0.358450286 0.64154971 3817.4971
+##  [7,] 0.122058663 0.104383027 0.32164025 0.451918056 0.54808194 3192.6167
+##  [8,] 0.090381264 0.080448614 0.29027974 0.538890384 0.46110962 2609.7702
+##  [9,] 0.066924974 0.061342987 0.25472793 0.617004111 0.38299589 2094.4109
+## [10,] 0.049556202 0.046418897 0.21872058 0.685304316 0.31469568 1655.7189
+## [11,] 0.036695078 0.034931548 0.18458607 0.743787305 0.25621269 1292.7165
+## [12,] 0.027171750 0.026180267 0.15361301 0.793034976 0.20696502  998.8320
+## [13,] 0.020119974 0.019562417 0.12637117 0.833946434 0.16605357  764.9813
+## [14,] 0.014898317 0.014584681 0.10296338 0.867553617 0.13244638  581.4826
+## [15,] 0.011031816 0.010855319 0.08321042 0.894902442 0.10509756  439.1392
+## [16,] 0.008168773 0.008069398 0.06678000 0.916981828 0.08301817  329.7747
+## [17,] 0.006048764 0.005992773 0.05327254 0.934685925 0.06531408  246.4269
+## [18,] 0.004478952 0.004447376 0.04227535 0.948798326 0.05120167  183.3450
+## [19,] 0.003316548 0.003298719 0.03339467 0.959990058 0.04000994  135.8860
+## [20,] 0.002455817 0.002445736 0.02627281 0.968825637 0.03117436  100.3659
 ## 
 ## , , 3
 ## 
-##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.733053664 0.193002604 0.06426130 0.009682434 0.99031757 5135.9290
-##  [2,] 0.537367675 0.252198956 0.17530938 0.035123988 0.96487601 5364.6277
-##  [3,] 0.393919343 0.248389573 0.27017430 0.087516789 0.91248321 5336.4718
-##  [4,] 0.288764018 0.218518384 0.33012036 0.162597237 0.83740276 5024.8436
-##  [5,] 0.211679522 0.181087255 0.35564514 0.251588079 0.74841192 4516.6116
-##  [6,] 0.155172449 0.144737041 0.35415849 0.345932024 0.65406798 3912.0129
-##  [7,] 0.113749732 0.112978399 0.33429906 0.438972809 0.56102719 3290.2742
-##  [8,] 0.083384658 0.086765075 0.30361668 0.526233590 0.47376641 2703.2253
-##  [9,] 0.061125429 0.065867026 0.26787980 0.605127742 0.39487226 2179.2519
-## [10,] 0.044808220 0.049582583 0.23110509 0.674504103 0.32549590 1729.8293
-## [11,] 0.032846830 0.037091600 0.19585721 0.734204361 0.26579564 1355.5812
-## [12,] 0.024078489 0.027617456 0.16360576 0.784698292 0.21530171 1050.9427
-## [13,] 0.017650825 0.020490214 0.13504902 0.826809938 0.17319006  807.3855
-## [14,] 0.012939002 0.015161052 0.11037432 0.861525626 0.13847437  615.4696
-## [15,] 0.009484983 0.011194536 0.08945293 0.889867550 0.11013245  466.0394
-## [16,] 0.006953001 0.008252473 0.07197831 0.912816216 0.08718378  350.8421
-## [17,] 0.005096923 0.006076053 0.05755959 0.931267432 0.06873257  262.7787
-## [18,] 0.003736318 0.004469302 0.04578181 0.946012566 0.05398743  195.9395
-## [19,] 0.002738922 0.003284975 0.03624239 0.957733710 0.04226629  145.5223
-## [20,] 0.002007777 0.002413075 0.02857135 0.967007803 0.03299220  107.6963
+##           State A     State B    State C      Death    Disc LY Disc cost
+##  [1,] 0.729239001 0.198839789 0.06223810 0.00968311 0.99031689 5125.6247
+##  [2,] 0.531789521 0.257668254 0.17590515 0.03463708 0.96536292 5371.5645
+##  [3,] 0.387801659 0.251740803 0.27481026 0.08564728 0.91435272 5369.5381
+##  [4,] 0.282800095 0.219751677 0.33873300 0.15871523 0.84128477 5083.2564
+##  [5,] 0.206228859 0.180747522 0.36753586 0.24548776 0.75451224 4595.0269
+##  [6,] 0.150390127 0.143421595 0.36841673 0.33777155 0.66222845 4003.5300
+##  [7,] 0.109670346 0.111169030 0.35001395 0.42914667 0.57085333 3388.1461
+##  [8,] 0.079975893 0.084797382 0.31997904 0.51524768 0.48475232 2801.7301
+##  [9,] 0.058321541 0.063950250 0.28422480 0.59350341 0.40649659 2274.0279
+## [10,] 0.042530342 0.047832109 0.24692180 0.66271575 0.33728425 1817.8851
+## [11,] 0.031014784 0.035559335 0.21077988 0.72264600 0.27735400 1435.1329
+## [12,] 0.022617190 0.026315590 0.17739577 0.77367145 0.22632855 1121.1770
+## [13,] 0.016493337 0.019408127 0.14757289 0.81652565 0.18347435  868.2115
+## [14,] 0.012027585 0.014276557 0.12158135 0.85211451 0.14788549  667.2935
+## [15,] 0.008770984 0.010480940 0.09935449 0.88139358 0.11860642  509.5774
+## [16,] 0.006396144 0.007682727 0.08062971 0.90529142 0.09470858  386.9753
+## [17,] 0.004664317 0.005624991 0.06504505 0.92466564 0.07533436  292.4475
+## [18,] 0.003401402 0.004114682 0.05220249 0.94028142 0.05971858  220.0716
+## [19,] 0.002480435 0.003007794 0.04170726 0.95280451 0.04719549  164.9870
+## [20,] 0.001808830 0.002197484 0.03319046 0.96280322 0.03719678  123.2790
 ## 
 ## , , 4
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.710644794 0.192954591 0.08664917 0.009751446 0.99024855 5267.6130
-##  [2,] 0.505016024 0.250041473 0.20525523 0.039687276 0.96031272 5510.2144
-##  [3,] 0.358887009 0.243772372 0.30005420 0.097286419 0.90271358 5450.8551
-##  [4,] 0.255041184 0.211907356 0.35633436 0.176717096 0.82328290 5096.7875
-##  [5,] 0.181243690 0.173222045 0.37683996 0.268694302 0.73130570 4549.5269
-##  [6,] 0.128799885 0.136343381 0.37020291 0.364653821 0.63534618 3914.5251
-##  [7,] 0.091530968 0.104642279 0.34568152 0.458145231 0.54185477 3271.7659
-##  [8,] 0.065046006 0.078899213 0.31109057 0.544964206 0.45503579 2671.9181
-##  [9,] 0.046224605 0.058723673 0.27225954 0.622792181 0.37720782 2141.5720
-## [10,] 0.032849275 0.043285034 0.23315546 0.690710227 0.30928977 1690.3905
-## [11,] 0.023344166 0.031669330 0.19624050 0.748746003 0.25125400 1317.4356
-## [12,] 0.016589410 0.023037628 0.16286374 0.797509218 0.20249078 1015.9142
-## [13,] 0.011789178 0.016682894 0.13360490 0.837923024 0.16207698  776.3964
-## [14,] 0.008377918 0.012037802 0.10854513 0.871039147 0.12896085  588.8210
-## [15,] 0.005953724 0.008661221 0.08746630 0.897918757 0.10208124  443.6331
-## [16,] 0.004230983 0.006217447 0.06998999 0.919561584 0.08043842  332.3456
-## [17,] 0.003006726 0.004454911 0.05566980 0.936868562 0.06313144  247.7425
-## [18,] 0.002136714 0.003187228 0.04404940 0.950626662 0.04937334  183.8750
-## [19,] 0.001518445 0.002277492 0.03469648 0.961507585 0.03849241  135.9508
-## [20,] 0.001079075 0.001625806 0.02722059 0.970074529 0.02992547  100.1772
+##  [1,] 0.721970303 0.204178865 0.06790716 0.005943677 0.99405632 5178.3058
+##  [2,] 0.521241118 0.265419729 0.18361194 0.029727216 0.97027278 5438.4796
+##  [3,] 0.376320608 0.259830272 0.28179305 0.082056071 0.91794393 5423.3762
+##  [4,] 0.271692303 0.227010044 0.34323716 0.158060494 0.84193951 5109.8706
+##  [5,] 0.196153774 0.186678147 0.36872460 0.248443477 0.75155652 4590.7729
+##  [6,] 0.141617200 0.147944268 0.36616257 0.344275965 0.65572404 3971.4576
+##  [7,] 0.102243412 0.114422148 0.34466162 0.438672817 0.56132718 3334.6428
+##  [8,] 0.073816707 0.087008173 0.31213398 0.527041136 0.47295886 2734.1244
+##  [9,] 0.053293471 0.065359667 0.27459019 0.606756670 0.39324333 2199.1376
+## [10,] 0.038476303 0.048657133 0.23618737 0.676679196 0.32332080 1741.3020
+## [11,] 0.027778748 0.035978266 0.19955569 0.736687294 0.26331271 1361.0021
+## [12,] 0.020055431 0.026466085 0.16618041 0.787298072 0.21270193 1052.2676
+## [13,] 0.014479426 0.019391420 0.13674550 0.829383654 0.17061635  806.1306
+## [14,] 0.010453715 0.014163994 0.11140847 0.863973820 0.13602618  612.7472
+## [15,] 0.007547272 0.010320749 0.09000486 0.892127122 0.10787288  462.6248
+## [16,] 0.005448906 0.007506046 0.07219233 0.914852720 0.08514728  347.2462
+## [17,] 0.003933949 0.005450799 0.05754743 0.933067827 0.06693217  259.3160
+## [18,] 0.002840194 0.003953611 0.04562726 0.947578937 0.05242106  192.7850
+## [19,] 0.002050536 0.002864964 0.03600635 0.959078148 0.04092185  142.7566
+## [20,] 0.001480426 0.002074531 0.02829662 0.968148426 0.03185157  105.3392
 ## 
 ## , , 5
 ## 
-##           State A     State B    State C      Death    Disc LY Disc cost
-##  [1,] 0.712814138 0.218851178 0.05817156 0.01016312 0.98983688 5104.9521
-##  [2,] 0.508103995 0.286238324 0.17212162 0.03353606 0.96646394 5362.9746
-##  [3,] 0.362183711 0.281539290 0.27425148 0.08202552 0.91797448 5389.3190
-##  [4,] 0.258169670 0.246808074 0.34240656 0.15261570 0.84738430 5132.1104
-##  [5,] 0.184026990 0.203375967 0.37509444 0.23750261 0.76249739 4665.3767
-##  [6,] 0.131177040 0.161303353 0.37884555 0.32867405 0.67132595 4085.5031
-##  [7,] 0.093504849 0.124699709 0.36213071 0.41966473 0.58033527 3472.9269
-##  [8,] 0.066651578 0.094672315 0.33271810 0.50595801 0.49404199 2882.8665
-##  [9,] 0.047510187 0.070926174 0.29675904 0.58480459 0.41519541 2347.5454
-## [10,] 0.033865933 0.052605754 0.25868438 0.65484393 0.34515607 1881.8591
-## [11,] 0.024140116 0.038717229 0.22143446 0.71570820 0.28429180 1489.1082
-## [12,] 0.017207416 0.028323676 0.18678686 0.76768205 0.23231795 1165.6302
-## [13,] 0.012265689 0.020621254 0.15567427 0.81143879 0.18856121  904.1283
-## [14,] 0.008743157 0.014956048 0.12845113 0.84784967 0.15215033  695.8720
-## [15,] 0.006232246 0.010813779 0.10509974 0.87785423 0.12214577  532.0385
-## [16,] 0.004442433 0.007799203 0.08538084 0.90237752 0.09762248  404.4541
-## [17,] 0.003166629 0.005613529 0.06893841 0.92228143 0.07771857  305.9415
-## [18,] 0.002257218 0.004033626 0.05536945 0.93833971 0.06166029  230.4233
-## [19,] 0.001608977 0.002894401 0.04426804 0.95122859 0.04877141  172.8886
-## [20,] 0.001146901 0.002074582 0.03525125 0.96152727 0.03847273  129.2871
+##           State A     State B    State C       Death    Disc LY Disc cost
+##  [1,] 0.709524601 0.214045066 0.06816612 0.008264213 0.99173579 5171.5676
+##  [2,] 0.503425160 0.276611605 0.18695369 0.033009549 0.96699045 5445.3137
+##  [3,] 0.357192536 0.268959618 0.28779614 0.086051707 0.91394829 5440.2640
+##  [4,] 0.253436891 0.233199815 0.35057829 0.162785006 0.83721499 5128.8321
+##  [5,] 0.179819709 0.190151302 0.37615612 0.253872873 0.74612713 4605.8308
+##  [6,] 0.127586507 0.149306059 0.37282398 0.350283451 0.64971655 3979.7775
+##  [7,] 0.090525766 0.114321975 0.35009705 0.445055213 0.55494479 3335.8520
+##  [8,] 0.064230258 0.086001251 0.31620278 0.533565710 0.46643429 2729.2878
+##  [9,] 0.045572948 0.063868052 0.27735809 0.613200911 0.38679909 2189.9160
+## [10,] 0.032335128 0.046975742 0.23783317 0.682855957 0.31714404 1729.4062
+## [11,] 0.022942569 0.034297738 0.20030348 0.742456214 0.25754379 1347.9042
+## [12,] 0.016278317 0.024898808 0.16625593 0.792566944 0.20743306 1039.0903
+## [13,] 0.011549866 0.017994842 0.13635166 0.834103634 0.16589637  793.6427
+## [14,] 0.008194914 0.012959241 0.11071424 0.868131601 0.13186840  601.4126
+## [15,] 0.005814493 0.009306479 0.08914277 0.895736254 0.10426375  452.6700
+## [16,] 0.004125526 0.006668201 0.07126086 0.917945414 0.08205459  338.7280
+## [17,] 0.002927162 0.004769148 0.05661578 0.935687914 0.06431209  252.1802
+## [18,] 0.002076894 0.003405913 0.04474095 0.949776246 0.05022375  186.9120
+## [19,] 0.001473607 0.002429450 0.03519266 0.960904286 0.03909571  137.9946
+## [20,] 0.001045560 0.001731255 0.02756938 0.969653802 0.03034620  101.5272
 ## 
 ## , , 6
 ## 
-##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.739761190 0.191821817 0.05858218 0.009834812 0.99016519 5101.3849
-##  [2,] 0.547246618 0.252545729 0.16488689 0.035320764 0.96467924 5305.8533
-##  [3,] 0.404831810 0.250642966 0.25723915 0.087286076 0.91271392 5270.1174
-##  [4,] 0.299478861 0.222227180 0.31668313 0.161610825 0.83838918 4963.1136
-##  [5,] 0.221542839 0.185627876 0.34307844 0.249750846 0.75024915 4465.8266
-##  [6,] 0.163888794 0.149567460 0.34321475 0.343328994 0.65667101 3874.0326
-##  [7,] 0.121238569 0.117708401 0.32526415 0.435788884 0.56421112 3264.3042
-##  [8,] 0.089687588 0.091150757 0.29647466 0.522686995 0.47731301 2687.2306
-##  [9,] 0.066347397 0.069780063 0.26244607 0.601426468 0.39857353 2170.8613
-## [10,] 0.049081229 0.052976226 0.22711980 0.670822745 0.32917725 1726.8275
-## [11,] 0.036308389 0.039971695 0.19304439 0.730675524 0.26932448 1356.1257
-## [12,] 0.026859537 0.030020533 0.16170692 0.781413011 0.21858699 1053.6163
-## [13,] 0.019869643 0.022468178 0.13383931 0.823822868 0.17617713  811.1646
-## [14,] 0.014698791 0.016771143 0.10966790 0.858862162 0.14113784  619.6576
-## [15,] 0.010873595 0.012493194 0.08910208 0.887531135 0.11246887  470.1924
-## [16,] 0.008043864 0.009291904 0.07186930 0.910794933 0.08920507  354.7004
-## [17,] 0.005950538 0.006902586 0.05760739 0.929539487 0.07046051  266.2108
-## [18,] 0.004401977 0.005122875 0.04592458 0.944550571 0.05544943  198.8983
-## [19,] 0.003256412 0.003799285 0.03643644 0.956507860 0.04349214  148.0131
-## [20,] 0.002408967 0.002816090 0.02878683 0.965988109 0.03401189  109.7540
+##           State A     State B    State C      Death    Disc LY  Disc cost
+##  [1,] 0.722707569 0.192468117 0.07462060 0.01020371 0.98979629 5194.39476
+##  [2,] 0.522306231 0.253585828 0.18453445 0.03957349 0.96042651 5396.38065
+##  [3,] 0.377474666 0.251370196 0.27431976 0.09683538 0.90316462 5319.58356
+##  [4,] 0.272803799 0.222176792 0.32852257 0.17649684 0.82350316 4962.36686
+##  [5,] 0.197157370 0.184665594 0.34898049 0.26919654 0.73080346 4420.03409
+##  [6,] 0.142487124 0.147792921 0.34356468 0.36615528 0.63384472 3794.19903
+##  [7,] 0.102976523 0.115337314 0.32097992 0.46070624 0.53929376 3162.60600
+##  [8,] 0.074421913 0.088426902 0.28866874 0.54848245 0.45151755 2574.63812
+##  [9,] 0.053785280 0.066923671 0.25222328 0.62706777 0.37293223 2056.13568
+## [10,] 0.038871029 0.050160803 0.21546590 0.69550227 0.30449773 1616.31082
+## [11,] 0.028092387 0.037319067 0.18077477 0.75381377 0.24618623 1253.94977
+## [12,] 0.020302580 0.027605749 0.14945373 0.80263794 0.19736206  962.09648
+## [13,] 0.014672829 0.020328593 0.12206151 0.84293707 0.15706293  731.23818
+## [14,] 0.010604164 0.014916304 0.09867348 0.87580606 0.12419394  551.29075
+## [15,] 0.007663710 0.010913772 0.07907508 0.90234744 0.09765256  412.72179
+## [16,] 0.005538621 0.007966964 0.06289723 0.92359718 0.07640282  307.09944
+## [17,] 0.004002803 0.005805074 0.04970624 0.94048589 0.05951411  227.28469
+## [18,] 0.002892856 0.004223500 0.03906026 0.95382339 0.04617661  167.41840
+## [19,] 0.002090689 0.003069088 0.03054226 0.96429797 0.03570203  122.80281
+## [20,] 0.001510957 0.002228006 0.02377705 0.97248399 0.02751601   89.73909
 ## 
 ## , , 7
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.723809599 0.198619826 0.06839167 0.009178909 0.99082109 5164.2464
-##  [2,] 0.523900335 0.256449588 0.18510559 0.034544482 0.96545552 5422.8437
-##  [3,] 0.379204091 0.249553271 0.28496322 0.086279422 0.91372058 5419.6100
-##  [4,] 0.274471561 0.216901113 0.34856125 0.160066076 0.83993392 5125.8650
-##  [5,] 0.198665150 0.177574004 0.37635561 0.247405232 0.75259477 4628.3101
-##  [6,] 0.143795743 0.140205174 0.37594134 0.340057742 0.65994226 4027.9044
-##  [7,] 0.104080739 0.108105874 0.35620201 0.431611376 0.56838862 3405.0169
-##  [8,] 0.075334638 0.082006199 0.32492612 0.517733043 0.48226696 2812.7642
-##  [9,] 0.054527934 0.061489043 0.28809136 0.595891665 0.40410833 2280.7867
-## [10,] 0.039467842 0.045716042 0.24988825 0.664927868 0.33507213 1821.6717
-## [11,] 0.028567203 0.033776022 0.21302080 0.724635972 0.27536403 1436.9569
-## [12,] 0.020677216 0.024836786 0.17906682 0.775419174 0.22458083 1121.7783
-## [13,] 0.014966367 0.018198017 0.14880571 0.818029903 0.18197010  868.1064
-## [14,] 0.010832800 0.013297234 0.12248314 0.853386826 0.14661317  666.8257
-## [15,] 0.007840885 0.009695774 0.10001000 0.882453339 0.11754666  508.9642
-## [16,] 0.005675308 0.007058238 0.08110441 0.906162049 0.09383795  386.3454
-## [17,] 0.004107842 0.005131709 0.06538851 0.925371941 0.07462806  291.8702
-## [18,] 0.002973296 0.003727366 0.05245162 0.940847723 0.05915228  219.5783
-## [19,] 0.002152100 0.002705271 0.04188909 0.953253538 0.04674646  164.5859
-## [20,] 0.001557711 0.001962281 0.03332456 0.963155454 0.03684455  122.9658
+##  [1,] 0.725284139 0.191334026 0.07401563 0.009366208 0.99063379 5194.4878
+##  [2,] 0.526037082 0.246370447 0.18935176 0.038240710 0.96175929 5427.2515
+##  [3,] 0.381526352 0.239198075 0.28373838 0.095537197 0.90446280 5371.4786
+##  [4,] 0.276715012 0.207514789 0.34038829 0.175381904 0.82461810 5022.1266
+##  [5,] 0.200697009 0.169643350 0.36153316 0.268126484 0.73187352 4479.3715
+##  [6,] 0.145562358 0.133801075 0.35573758 0.364898985 0.63510101 3849.3801
+##  [7,] 0.105574069 0.103095621 0.33225780 0.459072513 0.54092749 3212.5509
+##  [8,] 0.076571198 0.078176932 0.29887687 0.546375003 0.45362500 2619.4265
+##  [9,] 0.055535875 0.058614381 0.26136236 0.624487386 0.37551261 2096.1826
+## [10,] 0.040279290 0.043588381 0.22360934 0.692522987 0.30747701 1652.0240
+## [11,] 0.029213930 0.032219231 0.18801473 0.750552114 0.24944789 1285.6448
+## [12,] 0.021188400 0.023708478 0.15587776 0.799225359 0.20077464  990.0172
+## [13,] 0.015367610 0.017386800 0.12774591 0.839499683 0.16050032  755.6020
+## [14,] 0.011145884 0.012718016 0.10368388 0.872452218 0.12754778  572.3233
+## [15,] 0.008083933 0.009284711 0.08346955 0.899161810 0.10083819  430.6742
+## [16,] 0.005863148 0.006768096 0.06672918 0.920639576 0.07936042  322.2498
+## [17,] 0.004252449 0.004927937 0.05302649 0.937793126 0.06220687  239.9299
+## [18,] 0.003084233 0.003584921 0.04191806 0.951412790 0.04858721  177.8622
+## [19,] 0.002236946 0.002606141 0.03298548 0.962171430 0.03782857  131.3435
+## [20,] 0.001622421 0.001893597 0.02585196 0.970632024 0.02936798   96.6593
 ## 
 ## , , 8
 ## 
-##            State A     State B    State C       Death    Disc LY
-##  [1,] 0.7069525693 0.215535409 0.06915779 0.008354233 0.99164577
-##  [2,] 0.4997819352 0.272485892 0.19374847 0.033983705 0.96601630
-##  [3,] 0.3533221232 0.259570387 0.29736941 0.089738076 0.91026192
-##  [4,] 0.2497819828 0.220805619 0.35931839 0.170094013 0.82990599
-##  [5,] 0.1765840145 0.176886400 0.38184977 0.264679813 0.73532019
-##  [6,] 0.1248365227 0.136634547 0.37471561 0.363813321 0.63618668
-##  [7,] 0.0882535005 0.103049762 0.34841679 0.460279952 0.53972005
-##  [8,] 0.0623910389 0.076448851 0.31168259 0.549477522 0.45052248
-##  [9,] 0.0441075053 0.056050542 0.27088407 0.628957883 0.37104212
-## [10,] 0.0311819142 0.040742317 0.23024115 0.697834622 0.30216538
-## [11,] 0.0220441343 0.029425498 0.19228239 0.756247979 0.24375202
-## [12,] 0.0155841574 0.021149397 0.15831988 0.804946569 0.19505343
-## [13,] 0.0110172601 0.015144977 0.12884976 0.844988005 0.15501200
-## [14,] 0.0077886803 0.010814532 0.10385764 0.877539150 0.12246085
-## [15,] 0.0055062276 0.007705409 0.08303637 0.903751992 0.09624801
-## [16,] 0.0038926417 0.005480822 0.06593329 0.924693246 0.07530675
-## [17,] 0.0027519131 0.003893329 0.05204463 0.941310130 0.05868987
-## [18,] 0.0019454720 0.002762791 0.04087251 0.954419230 0.04558077
-## [19,] 0.0013753564 0.001958954 0.03195649 0.964709201 0.03529080
-## [20,] 0.0009723118 0.001388115 0.02488853 0.972751046 0.02724895
-##        Disc cost
-##  [1,] 5177.40435
-##  [2,] 5477.66423
-##  [3,] 5472.59446
-##  [4,] 5140.05771
-##  [5,] 4588.84005
-##  [6,] 3937.45477
-##  [7,] 3275.67681
-##  [8,] 2659.53006
-##  [9,] 2117.64300
-## [10,] 1659.77132
-## [11,] 1284.15777
-## [12,]  982.91433
-## [13,]  745.57273
-## [14,]  561.22822
-## [15,]  419.70758
-## [16,]  312.10857
-## [17,]  230.96200
-## [18,]  170.18490
-## [19,]  124.93185
-## [20,]   91.40877
+##           State A     State B    State C       Death    Disc LY Disc cost
+##  [1,] 0.739975448 0.191595149 0.06193743 0.006491973 0.99350803 5136.9834
+##  [2,] 0.547563664 0.253819189 0.16850785 0.030109292 0.96989071 5349.6822
+##  [3,] 0.405183668 0.253342202 0.26012195 0.081352184 0.91864782 5310.9989
+##  [4,] 0.299825966 0.225783946 0.31860245 0.155787641 0.84421236 4996.6702
+##  [5,] 0.221863854 0.189482050 0.34407658 0.244577518 0.75542248 4490.8020
+##  [6,] 0.164173805 0.153315795 0.34341601 0.339094386 0.66090561 3890.7293
+##  [7,] 0.121484585 0.121112893 0.32481249 0.432590032 0.56740997 3273.8062
+##  [8,] 0.089895610 0.094101817 0.29551353 0.520489047 0.47951095 2690.9512
+##  [9,] 0.066520544 0.072253637 0.26111070 0.600115119 0.39988488 2170.2612
+## [10,] 0.049223570 0.054998428 0.22553285 0.670245151 0.32975485 1723.2461
+## [11,] 0.036424233 0.041593687 0.19131284 0.730669243 0.26933076 1350.6934
+## [12,] 0.026953038 0.031302399 0.15992010 0.781824462 0.21817554 1047.2246
+## [13,] 0.019944586 0.023469492 0.13206835 0.824517570 0.17548243  804.4737
+## [14,] 0.014758504 0.017546078 0.10796634 0.859729077 0.14027092  613.1243
+## [15,] 0.010920931 0.013088480 0.08750746 0.888483127 0.11151687  464.1069
+## [16,] 0.008081221 0.009746448 0.07040541 0.911766918 0.08823308  349.2251
+## [17,] 0.005979905 0.007247976 0.05628671 0.930485405 0.06951460  261.4146
+## [18,] 0.004424983 0.005384286 0.04475077 0.945439961 0.05456004  194.7863
+## [19,] 0.003274379 0.003996497 0.03540662 0.957322504 0.04267750  144.5493
+## [20,] 0.002422960 0.002964478 0.02789356 0.966719005 0.03328099  106.8794
 ## 
 ## , , 9
 ## 
-##            State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.7035963812 0.226191113 0.06052552 0.009686982 0.99031302 5123.1447
-##  [2,] 0.4950478676 0.295338535 0.17632417 0.033289426 0.96671057 5389.8573
-##  [3,] 0.3483138881 0.289800872 0.27983758 0.082047660 0.91795234 5420.5971
-##  [4,] 0.2450723912 0.253276683 0.34888872 0.152762201 0.84723780 5165.1385
-##  [5,] 0.1724320476 0.207932899 0.38200983 0.237625221 0.76237478 4698.2260
-##  [6,] 0.1213225647 0.164200482 0.38580428 0.328672670 0.67132733 4116.7776
-##  [7,] 0.0853621175 0.126308370 0.36883902 0.419490490 0.58050951 3501.7152
-##  [8,] 0.0600604769 0.095359325 0.33897892 0.505601276 0.49439872 2908.6755
-##  [9,] 0.0422583342 0.071001678 0.30245894 0.584281046 0.41571895 2370.2080
-## [10,] 0.0297328110 0.052309078 0.26377502 0.654183088 0.34581691 1901.4367
-## [11,] 0.0209198982 0.038220967 0.22591392 0.714945211 0.28505479 1505.8048
-## [12,] 0.0147191647 0.027745013 0.19068345 0.766852371 0.23314763 1179.7257
-## [13,] 0.0103563510 0.020034815 0.15903386 0.810574973 0.18942503  915.9317
-## [14,] 0.0072866911 0.014405620 0.13132797 0.846979721 0.15302028  705.6909
-## [15,] 0.0051268895 0.010321911 0.10755026 0.877000938 0.12299906  540.1618
-## [16,] 0.0036072609 0.007374554 0.08745974 0.901558445 0.09844156  411.1433
-## [17,] 0.0025380557 0.005256202 0.07069646 0.921509287 0.07849071  311.4268
-## [18,] 0.0017857668 0.003738882 0.05685241 0.937622941 0.06237706  234.9045
-## [19,] 0.0012564591 0.002655132 0.04551635 0.950572055 0.04942794  176.5366
-## [20,] 0.0008840401 0.001882874 0.03630017 0.960932913 0.03906709  132.2468
+##           State A     State B    State C       Death    Disc LY Disc cost
+##  [1,] 0.710572635 0.211128285 0.06936366 0.008935421 0.99106458 5174.6276
+##  [2,] 0.504913470 0.275063757 0.18609869 0.033924078 0.96607592 5436.0520
+##  [3,] 0.358777695 0.269509391 0.28635165 0.085361263 0.91463874 5435.7375
+##  [4,] 0.254937612 0.235366395 0.35055064 0.159145353 0.84085465 5143.7159
+##  [5,] 0.181151691 0.193221457 0.37880239 0.246824458 0.75317554 4645.3850
+##  [6,] 0.128721434 0.152682614 0.37851559 0.340080357 0.65991964 4041.7718
+##  [7,] 0.091465929 0.117603772 0.35855927 0.432371032 0.56762897 3414.1431
+##  [8,] 0.064993186 0.088962463 0.32680667 0.519237680 0.48076232 2816.6793
+##  [9,] 0.046182380 0.066410360 0.28935251 0.598054749 0.40194525 2279.8700
+## [10,] 0.032815935 0.049082272 0.25049518 0.667606614 0.33239339 1816.8167
+## [11,] 0.023318105 0.035997592 0.21301898 0.727665320 0.27233468 1429.2640
+## [12,] 0.016569208 0.026242864 0.17855094 0.778636991 0.22136301 1112.3323
+## [13,] 0.011773626 0.019040695 0.14789278 0.821292898 0.17870710  857.8467
+## [14,] 0.008366016 0.013762692 0.12129269 0.856578603 0.14342140  656.4886
+## [15,] 0.005944662 0.009917325 0.09865135 0.885486662 0.11451334  499.0762
+## [16,] 0.004224114 0.007128671 0.07966986 0.908977356 0.09102264  377.2448
+## [17,] 0.003001540 0.005113821 0.06395090 0.927933741 0.07206626  283.7418
+## [18,] 0.002132812 0.003662396 0.05106470 0.943140094 0.05685991  212.4913
+## [19,] 0.001515518 0.002619369 0.04058958 0.955275532 0.04472447  158.5285
+## [20,] 0.001076886 0.001871303 0.03213493 0.964916883 0.03508312  117.8740
 ## 
 ## , , 10
 ## 
 ##           State A     State B    State C      Death    Disc LY Disc cost
-##  [1,] 0.737505607 0.181976334 0.06683324 0.01368482 0.98631518 5129.0096
-##  [2,] 0.543914521 0.238653234 0.17377233 0.04365992 0.95634008 5314.2650
-##  [3,] 0.401140009 0.235953743 0.26370580 0.09920045 0.90079955 5250.0489
-##  [4,] 0.295843006 0.208422798 0.31999208 0.17574212 0.82425788 4919.9138
-##  [5,] 0.218185876 0.173459947 0.34354122 0.26481296 0.73518704 4408.6378
-##  [6,] 0.160913307 0.139261384 0.34151920 0.35830611 0.64169389 3811.2598
-##  [7,] 0.118674466 0.109210988 0.32214095 0.44997360 0.55002640 3202.1585
-##  [8,] 0.087523084 0.084277202 0.29255297 0.53564674 0.46435326 2629.6415
-##  [9,] 0.064548765 0.064297729 0.25820838 0.61294512 0.38705488 2119.9003
-## [10,] 0.047605076 0.048649800 0.22290473 0.68084039 0.31915961 1683.2404
-## [11,] 0.035109011 0.036585377 0.18906929 0.73923632 0.26076368 1319.8060
-## [12,] 0.025893092 0.027387055 0.15809565 0.78862420 0.21137580 1023.9697
-## [13,] 0.019096301 0.020430633 0.13064838 0.82982468 0.17017532  787.3650
-## [14,] 0.014083629 0.015201164 0.10690822 0.86380699 0.13619301  600.8121
-## [15,] 0.010386755 0.011287541 0.08675574 0.89156997 0.10843003  455.4398
-## [16,] 0.007660290 0.008368587 0.06990192 0.91406920 0.08593080  343.2634
-## [17,] 0.005649507 0.006197112 0.05597666 0.93217672 0.06782328  257.4175
-## [18,] 0.004166543 0.004584887 0.04458592 0.94666265 0.05333735  192.1860
-## [19,] 0.003072849 0.003389692 0.03534659 0.95819087 0.04180913  142.9211
-## [20,] 0.002266243 0.002504687 0.02790584 0.96732323 0.03267677  105.9125</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_LY_mono[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] 8.176415 7.625209 8.050778 7.834823 8.293924 8.092457 8.169588
-##  [8] 7.787430 8.303811 7.933703</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_total_cost_mono[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] 45737.59 42622.06 44551.27 44707.46 46355.21 44217.89 45897.00
-##  [8] 44429.81 46709.35 43697.17</code></pre>
+##  [1,] 0.719389773 0.205088507 0.06235855 0.01316317 0.98683683 5111.5530
+##  [2,] 0.517521646 0.274059024 0.16786238 0.04055695 0.95944305 5304.6151
+##  [3,] 0.372299780 0.275206557 0.25985295 0.09264072 0.90735928 5267.3084
+##  [4,] 0.267828654 0.246131142 0.32001485 0.16602536 0.83397464 4967.6122
+##  [5,] 0.192673195 0.206768500 0.34766209 0.25289622 0.74710378 4480.0815
+##  [6,] 0.138607126 0.167071906 0.34899225 0.34532872 0.65467128 3896.0483
+##  [7,] 0.099712549 0.131494487 0.33183328 0.43695969 0.56304031 3290.4081
+##  [8,] 0.071732188 0.101569712 0.30332814 0.52336996 0.47663004 2713.8875
+##  [9,] 0.051603402 0.077370471 0.26912386 0.60190226 0.39809774 2195.4810
+## [10,] 0.037122960 0.058313617 0.23327947 0.67128395 0.32871605 1747.9138
+## [11,] 0.026705878 0.043587547 0.19847574 0.73123084 0.26876916 1373.1021
+## [12,] 0.019211935 0.032366513 0.16631628 0.78210527 0.21789473 1066.5488
+## [13,] 0.013820870 0.023907262 0.13762170 0.82465016 0.17534984  820.4968
+## [14,] 0.009942592 0.017583049 0.11267771 0.85979664 0.14020336  626.0048
+## [15,] 0.007152599 0.012886210 0.09142779 0.88853340 0.11146660  474.2018
+## [16,] 0.005145507 0.009416504 0.07361414 0.91182385 0.08817615  356.9695
+## [17,] 0.003701625 0.006864387 0.05887592 0.93055807 0.06944193  267.2472
+## [18,] 0.002662911 0.004993846 0.04681431 0.94552894 0.05447106  199.1080
+## [19,] 0.001915671 0.003626869 0.03703333 0.95742413 0.04257587  147.7049
+## [20,] 0.001378114 0.002630322 0.02916349 0.96682807 0.03317193  109.1526</code></pre>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">Expected_LY_mono</span>[<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
+<pre><code>##  [1] 8.042059 7.913119 8.195247 8.050147 7.964093 7.777549 7.822450 8.122190
+##  [9] 8.138555 8.057394</code></pre>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">Expected_total_cost_mono</span>[<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
+<pre><code>##  [1] 45346.76 43740.61 45619.48 45063.68 45008.11 43322.29 43926.59 44370.61
+##  [9] 45909.69 44415.45</code></pre>
 </div>
 <div id="combination-therapy" class="section level2">
 <h2 class="hasAnchor">
 <a href="#combination-therapy" class="anchor"></a><span class="header-section-number">4.2</span> Combination therapy</h2>
 <p>Define an array for trace and outcomes by follow-up time for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trace_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="ot">NA</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(follow_up, <span class="dv">6</span>, PSA_samples))
-<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(trace_combi) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"State A"</span>, <span class="st">"State B"</span>, <span class="st">"State C"</span>, <span class="st">"Death"</span>, <span class="st">"Disc LY"</span>, <span class="st">"Disc cost"</span>)</code></pre></div>
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">trace_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="fl">NA</span>, <span class="kw">dim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">follow_up</span>, <span class="fl">6</span>, <span class="no">PSA_samples</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">trace_combi</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"State A"</span>, <span class="st">"State B"</span>, <span class="st">"State C"</span>, <span class="st">"Death"</span>, <span class="st">"Disc LY"</span>, <span class="st">"Disc cost"</span>)</pre></body></html></div>
 <p>Define a matrix for expected outcomes for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_LY_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, PSA_samples), <span class="dt">nrow=</span>PSA_samples)
-Expected_total_cost_combi &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, PSA_samples), <span class="dt">nrow=</span>PSA_samples)</code></pre></div>
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">Expected_LY_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="no">PSA_samples</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">PSA_samples</span>)
+<span class="no">Expected_total_cost_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="no">PSA_samples</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">PSA_samples</span>)</pre></body></html></div>
 <p>Trace and expected LY and cost for each PSA sample</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>PSA_samples){
-<span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>){
-trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] &lt;-<span class="st"> </span>initial <span class="op">%*%</span><span class="st"> </span>(p_combi[,,i] <span class="op">%^%</span>t)
-trace_combi[t,<span class="dv">5</span>,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span>t  )
-trace_combi[t,<span class="dv">6</span>,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">*</span><span class="st"> </span>(drug_cost_combi <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span>t  )
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="kw">for</span>(<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">PSA_samples</span>){
+<span class="kw">for</span>(<span class="no">t</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">2</span>){
+<span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">p_combi</span>[,,<span class="no">i</span>] <span class="kw">%^%</span><span class="no">t</span>)
+<span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">5</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="no">t</span>  )
+<span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">6</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] * (<span class="no">drug_cost_combi</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="no">t</span>  )
 }
-<span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">3</span><span class="op">:</span>follow_up){
-trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] &lt;-<span class="st"> </span>trace_combi[<span class="dv">2</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">%*%</span><span class="st"> </span>(p_mono[,,i] <span class="op">%^%</span><span class="st"> </span>(t<span class="op">-</span><span class="dv">2</span>))
-trace_combi[t,<span class="dv">5</span>,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">*</span><span class="st"> </span>LY <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_LY)<span class="op">^</span>t  )
-trace_combi[t,<span class="dv">6</span>,i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  trace_combi[t,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,i] <span class="op">*</span><span class="st"> </span>(drug_cost_mono <span class="op">+</span><span class="st"> </span>other_cost) <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>discount_cost)<span class="op">^</span>t  )
+<span class="kw">for</span>(<span class="no">t</span> <span class="kw">in</span> <span class="fl">3</span>:<span class="no">follow_up</span>){
+<span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="no">trace_combi</span>[<span class="fl">2</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] <span class="kw">%*%</span> (<span class="no">p_mono</span>[,,<span class="no">i</span>] <span class="kw">%^%</span> (<span class="no">t</span>-<span class="fl">2</span>))
+<span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">5</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="no">t</span>  )
+<span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">6</span>,<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>,<span class="no">i</span>] * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="no">t</span>  )
 }
-Expected_LY_combi[i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_combi[,<span class="dv">5</span>,i])
-Expected_total_cost_combi[i] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(trace_combi[,<span class="dv">6</span>,i])
-}</code></pre></div>
+<span class="no">Expected_LY_combi</span>[<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_combi</span>[,<span class="fl">5</span>,<span class="no">i</span>])
+<span class="no">Expected_total_cost_combi</span>[<span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_combi</span>[,<span class="fl">6</span>,<span class="no">i</span>])
+}</pre></body></html></div>
 <p>Presentation of results for the first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trace_combi[,,<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">trace_combi</span>[,,<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
 <pre><code>## , , 1
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.874527519 0.095156858 0.02700124 0.003314380 0.99668562 6881.4618
-##  [2,] 0.764798381 0.160855208 0.06468097 0.009665438 0.99033456 6678.6279
-##  [3,] 0.548116365 0.258314464 0.16042239 0.033146785 0.96685322 4992.7125
-##  [4,] 0.392824510 0.268700916 0.25910589 0.079368685 0.92063132 5016.8555
-##  [5,] 0.281529810 0.241402643 0.32875975 0.148307793 0.85169221 4792.8773
-##  [6,] 0.201767027 0.201539222 0.36389841 0.232795339 0.76720466 4368.2829
-##  [7,] 0.144602568 0.161109300 0.36969493 0.324593201 0.67540680 3829.8306
-##  [8,] 0.103633893 0.125203989 0.35435734 0.416804781 0.58319522 3254.9858
-##  [9,] 0.074272428 0.095422266 0.32577577 0.504529534 0.49547047 2698.3868
-## [10,] 0.053229628 0.071712459 0.29030558 0.584752338 0.41524766 2192.4163
-## [11,] 0.038148656 0.053337782 0.25255209 0.655961469 0.34403853 1752.2961
-## [12,] 0.027340412 0.039361338 0.21557299 0.717725265 0.28227473 1381.6587
-## [13,] 0.019594350 0.028872781 0.18121076 0.770322105 0.22967790 1077.1545
-## [14,] 0.014042896 0.021080105 0.15042494 0.814452060 0.18554794  831.7887
-## [15,] 0.010064275 0.015334139 0.12357290 0.851028683 0.14897132  637.1282
-## [16,] 0.007212873 0.011121985 0.10062718 0.881037964 0.11896204  484.6445
-## [17,] 0.005169328 0.008048215 0.08133352 0.905448935 0.09455106  366.4506
-## [18,] 0.003704759 0.005813168 0.06532040 0.925161678 0.07483832  275.6416
-## [19,] 0.002655130 0.004192576 0.05217120 0.940981095 0.05901891  206.3936
-## [20,] 0.001902881 0.003020158 0.04146938 0.953607583 0.04639242  153.9250
+##  [1,] 0.897220355 0.072802905 0.02606320 0.003913543 0.99608646 6865.6626
+##  [2,] 0.805004366 0.126606322 0.05830109 0.010088217 0.98991178 6631.4324
+##  [3,] 0.579449613 0.231776504 0.15439265 0.034381232 0.96561877 4949.2527
+##  [4,] 0.417093208 0.246825949 0.25546201 0.080618832 0.91938117 4988.6996
+##  [5,] 0.300227562 0.223162382 0.32728901 0.149321044 0.85067896 4778.1612
+##  [6,] 0.216106585 0.186509422 0.36392059 0.233463401 0.76653660 4362.8736
+##  [7,] 0.155555525 0.148967610 0.37062244 0.324854420 0.67514558 3830.4218
+##  [8,] 0.111970311 0.115598192 0.35579849 0.416633010 0.58336699 3259.3965
+##  [9,] 0.080597269 0.087969030 0.32749768 0.503936022 0.49606398 2705.2204
+## [10,] 0.058014662 0.066028381 0.29217491 0.583782043 0.41621796 2200.7293
+## [11,] 0.041759492 0.049067702 0.25448931 0.654683500 0.34531650 1761.3983
+## [12,] 0.030058870 0.036195180 0.21752475 0.716221199 0.28377880 1391.0190
+## [13,] 0.021636653 0.026551732 0.18313629 0.768675323 0.23132468 1086.3622
+## [14,] 0.015574264 0.019395480 0.15229052 0.812739737 0.18726026  840.5387
+## [15,] 0.011210500 0.014122171 0.12535054 0.849316793 0.15068321  645.2110
+## [16,] 0.008069422 0.010256909 0.10229470 0.879378965 0.12062103  491.9345
+## [17,] 0.005808445 0.007435138 0.08287493 0.903881484 0.09611852  372.8917
+## [18,] 0.004180972 0.005381524 0.06672583 0.923711676 0.07628832  281.2320
+## [19,] 0.003009503 0.003890530 0.05343648 0.939663488 0.06033651  211.1704
+## [20,] 0.002166268 0.002810029 0.04259525 0.952428457 0.04757154  157.9509
 ## 
 ## , , 2
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.859664917 0.101444380 0.03319807 0.005692636 0.99430736 6903.7843
-##  [2,] 0.739023769 0.168514234 0.07692350 0.015538500 0.98446150 6711.5338
-##  [3,] 0.526490376 0.253594543 0.17295303 0.046962050 0.95303795 4998.9139
-##  [4,] 0.375078756 0.259879588 0.26201105 0.103030609 0.89696939 4934.8222
-##  [5,] 0.267211102 0.232131040 0.31894729 0.181710572 0.81828943 4619.3402
-##  [6,] 0.190364748 0.193246592 0.34201150 0.274377156 0.72562284 4122.5390
-##  [7,] 0.135618382 0.154205477 0.33814927 0.372026871 0.62797313 3538.5246
-##  [8,] 0.096616341 0.119665761 0.31615225 0.467565652 0.53243435 2943.7958
-##  [9,] 0.068830769 0.091069271 0.28382491 0.556275049 0.44372495 2388.2259
-## [10,] 0.049035956 0.068329982 0.24710442 0.635529645 0.36447035 1898.3296
-## [11,] 0.034933868 0.050726280 0.21005370 0.704286151 0.29571385 1483.7941
-## [12,] 0.024887353 0.037352379 0.17518445 0.762575819 0.23742418 1143.6893
-## [13,] 0.017730082 0.027330637 0.14385255 0.811086728 0.18891327  871.2443
-## [14,] 0.012631146 0.019897984 0.11661679 0.850854075 0.14914592  657.1097
-## [15,] 0.008998597 0.014429040 0.09352463 0.883047730 0.11695227  491.3844
-## [16,] 0.006410720 0.010429784 0.07432258 0.908836912 0.09116309  364.7498
-## [17,] 0.004567083 0.007519499 0.05860198 0.929311441 0.07068856  269.0138
-## [18,] 0.003253650 0.005409892 0.04589446 0.945441999 0.05455800  197.2900
-## [19,] 0.002317944 0.003885459 0.03573076 0.958065836 0.04193416  143.9714
-## [20,] 0.001651334 0.002786667 0.02767398 0.967888018 0.03211198  104.6001
+##  [1,] 0.874335884 0.086503806 0.03488697 0.004273343 0.99572666 6919.1067
+##  [2,] 0.764463239 0.143783026 0.07869276 0.013060972 0.98693903 6730.5634
+##  [3,] 0.566065136 0.217349729 0.17400794 0.042577200 0.95742280 5013.9759
+##  [4,] 0.419156503 0.223235784 0.26117847 0.096429239 0.90357076 4948.4306
+##  [5,] 0.310374483 0.200297252 0.31739673 0.171931534 0.82806847 4641.8419
+##  [6,] 0.229824229 0.167976317 0.34132341 0.260876041 0.73912396 4162.1460
+##  [7,] 0.170178861 0.135427941 0.33948857 0.354904625 0.64509538 3597.7195
+##  [8,] 0.126013018 0.106486462 0.32005777 0.447442745 0.55255725 3020.2216
+##  [9,] 0.093309361 0.082336780 0.29028767 0.534066192 0.46593381 2476.7818
+## [10,] 0.069093154 0.062926872 0.25574412 0.612235854 0.38776415 1993.0715
+## [11,] 0.051161682 0.047696076 0.22029706 0.680845178 0.31915482 1579.2144
+## [12,] 0.037883894 0.035935892 0.18640552 0.739774698 0.26022530 1235.3824
+## [13,] 0.028052038 0.026956893 0.15546618 0.789524890 0.21047511  956.1175
+## [14,] 0.020771804 0.020155993 0.12813059 0.830941613 0.16905839  733.3131
+## [15,] 0.015380981 0.015034604 0.10455967 0.865024741 0.13497526  558.0996
+## [16,] 0.011389216 0.011194316 0.08461336 0.892803110 0.10719689  421.9340
+## [17,] 0.008433418 0.008323697 0.06798430 0.915258583 0.08474142  317.1534
+## [18,] 0.006244727 0.006182918 0.05428775 0.933284602 0.06671540  237.1926
+## [19,] 0.004624058 0.004589210 0.04311895 0.947667783 0.05233222  176.6048
+## [20,] 0.003423994 0.003404325 0.03408756 0.959084125 0.04091587  130.9765
 ## 
 ## , , 3
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.847313083 0.110392871 0.03675592 0.005538121 0.99446188 6928.3025
-##  [2,] 0.717939461 0.177010141 0.08881846 0.016231942 0.98376806 6775.5531
-##  [3,] 0.526288153 0.240107654 0.18600056 0.047603633 0.95239637 5061.3297
-##  [4,] 0.385797459 0.239314912 0.27240637 0.102481259 0.89751874 4983.6623
-##  [5,] 0.282810241 0.211745078 0.32748857 0.177956106 0.82204389 4668.8516
-##  [6,] 0.207315084 0.176052592 0.35048252 0.266149805 0.73385020 4185.4774
-##  [7,] 0.151973082 0.141006513 0.34793371 0.359086700 0.64091330 3619.9252
-##  [8,] 0.111404424 0.110220862 0.32789945 0.450475263 0.54952474 3042.0919
-##  [9,] 0.081665422 0.084730539 0.29754627 0.536057768 0.46394223 2498.1236
-## [10,] 0.059865137 0.064368079 0.26239587 0.613370916 0.38662908 2013.3372
-## [11,] 0.043884358 0.048479458 0.22631081 0.681325377 0.31867462 1597.8661
-## [12,] 0.032169589 0.036280475 0.19176351 0.739786430 0.26021357 1252.0486
-## [13,] 0.023582035 0.027021437 0.16017185 0.789224682 0.21077532  970.6259
-## [14,] 0.017286897 0.020052486 0.13220825 0.830452363 0.16954764  745.6629
-## [15,] 0.012672223 0.014839706 0.10805027 0.864437804 0.13556220  568.4130
-## [16,] 0.009289420 0.010958704 0.08756889 0.892182991 0.10781701  430.4080
-## [17,] 0.006809643 0.008079442 0.07046256 0.914648355 0.08535165  324.0203
-## [18,] 0.004991834 0.005949124 0.05634799 0.932711054 0.06728895  242.6918
-## [19,] 0.003659282 0.004376206 0.04481867 0.947145841 0.05285416  180.9640
-## [20,] 0.002682450 0.003216701 0.03548042 0.958620425 0.04137957  134.4019
+##  [1,] 0.855726651 0.105950570 0.03316319 0.005159586 0.99484041 6908.4180
+##  [2,] 0.732268101 0.172148757 0.08092823 0.014654915 0.98534509 6740.3709
+##  [3,] 0.533998459 0.243146897 0.17918044 0.043674204 0.95632580 5042.8982
+##  [4,] 0.389412503 0.243951943 0.27137483 0.095260721 0.90473928 5008.4331
+##  [5,] 0.283974785 0.215658656 0.33296062 0.167405943 0.83259406 4734.9642
+##  [6,] 0.207085488 0.178661911 0.36150017 0.252752430 0.74724757 4282.1177
+##  [7,] 0.151014815 0.142410178 0.36299953 0.343575480 0.65642452 3734.7642
+##  [8,] 0.110125893 0.110720155 0.34550249 0.433651464 0.56634854 3164.3592
+##  [9,] 0.080308096 0.084633621 0.31638227 0.518676017 0.48132398 2619.5899
+## [10,] 0.058563796 0.063923515 0.28143645 0.596076237 0.40392376 2128.3400
+## [11,] 0.042707004 0.047865130 0.24480110 0.664626763 0.33537324 1702.9401
+## [12,] 0.031143613 0.035613173 0.20918880 0.724054412 0.27594559 1345.4406
+## [13,] 0.022711137 0.026371712 0.17621395 0.774703196 0.22529680 1051.8233
+## [14,] 0.016561847 0.019458607 0.14670169 0.817277853 0.18272215  814.9905
+## [15,] 0.012077545 0.014318783 0.12094290 0.852660771 0.14733923  626.7146
+## [16,] 0.008807417 0.010514800 0.09888878 0.881789006 0.11821099  478.8078
+## [17,] 0.006422712 0.007709157 0.08029127 0.905576862 0.09442314  363.7547
+## [18,] 0.004683692 0.005645250 0.06479987 0.924871187 0.07512881  274.9966
+## [19,] 0.003415531 0.004130014 0.05202535 0.940429103 0.05957090  207.0045
+## [20,] 0.002490738 0.003019290 0.04157958 0.952910396 0.04708960  155.2341
 ## 
 ## , , 4
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.830138392 0.113271082 0.05086609 0.005724439 0.99427556 7011.0645
-##  [2,] 0.689129750 0.179720793 0.11274484 0.018404619 0.98159538 6895.6088
-##  [3,] 0.489726470 0.238145472 0.21769680 0.054431255 0.94556875 5198.3406
-##  [4,] 0.348021567 0.233860503 0.30328187 0.114836057 0.88516394 5085.9962
-##  [5,] 0.247319715 0.204010276 0.35380277 0.194867239 0.80513276 4726.4427
-##  [6,] 0.175756468 0.167110688 0.37105574 0.286077103 0.71392290 4203.5543
-##  [7,] 0.124900419 0.131708158 0.36288448 0.380506943 0.61949306 3608.5364
-##  [8,] 0.088759833 0.101177273 0.33794302 0.472119877 0.52788012 3011.4406
-##  [9,] 0.063076713 0.076336748 0.30360816 0.556978381 0.44302162 2456.7463
-## [10,] 0.044825138 0.056844104 0.26540614 0.632924622 0.36707538 1967.6364
-## [11,] 0.031854751 0.041915055 0.22710301 0.699127180 0.30087282 1552.2435
-## [12,] 0.022637413 0.030675703 0.19103402 0.755652863 0.24434714 1209.2642
-## [13,] 0.016087160 0.022319775 0.15847293 0.803120132 0.19687987  932.1993
-## [14,] 0.011432256 0.016165886 0.12995886 0.842442994 0.15755701  712.2372
-## [15,] 0.008124273 0.011666373 0.10555485 0.874654500 0.12534550  540.0519
-## [16,] 0.005773473 0.008394915 0.08503857 0.900793038 0.09920696  406.8212
-## [17,] 0.004102888 0.006026821 0.06803552 0.921834770 0.07816523  304.7259
-## [18,] 0.002915696 0.004318638 0.05410746 0.938658206 0.06134179  227.1274
-## [19,] 0.002072024 0.003089914 0.04280803 0.952030028 0.04796997  168.5578
-## [20,] 0.001472473 0.002208061 0.03371526 0.962604205 0.03739579  124.6153
+##  [1,] 0.850186874 0.110019449 0.03659099 0.003202683 0.99679732 6942.9149
+##  [2,] 0.722817721 0.178537276 0.08705989 0.011585116 0.98841488 6795.6219
+##  [3,] 0.521852928 0.250772761 0.18751161 0.039862701 0.96013730 5104.6291
+##  [4,] 0.376762317 0.251489726 0.27875300 0.092994958 0.90700504 5055.7670
+##  [5,] 0.272011204 0.222279671 0.33757005 0.168139073 0.83186093 4755.2021
+##  [6,] 0.196384011 0.184009260 0.36256031 0.257046417 0.74295358 4272.6669
+##  [7,] 0.141783424 0.146448749 0.36046470 0.351303127 0.64869687 3699.1499
+##  [8,] 0.102363421 0.113591727 0.33978992 0.444254929 0.55574507 3108.9981
+##  [9,] 0.073903350 0.086552720 0.30815090 0.531393025 0.46860698 2551.5786
+## [10,] 0.053356024 0.065114120 0.27142448 0.610105375 0.38989463 2054.1544
+## [11,] 0.038521465 0.048527987 0.23371859 0.679231954 0.32076805 1627.8185
+## [12,] 0.027811354 0.035912845 0.19765573 0.738620068 0.26137993 1273.2170
+## [13,] 0.020078971 0.026434931 0.16473199 0.788754108 0.21124589  985.0196
+## [14,] 0.014496421 0.019378220 0.13564889 0.830476470 0.16952353  755.0337
+## [15,] 0.010465986 0.014159835 0.11058242 0.864791761 0.13520824  574.1902
+## [16,] 0.007556131 0.010320851 0.08938495 0.892738073 0.10726193  433.7025
+## [17,] 0.005455302 0.007507914 0.07172841 0.915308372 0.08469163  325.6622
+## [18,] 0.003938566 0.005453184 0.05720097 0.933407280 0.06659272  243.2805
+## [19,] 0.002843528 0.003955932 0.04536892 0.947831623 0.05216838  180.9187
+## [20,] 0.002052943 0.002866987 0.03581393 0.959266141 0.04073386  134.0061
 ## 
 ## , , 5
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.832044116 0.127991478 0.03402067 0.005943733 0.99405627 6914.3617
-##  [2,] 0.692297411 0.204177698 0.08711927 0.016405622 0.98359438 6772.1562
-##  [3,] 0.493479382 0.273016042 0.18741230 0.046092280 0.95390772 5083.3057
-##  [4,] 0.351759080 0.270470110 0.27995913 0.097811684 0.90218832 5046.9829
-##  [5,] 0.250738845 0.237939373 0.34183936 0.169482420 0.83051758 4773.5550
-##  [6,] 0.178730194 0.196471968 0.37074324 0.254054598 0.74594540 4321.9445
-##  [7,] 0.127401409 0.156035580 0.37248202 0.344080993 0.65591901 3775.1754
-##  [8,] 0.090813525 0.120738561 0.35495174 0.433496177 0.56650382 3203.7697
-##  [9,] 0.064733165 0.091726041 0.32548867 0.518052121 0.48194788 2656.3848
-## [10,] 0.046142715 0.068753002 0.28993438 0.595169900 0.40483010 2161.3482
-## [11,] 0.032891180 0.051013228 0.25250646 0.663589133 0.33641087 1731.5559
-## [12,] 0.023445298 0.037556193 0.21600445 0.722994055 0.27700594 1369.5523
-## [13,] 0.016712140 0.027480683 0.18211739 0.773689787 0.22631021 1071.6702
-## [14,] 0.011912650 0.020011198 0.15172580 0.816350349 0.18364965  831.0188
-## [15,] 0.008491505 0.014515741 0.12515652 0.851836234 0.14816377  639.4614
-## [16,] 0.006052865 0.010496678 0.10238021 0.881070252 0.11892975  488.8213
-## [17,] 0.004314568 0.007571239 0.08315585 0.904958345 0.09504165  371.5456
-## [18,] 0.003075485 0.005449885 0.06713149 0.924343143 0.07565686  281.0138
-## [19,] 0.002192249 0.003916294 0.05391122 0.939980234 0.06001977  211.6267
-## [20,] 0.001562666 0.002810359 0.04309750 0.952529476 0.04747052  158.7713
+##  [1,] 0.872656244 0.093836871 0.02988387 0.003623012 0.99637699 6896.0192
+##  [2,] 0.761528921 0.158560695 0.06949681 0.010413574 0.98958643 6700.0743
+##  [3,] 0.540323504 0.255407644 0.16886960 0.035399250 0.96460075 5026.8046
+##  [4,] 0.383372818 0.264500264 0.26805698 0.084069934 0.91593007 5041.4451
+##  [5,] 0.272012446 0.236204749 0.33569285 0.156089957 0.84391004 4794.8387
+##  [6,] 0.192999522 0.195878526 0.36744853 0.243673420 0.75632658 4344.1423
+##  [7,] 0.136937909 0.155464850 0.36950698 0.338090262 0.66190974 3782.7513
+##  [8,] 0.097160815 0.119912821 0.35075083 0.432175533 0.56782447 3191.3117
+##  [9,] 0.068937989 0.090679689 0.31942727 0.520955049 0.47904495 2625.1249
+## [10,] 0.048913199 0.067602223 0.28201320 0.601471381 0.39852862 2115.7957
+## [11,] 0.034705118 0.049866910 0.24308629 0.672341683 0.32765832 1677.1466
+## [12,] 0.024624135 0.036489939 0.20559655 0.733289375 0.26671062 1311.3065
+## [13,] 0.017471430 0.026536312 0.17124705 0.784745208 0.21525479 1013.5890
+## [14,] 0.012396409 0.019204528 0.14085606 0.827543005 0.17245700  775.9393
+## [15,] 0.008795557 0.013845421 0.11465433 0.862704688 0.13729531  589.1562
+## [16,] 0.006240664 0.009951492 0.09250958 0.891298261 0.10870174  444.2013
+## [17,] 0.004427905 0.007135322 0.07408609 0.914350686 0.08564931  332.8847
+## [18,] 0.003141707 0.005106100 0.05895254 0.932799654 0.06720035  248.1521
+## [19,] 0.002229119 0.003648205 0.04665112 0.947471554 0.05252845  184.1368
+## [20,] 0.001581615 0.002603236 0.03673902 0.959076126 0.04092387  136.0831
 ## 
 ## , , 6
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.876733057 0.090859965 0.02774854 0.004658441 0.99534156 6875.6395
-##  [2,] 0.768660852 0.152306553 0.06620419 0.012828402 0.98717160 6664.8043
-##  [3,] 0.568625467 0.235296793 0.15615818 0.039919561 0.96008044 4935.9854
-##  [4,] 0.420647052 0.244794659 0.24499225 0.089566040 0.91043396 4900.7075
-##  [5,] 0.311178364 0.221887567 0.30613778 0.160796291 0.83920371 4635.9131
-##  [6,] 0.230197677 0.187676206 0.33579687 0.246329248 0.75367075 4193.5261
-##  [7,] 0.170291307 0.152409129 0.33914956 0.338150005 0.66184999 3655.7457
-##  [8,] 0.125974900 0.120575626 0.32377764 0.429671829 0.57032817 3093.5549
-##  [9,] 0.093191342 0.093713113 0.29681534 0.516280203 0.48371980 2555.9225
-## [10,] 0.068939338 0.071930134 0.26394696 0.595183564 0.40481644 2071.1252
-## [11,] 0.050998647 0.054713584 0.22926083 0.665026941 0.33497306 1651.7734
-## [12,] 0.037726820 0.041341611 0.19545319 0.725478381 0.27452162 1300.0504
-## [13,] 0.027908837 0.031082791 0.16413575 0.776872626 0.22312737 1011.9591
-## [14,] 0.020645875 0.023282170 0.13613619 0.819935769 0.18006423  780.3614
-## [15,] 0.015273017 0.017389554 0.11174979 0.855587635 0.14441237  596.9674
-## [16,] 0.011298385 0.012960044 0.09093294 0.884808629 0.11519137  453.5322
-## [17,] 0.008358107 0.009642669 0.07344338 0.908555848 0.09144415  342.5015
-## [18,] 0.006183003 0.007165187 0.05893711 0.927714697 0.07228530  257.2998
-## [19,] 0.004573946 0.005318936 0.04703223 0.943074889 0.05692511  192.4028
-## [20,] 0.003383627 0.003945361 0.03734861 0.955322401 0.04467760  143.2871
+##  [1,] 0.904533374 0.066263192 0.02569048 0.003512949 0.99648705 6864.3296
+##  [2,] 0.818180626 0.116957463 0.05556427 0.009297645 0.99070236 6618.6749
+##  [3,] 0.591305331 0.227044618 0.14791736 0.033732692 0.96626731 4916.8326
+##  [4,] 0.427340839 0.248862560 0.24213969 0.081656909 0.91834309 4919.0741
+##  [5,] 0.308842459 0.230282799 0.30764203 0.153232714 0.84676729 4673.2484
+##  [6,] 0.223202783 0.196423661 0.33954233 0.240831228 0.75916877 4231.3678
+##  [7,] 0.161310341 0.159799996 0.34321633 0.335673329 0.66432667 3682.3990
+##  [8,] 0.116580204 0.126102468 0.32686078 0.430456545 0.56954346 3104.1948
+##  [9,] 0.084253396 0.097448717 0.29824161 0.520056280 0.47994372 2550.6028
+## [10,] 0.060890567 0.074182451 0.26353678 0.601390203 0.39860980 2052.6191
+## [11,] 0.044006074 0.055846154 0.22715843 0.672989345 0.32701066 1623.9118
+## [12,] 0.031803523 0.041689272 0.19197834 0.734528870 0.26547113 1266.6647
+## [13,] 0.022984646 0.030919595 0.15967395 0.786421809 0.21357819  976.3229
+## [14,] 0.016611178 0.022816012 0.13106708 0.829505729 0.17049427  744.9773
+## [15,] 0.012005024 0.016768990 0.10640657 0.864819421 0.13518058  563.5624
+## [16,] 0.008676122 0.012285444 0.08558419 0.893454248 0.10654575  423.1597
+## [17,] 0.006270299 0.008977746 0.06828965 0.916462310 0.08353769  315.6838
+## [18,] 0.004531592 0.006547152 0.05411606 0.934805194 0.06519481  234.1726
+## [19,] 0.003275016 0.004766692 0.04262804 0.949330253 0.05066975  172.8419
+## [20,] 0.002366879 0.003465754 0.03340284 0.960764531 0.03923547  127.0100
 ## 
 ## , , 7
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.859049923 0.101362972 0.03490277 0.004684333 0.99531567 6920.5882
-##  [2,] 0.737966770 0.166058091 0.08239076 0.013584378 0.98641562 6753.6877
-##  [3,] 0.534147431 0.240787632 0.18312834 0.041936600 0.95806340 5070.3765
-##  [4,] 0.386621038 0.242702761 0.27758403 0.093092176 0.90690782 5047.5311
-##  [5,] 0.279840018 0.214487639 0.34055120 0.165121146 0.83487885 4778.7564
-##  [6,] 0.202550891 0.177271006 0.36958346 0.250594644 0.74940536 4325.1056
-##  [7,] 0.146608279 0.140805054 0.37089969 0.341686975 0.65831302 3773.6139
-##  [8,] 0.106116480 0.109004840 0.35278931 0.432089367 0.56791063 3197.5529
-##  [9,] 0.076808127 0.082920564 0.32283177 0.517439535 0.48256047 2646.8369
-## [10,] 0.055594459 0.062300471 0.28697349 0.595131583 0.40486842 2150.0543
-## [11,] 0.040239803 0.046388237 0.24944633 0.663925628 0.33607437 1719.8656
-## [12,] 0.029125956 0.034310717 0.21301743 0.723545900 0.27645410 1358.4150
-## [13,] 0.021081646 0.025251125 0.17932667 0.774340561 0.22565944 1061.6461
-## [14,] 0.015259098 0.018513420 0.14920588 0.817021599 0.18297840  822.3610
-## [15,] 0.011044682 0.013534319 0.12294153 0.852479472 0.14752053  632.2116
-## [16,] 0.007994247 0.009872368 0.10047455 0.881658834 0.11834117  482.8930
-## [17,] 0.005786312 0.007188888 0.08154430 0.905480497 0.09451950  366.7864
-## [18,] 0.004188188 0.005227881 0.06578738 0.924796547 0.07520345  277.2476
-## [19,] 0.003031451 0.003797888 0.05280256 0.940368105 0.05963190  208.6793
-## [20,] 0.002194193 0.002756832 0.04219109 0.952857882 0.04714212  156.4842
+##  [1,] 0.882508981 0.081830112 0.03165515 0.004005758 0.99599424 6900.5406
+##  [2,] 0.778822101 0.138729776 0.07086831 0.011579815 0.98842018 6695.0890
+##  [3,] 0.564867317 0.227031469 0.16883808 0.039263134 0.96073687 5003.2557
+##  [4,] 0.409689306 0.235752122 0.26318418 0.091374395 0.90862560 4981.4519
+##  [5,] 0.297141155 0.210965449 0.32570038 0.166193019 0.83380698 4704.5754
+##  [6,] 0.215511767 0.175492084 0.35354712 0.255449027 0.74455097 4236.8399
+##  [7,] 0.156307266 0.139924746 0.35334118 0.350426808 0.64957319 3671.1850
+##  [8,] 0.113367181 0.108595205 0.33384278 0.444194830 0.55580517 3084.9356
+##  [9,] 0.082223418 0.082760774 0.30294887 0.532066934 0.46793307 2529.6590
+## [10,] 0.059635341 0.062273620 0.26674468 0.611346355 0.38865364 2033.8617
+## [11,] 0.043252567 0.046430564 0.22946459 0.680852282 0.31914772 1609.1864
+## [12,] 0.031370401 0.034386455 0.19379544 0.740447707 0.25955229 1256.4280
+## [13,] 0.022752454 0.025339847 0.16125851 0.790649190 0.20935081  970.2152
+## [14,] 0.016501994 0.018603476 0.13255921 0.832335321 0.16766468  742.2510
+## [15,] 0.011968635 0.013619274 0.10786791 0.866544184 0.13345582  563.3621
+## [16,] 0.008680661 0.009948964 0.08702870 0.894341676 0.10565832  424.6834
+## [17,] 0.006295946 0.007255821 0.06970607 0.916742166 0.08325783  318.2594
+## [18,] 0.004566350 0.005285024 0.05548291 0.934665714 0.06533429  237.2811
+## [19,] 0.003311901 0.003845793 0.04392273 0.948919580 0.05108042  176.1099
+## [20,] 0.002402069 0.002796406 0.03460652 0.960195003 0.03980500  130.1883
 ## 
 ## , , 8
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.856328748 0.105669727 0.03390573 0.004095798 0.99590420 6919.8649
-##  [2,] 0.733298925 0.173221830 0.08113536 0.012343889 0.98765611 6756.4524
-##  [3,] 0.518407559 0.254584148 0.18628268 0.040725610 0.95927439 5095.4792
-##  [4,] 0.366489556 0.253608667 0.28533585 0.094565929 0.90543407 5082.5939
-##  [5,] 0.259090733 0.220321347 0.34863794 0.171949980 0.82805002 4792.1328
-##  [6,] 0.183164859 0.178622893 0.37428070 0.263931547 0.73606845 4298.7575
-##  [7,] 0.129488868 0.139020656 0.37024806 0.361242417 0.63875758 3705.0840
-##  [8,] 0.091542488 0.105382227 0.34642050 0.456654781 0.54334522 3094.3147
-##  [9,] 0.064716197 0.078457570 0.31142081 0.545405423 0.45459458 2520.5073
-## [10,] 0.045751282 0.057671105 0.27171572 0.624861895 0.37513810 2012.4608
-## [11,] 0.032343986 0.041999709 0.23167754 0.693978769 0.30602123 1580.9732
-## [12,] 0.022865664 0.030376679 0.19398190 0.752775761 0.24722424 1225.5757
-## [13,] 0.016164940 0.021856536 0.16006084 0.801917683 0.19808232  939.6267
-## [14,] 0.011427846 0.015664227 0.13049981 0.842408121 0.15759188  713.7448
-## [15,] 0.008078945 0.011192394 0.10534668 0.875381977 0.12461802  537.9223
-## [16,] 0.005711431 0.007978544 0.08433542 0.901974607 0.09802539  402.7010
-## [17,] 0.004037711 0.005677262 0.06703887 0.923246161 0.07675384  299.7354
-## [18,] 0.002854470 0.004034068 0.05296796 0.940143505 0.05985650  221.9829
-## [19,] 0.002017975 0.002863326 0.04163228 0.953486419 0.04651358  163.6834
-## [20,] 0.001426613 0.002030606 0.03257426 0.963968518 0.03603148  120.2335
+##  [1,] 0.856383828 0.105821399 0.03420914 0.003585632 0.99641437 6925.1238
+##  [2,] 0.733393262 0.172177509 0.08203380 0.012395434 0.98760457 6760.8490
+##  [3,] 0.542693007 0.241202776 0.17509640 0.041007817 0.95899218 5032.2500
+##  [4,] 0.401579501 0.245031019 0.25960047 0.093789013 0.90621099 4956.2550
+##  [5,] 0.297158972 0.220233085 0.31465283 0.167955116 0.83204488 4648.3925
+##  [6,] 0.219890343 0.185724962 0.33876956 0.255615135 0.74438486 4173.2652
+##  [7,] 0.162713455 0.150740562 0.33787331 0.348672674 0.65132733 3614.8827
+##  [8,] 0.120403962 0.119327119 0.31960321 0.440665713 0.55933429 3042.2280
+##  [9,] 0.089095976 0.092850467 0.29089086 0.527162700 0.47283730 2501.4253
+## [10,] 0.065928835 0.071368651 0.25715250 0.605550017 0.39444998 2018.1764
+## [11,] 0.048785719 0.054367525 0.22222436 0.674622396 0.32537760 1603.1030
+## [12,] 0.036100234 0.041140850 0.18859468 0.734164232 0.26583577 1256.9848
+## [13,] 0.026713287 0.030975507 0.15771550 0.784595704 0.21540430  974.9009
+## [14,] 0.019767177 0.023232393 0.13029795 0.826702485 0.17329752  749.1468
+## [15,] 0.014627225 0.017373433 0.10655577 0.861443571 0.13855643  571.1172
+## [16,] 0.010823788 0.012962366 0.08639076 0.889823091 0.11017691  432.4189
+## [17,] 0.008009337 0.009654085 0.06952602 0.912810560 0.08718944  325.4550
+## [18,] 0.005926713 0.007180190 0.05559728 0.931295817 0.06870418  243.6714
+## [19,] 0.004385622 0.005334454 0.04421232 0.946067605 0.05393239  181.5990
+## [20,] 0.003245253 0.003959815 0.03498747 0.957807460 0.04219254  134.7857
 ## 
 ## , , 9
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.844104364 0.118966858 0.03183384 0.005094939 0.99490506 6904.6476
-##  [2,] 0.712512178 0.194490557 0.07895794 0.014039326 0.98596067 6739.1966
-##  [3,] 0.501320990 0.278268077 0.17893732 0.041473608 0.95852639 5059.6519
-##  [4,] 0.352727634 0.280941552 0.27567810 0.090652717 0.90934728 5056.7867
-##  [5,] 0.248177887 0.248940773 0.34253412 0.160347221 0.83965278 4813.5975
-##  [6,] 0.174617063 0.206024652 0.37561664 0.243741649 0.75625835 4382.0118
-##  [7,] 0.122859934 0.163545744 0.38025849 0.333335832 0.66666417 3844.9564
-##  [8,] 0.086443805 0.126261887 0.36439117 0.422903142 0.57709686 3275.2734
-##  [9,] 0.060821548 0.095576006 0.33558642 0.508016027 0.49198397 2724.3243
-## [10,] 0.042793821 0.071304290 0.29996441 0.585937477 0.41406252 2222.7319
-## [11,] 0.030109578 0.052612405 0.26199438 0.655283634 0.34471637 1785.0734
-## [12,] 0.021184990 0.038488824 0.22467610 0.715650090 0.28434991 1415.0012
-## [13,] 0.014905682 0.027966253 0.18984506 0.767283004 0.23271700 1109.5061
-## [14,] 0.010487584 0.020210214 0.15848174 0.810820465 0.18917953  862.0363
-## [15,] 0.007379026 0.014540912 0.13097629 0.847103773 0.15289623  664.5849
-## [16,] 0.005191856 0.010424258 0.10733584 0.877048043 0.12295196  508.9776
-## [17,] 0.003652971 0.007450872 0.08733717 0.901558989 0.09844101  387.5938
-## [18,] 0.002570217 0.005312493 0.07063375 0.921483540 0.07851646  293.7128
-## [19,] 0.001808396 0.003780050 0.05682749 0.937584064 0.06241594  221.6253
-## [20,] 0.001272381 0.002685038 0.04551427 0.950528310 0.04947169  166.6113
+##  [1,] 0.807345019 0.140535832 0.04617136 0.005947791 0.99405221 6989.4920
+##  [2,] 0.651805980 0.215853600 0.11333198 0.019008436 0.98099156 6904.5673
+##  [3,] 0.463155493 0.265455045 0.21746826 0.053921207 0.94607879 5206.0841
+##  [4,] 0.329105619 0.255002294 0.30358907 0.112303017 0.88769698 5102.5744
+##  [5,] 0.233853447 0.220509880 0.35589125 0.189745418 0.81025458 4759.1145
+##  [6,] 0.166169860 0.179971149 0.37551690 0.278342086 0.72165791 4253.3467
+##  [7,] 0.118075755 0.141671964 0.36970543 0.370546855 0.62945315 3672.1997
+##  [8,] 0.083901401 0.108835056 0.34672138 0.460542164 0.53945784 3083.8581
+##  [9,] 0.059618039 0.082172062 0.31376131 0.544448592 0.45555141 2532.6688
+## [10,] 0.042362947 0.061253866 0.27632284 0.620060348 0.37993965 2042.6312
+## [11,] 0.030101951 0.045221923 0.23823433 0.686441799 0.31355820 1623.0537
+## [12,] 0.021389623 0.033138282 0.20193658 0.743535520 0.25646448 1273.8103
+## [13,] 0.015198881 0.024142266 0.16882031 0.791838538 0.20816146  989.4035
+## [14,] 0.010799909 0.017507291 0.13953427 0.832158526 0.16784147  761.7860
+## [15,] 0.007674120 0.012648946 0.11423455 0.865442383 0.13455762  582.1629
+## [16,] 0.005453019 0.009111625 0.09277224 0.892663112 0.10733689  442.0452
+## [17,] 0.003874766 0.006547692 0.07482716 0.914750385 0.08524962  333.7932
+## [18,] 0.002753303 0.004695976 0.05999860 0.932552123 0.06744788  250.8370
+## [19,] 0.001956422 0.003362515 0.04786401 0.946817054 0.05318295  187.7037
+## [20,] 0.001390180 0.002404522 0.03801457 0.958190728 0.04180927  139.9407
 ## 
 ## , , 10
 ## 
 ##           State A     State B    State C       Death    Disc LY Disc cost
-##  [1,] 0.827020261 0.119919586 0.04404207 0.009018085 0.99098192 6950.5523
-##  [2,] 0.683962512 0.185426566 0.10550053 0.025110395 0.97488960 6814.3102
-##  [3,] 0.504426188 0.230889906 0.20039078 0.064293130 0.93570687 5064.0248
-##  [4,] 0.372017142 0.224312067 0.27769021 0.125980584 0.87401942 4912.6058
-##  [5,] 0.274364728 0.196441426 0.32367292 0.205520925 0.79447907 4543.9527
-##  [6,] 0.202345526 0.162674743 0.33992457 0.295055165 0.70494483 4033.5815
-##  [7,] 0.149230960 0.130188686 0.33333913 0.387241224 0.61275878 3462.8636
-##  [8,] 0.110058670 0.101877835 0.31154558 0.476517911 0.52348209 2894.1504
-##  [9,] 0.081168886 0.078500493 0.28107930 0.559251317 0.44074868 2366.9971
-## [10,] 0.059862509 0.059825894 0.24687138 0.633440213 0.36655979 1901.9839
-## [11,] 0.044148936 0.045230419 0.21231685 0.698303797 0.30169620 1506.2539
-## [12,] 0.032560088 0.033993899 0.17955344 0.753892578 0.24610742 1178.4910
-## [13,] 0.024013247 0.025435842 0.14977836 0.800772554 0.19922745  912.6910
-## [14,] 0.017709904 0.018968654 0.12353085 0.839790592 0.16020941  700.7375
-## [15,] 0.013061154 0.014109775 0.10091757 0.871911501 0.12808850  534.0199
-## [16,] 0.009632674 0.010475076 0.08178035 0.898111897 0.10188810  404.3591
-## [17,] 0.007104151 0.007765051 0.06581468 0.919316114 0.08068389  304.4701
-## [18,] 0.005239351 0.005749511 0.05264950 0.936361637 0.06363836  228.1332
-## [19,] 0.003864051 0.004253349 0.04189829 0.949984307 0.05001569  170.1958
-## [20,] 0.002849759 0.003144360 0.03318982 0.960816059 0.03918394  126.4843</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_LY_combi[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] 9.246995 8.619897 8.874513 8.632212 9.088069 9.104239 9.108164
-##  [8] 8.774941 9.210114 8.589310</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Expected_total_cost_combi[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] 51873.52 48786.66 50223.76 50343.21 51864.02 50313.06 51750.69
-##  [8] 50483.83 52437.90 49010.86</code></pre>
+##  [1,] 0.869134427 0.095645213 0.02908158 0.006138783 0.99386122 6874.8921
+##  [2,] 0.755394653 0.161685816 0.06754692 0.015372615 0.98462738 6658.6208
+##  [3,] 0.543423188 0.254667805 0.15782519 0.044083813 0.95591619 4931.9481
+##  [4,] 0.390933084 0.268556095 0.24674146 0.093769365 0.90623064 4898.1793
+##  [5,] 0.281233263 0.245849905 0.30889555 0.164021284 0.83597872 4641.9637
+##  [6,] 0.202316333 0.209344134 0.34007826 0.248261277 0.75173872 4210.0580
+##  [7,] 0.145544301 0.170638528 0.34488151 0.338935658 0.66106434 3680.5333
+##  [8,] 0.104703082 0.135117494 0.33052001 0.429659418 0.57034058 3122.7379
+##  [9,] 0.075322326 0.104828270 0.30400641 0.515842996 0.48415700 2585.7792
+## [10,] 0.054186111 0.080116993 0.27106837 0.594628527 0.40537147 2098.8960
+## [11,] 0.038980934 0.060537649 0.23591737 0.664564048 0.33543595 1675.8287
+## [12,] 0.028042485 0.045340615 0.20139240 0.725224503 0.27477550 1319.7243
+## [13,] 0.020173477 0.033722115 0.16923351 0.776870896 0.22312910 1027.2696
+## [14,] 0.014512593 0.024940743 0.14036796 0.820178703 0.17982130  791.7377
+## [15,] 0.010440211 0.018362475 0.11515934 0.856037971 0.14396203  605.0348
+## [16,] 0.007510581 0.013469099 0.09360482 0.885415500 0.11458450  458.9636
+## [17,] 0.005403035 0.009849510 0.07548150 0.909265953 0.09073405  345.9280
+## [18,] 0.003886888 0.007184328 0.06044963 0.928479155 0.07152085  259.2660
+## [19,] 0.002796188 0.005229215 0.04812182 0.943852782 0.05614722  193.3509
+## [20,] 0.002011549 0.003799403 0.03810704 0.956082011 0.04391799  143.5595</code></pre>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="no">Expected_LY_combi</span>[<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
+<pre><code>##  [1] 9.258308 8.907993 9.090213 8.939687 9.048418 9.047078 8.928407 8.984268
+##  [9] 8.780744 9.083315</code></pre>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">Expected_total_cost_combi</span>[<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
+<pre><code>##  [1] 51811.56 49849.85 51385.96 50873.53 51230.90 50061.65 50269.36 50146.03
+##  [9] 51131.07 50524.27</code></pre>
 </div>
 <div id="incremental-cost-effectiveness-ratio" class="section level2">
 <h2 class="hasAnchor">
 <a href="#incremental-cost-effectiveness-ratio" class="anchor"></a><span class="header-section-number">4.3</span> Incremental Cost-Effectiveness Ratio</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ICER &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="ot">NA</span>, PSA_samples), <span class="dt">nrow=</span>PSA_samples)
-<span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>PSA_samples){
-ICER[i]  &lt;-<span class="st"> </span>(Expected_total_cost_combi[i] <span class="op">-</span><span class="st"> </span>Expected_total_cost_mono[i]) <span class="op">/</span><span class="st"> </span>(Expected_LY_combi[i] <span class="op">-</span><span class="st"> </span>Expected_LY_mono[i])
-}</code></pre></div>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">ICER</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="no">PSA_samples</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">PSA_samples</span>)
+<span class="kw">for</span>(<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">PSA_samples</span>){
+<span class="no">ICER</span>[<span class="no">i</span>]  <span class="kw">&lt;-</span> (<span class="no">Expected_total_cost_combi</span>[<span class="no">i</span>] - <span class="no">Expected_total_cost_mono</span>[<span class="no">i</span>]) / (<span class="no">Expected_LY_combi</span>[<span class="no">i</span>] - <span class="no">Expected_LY_mono</span>[<span class="no">i</span>])
+}</pre></body></html></div>
 <p>Presentation of results for first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ICER[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</code></pre></div>
-<pre><code>##  [1] 5731.410 6197.522 6886.292 7067.757 6936.786 6024.199 6236.786
-##  [8] 6130.578 6320.790 8104.991</code></pre>
+<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="no">ICER</span>[<span class="fl">1</span>:<span class="fl">10</span>]</pre></body></html></div>
+<pre><code>##  [1] 5315.357 6140.716 6443.236 6531.298 5738.863 5308.553 5735.101 6699.424
+##  [9] 8130.606 5954.480</code></pre>
 </div>
 <div id="overview-psa-results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview-psa-results" class="anchor"></a><span class="header-section-number">4.4</span> Overview PSA results</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results_by_PSA_sample &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(Expected_LY_mono, Expected_LY_combi, Expected_total_cost_mono, Expected_total_cost_combi, ICER)
-<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(Results_by_PSA_sample) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Disc LY mono"</span>, <span class="st">"Disc LY combi"</span>, <span class="st">"Disc cost mono"</span>, <span class="st">"Disc cost combi"</span>, <span class="st">"ICER"</span>)</code></pre></div>
+<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="no">Results_by_PSA_sample</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">Expected_LY_mono</span>, <span class="no">Expected_LY_combi</span>, <span class="no">Expected_total_cost_mono</span>, <span class="no">Expected_total_cost_combi</span>, <span class="no">ICER</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">Results_by_PSA_sample</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Disc LY mono"</span>, <span class="st">"Disc LY combi"</span>, <span class="st">"Disc cost mono"</span>, <span class="st">"Disc cost combi"</span>, <span class="st">"ICER"</span>)</pre></body></html></div>
 <p>Presentation of results first 10 PSA samples</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results_by_PSA_sample[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]</code></pre></div>
+<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="no">Results_by_PSA_sample</span>[<span class="fl">1</span>:<span class="fl">10</span>,]</pre></body></html></div>
 <pre><code>##       Disc LY mono Disc LY combi Disc cost mono Disc cost combi     ICER
-##  [1,]     8.176415      9.246995       45737.59        51873.52 5731.410
-##  [2,]     7.625209      8.619897       42622.06        48786.66 6197.522
-##  [3,]     8.050778      8.874513       44551.27        50223.76 6886.292
-##  [4,]     7.834823      8.632212       44707.46        50343.21 7067.757
-##  [5,]     8.293924      9.088069       46355.21        51864.02 6936.786
-##  [6,]     8.092457      9.104239       44217.89        50313.06 6024.199
-##  [7,]     8.169588      9.108164       45897.00        51750.69 6236.786
-##  [8,]     7.787430      8.774941       44429.81        50483.83 6130.578
-##  [9,]     8.303811      9.210114       46709.35        52437.90 6320.790
-## [10,]     7.933703      8.589310       43697.17        49010.86 8104.991</code></pre>
+##  [1,]     8.042059      9.258308       45346.76        51811.56 5315.357
+##  [2,]     7.913119      8.907993       43740.61        49849.85 6140.716
+##  [3,]     8.195247      9.090213       45619.48        51385.96 6443.236
+##  [4,]     8.050147      8.939687       45063.68        50873.53 6531.298
+##  [5,]     7.964093      9.048418       45008.11        51230.90 5738.863
+##  [6,]     7.777549      9.047078       43322.29        50061.65 5308.553
+##  [7,]     7.822450      8.928407       43926.59        50269.36 5735.101
+##  [8,]     8.122190      8.984268       44370.61        50146.03 6699.424
+##  [9,]     8.138555      8.780744       45909.69        51131.07 8130.606
+## [10,]     8.057394      9.083315       44415.45        50524.27 5954.480</code></pre>
 </div>
 </div>
 <div id="appendix-dirichlet-distribution" class="section level1">
@@ -952,33 +926,11 @@ p(x_1,\ldots,x_k | \pi_1,\ldots,\pi_k) = \text{Multin}(n, \pi_1,\ldots,\pi_k).
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#required-r-packages"><span class="toc-section-number">1</span> Required R-packages</a></li>
-      <li><a href="#model-settings"><span class="toc-section-number">2</span> Model settings</a></li>
-      <li>
-<a href="#model-parameters"><span class="toc-section-number">3</span> Model parameters</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#transition-matrix-monotherapy"><span class="toc-section-number">3.1</span> Transition matrix monotherapy</a></li>
-      <li><a href="#relative-treatment-effect-with-combination-therapy"><span class="toc-section-number">3.2</span> Relative treatment effect with combination therapy</a></li>
-      <li><a href="#transition-matrix-combination-therapy"><span class="toc-section-number">3.3</span> Transition matrix combination therapy</a></li>
-      <li><a href="#other-parameters"><span class="toc-section-number">3.4</span> Other parameters</a></li>
-      </ul>
-</li>
-      <li>
-<a href="#model-output"><span class="toc-section-number">4</span> Model output</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#monotherapy"><span class="toc-section-number">4.1</span> Monotherapy</a></li>
-      <li><a href="#combination-therapy"><span class="toc-section-number">4.2</span> Combination therapy</a></li>
-      <li><a href="#incremental-cost-effectiveness-ratio"><span class="toc-section-number">4.3</span> Incremental Cost-Effectiveness Ratio</a></li>
-      <li><a href="#overview-psa-results"><span class="toc-section-number">4.4</span> Overview PSA results</a></li>
-      </ul>
-</li>
-      <li><a href="#appendix-dirichlet-distribution"><span class="toc-section-number">5</span> Appendix: Dirichlet distribution</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -989,7 +941,7 @@ p(x_1,\ldots,x_k | \pi_1,\ldots,\pi_k) = \text{Multin}(n, \pi_1,\ldots,\pi_k).
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

@@ -1,18 +1,17 @@
 ---
 title: "Partitioned Survival Model"
+date: "`r Sys.Date()`"
 output:
   html_document:
     number_sections: yes
     toc: yes
     toc_depth: 2
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
-date: "`r Sys.Date()`"
 pkgdown:
   as_is: yes
-vignette: |
-  %\VignetteIndexEntry{Partitioned Survival Model} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+vignette: >
+  %\VignetteIndexEntry{Simple Markov Cohort Model (hesim)}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 # Overview
