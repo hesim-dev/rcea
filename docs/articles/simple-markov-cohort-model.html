@@ -83,12 +83,12 @@
 
       
 
-      </header><div class="row">
+      </header><script src="simple-markov-cohort-model_files/kePrint-0.0.1/kePrint.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-07-30</h4>
+            <h4 class="date">2020-08-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/simple-markov-cohort-model.Rmd"><code>vignettes/simple-markov-cohort-model.Rmd</code></a></small>
       <div class="hidden name"><code>simple-markov-cohort-model.Rmd</code></div>
@@ -100,245 +100,345 @@
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
-<p>We illustrate the implementation of a simple Markov cohort model by replicating the HIV model developed by <a href="https://link.springer.com/article/10.2165/00019053-199712010-00006">Chancellor et al.</a> and used for didactic purposes in the <a href="https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation"><em>Decision Modeling for Health Economic Evaluation</em></a>. The analysis compares two treatment strategies, zidovudine monotherapy and zidovudine + lamivudine combination therapy. The model is time-inhomogeneous because patients are assumed to only use lamivudine for 2 years before switching back to monotherapy.</p>
-<p>The model consists 4 health states. Ordered from worst to best to worst, they are: State A (CD4 cells &gt; 200 and &lt; 500 cells/mm3), State B (CD4 &lt; 200 cells/mm3), State C (AIDS), and State D (death). The model assumes that patients can transition to any state that is more severe (i.e., progress) but cannot transition back to a more severe state.</p>
-<p><img src="simple-markov-cohort-model.png" width="700px"></p>
+<p>The most commonly used model for cost-effectiveness analysis (CEA) is the cohort discrete time state transition model (cDTSTM), commonly referred to as a Markov cohort model. In this tutorial we demonstrate implementation with <code>R</code> of the simplest of cDSTMs, a time-homogeneous model with transition probabilities that are constant over time. The entire analysis can be run using <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html">Base R</a> (i.e., without installing any packages). However, we will use the following packages to create a nice looking cost-effectiveness table.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"knitr"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"kableExtra"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"magrittr"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tibble"</span>)</pre></body></html></div>
+<p>As an example, we will consider the 4-state sick-sicker model that has been described in more detail by <a href="https://arxiv.org/abs/2001.07824">Alarid-Escudero et al</a>. The model will be used to compare two treatment strategies, a “New” treatment and the existing “standard of care (SOC)”. The sick- fare consists 4 health states. Ordered from worst to best to worst, they are: Healthy (<em>H</em>), Sick (<em>S1</em>), Sicker (<em>S2</em>), and Death (<em>D</em>). Possible transitions from each state are displayed in the figure below.</p>
+<p><img src="sick-sicker.png" width="700px"></p>
 </div>
-<div id="required-r-package" class="section level1">
+<div id="theory" class="section level1">
 <h1 class="hasAnchor">
-<a href="#required-r-package" class="anchor"></a><span class="header-section-number">2</span> Required R-package</h1>
-<p>Install and load R Package ‘expm’ to compute the k-th power of a matrix</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"expm"</span>,<span class="kw">repos</span> <span class="kw">=</span> <span class="st">"http://cran.us.r-project.org"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">expm</span>)</pre></body></html></div>
+<a href="#theory" class="anchor"></a><span class="header-section-number">2</span> Theory</h1>
+<div id="transition-probabilities" class="section level2">
+<h2 class="hasAnchor">
+<a href="#transition-probabilities" class="anchor"></a><span class="header-section-number">2.1</span> Transition probabilities</h2>
+<p>Transition probabilities are the building blocks of Markov cohort models and used to simulate the probability that a cohort of patients is in each health state at each model cycle. To set notation, let <span class="math inline">\(p_t\)</span> be the transition probability matrix governing transitions from one time period (i.e., model cycle) to the next. <span class="math inline">\(x_t\)</span> is the state occupancy vector at time <span class="math inline">\(t\)</span>. In this example, <span class="math inline">\(p_t\)</span> is a <span class="math inline">\(4 \times 4\)</span> matrix and <span class="math inline">\(x_t\)</span> is a <span class="math inline">\(1 \times 4\)</span> vector containing the proportion of patients in each of the 4 health states.</p>
+<p>At time <span class="math inline">\(0\)</span>, the state vector, <span class="math inline">\(x_0 = (1, 0, 0, 0)\)</span> since all patients are healthy. The state vector at time <span class="math inline">\(t+1\)</span> for each of <span class="math inline">\(T\)</span> model cycles can be computed using matrix multiplication,</p>
+<p><span class="math display">\[
+x_{t+1}= x_t p_t, \quad t = 0,\ldots,T
+\]</span> The matrix containing state vectors across all model cycles is often referred to as the “Markov trace” in health economics. Note that since we are considering a time-homogeneous model in this example, we can remove the subscript from the transition matrix and set <span class="math inline">\(p_t = p\)</span>.</p>
+</div>
+<div id="costs-and-outcome" class="section level2">
+<h2 class="hasAnchor">
+<a href="#costs-and-outcome" class="anchor"></a><span class="header-section-number">2.2</span> Costs and outcome</h2>
+<p>To perform cost-effectiveness analysis (CEA), Markov models estimate expected (i.e., average) costs and outcomes for the cohort of interest. In our examples, quality-adjusted life-years (QALYs) will be used as the outcome.</p>
+<p>Costs and QALYs are computed by assigning values to the health states (i.e., “state values”) and weighting the time spent in each state by these state values. For example, if utility in each of the four health states is given by the <span class="math inline">\(4 \times 1\)</span> vector <span class="math inline">\(u = (1, 0.75, 0.5, 0)^T\)</span> and say, <span class="math inline">\(x_1 = (.8, .1, 0.08, 0.02)\)</span>, then the weighted average utility would be given by <span class="math inline">\(x_{1}u = 0.915\)</span>. More generally, we can define a state vector at time <span class="math inline">\(t\)</span> as <span class="math inline">\(z_t\)</span> so that the expected value at time <span class="math inline">\(t\)</span> is given by</p>
+<p><span class="math display">\[
+EV_t = x_{t}z_{t}.
+\]</span></p>
+<p>In health economics, future cost and outcomes are discounted using a discount rate. In discrete time, the “discount weight” at time <span class="math inline">\(t\)</span> is given by <span class="math inline">\(1/(1 + r)^t\)</span> where <span class="math inline">\(r\)</span> is the discount rate; in continuous time, it is given by <span class="math inline">\(e^{-rt}\)</span>. In this example we will use discrete time, meaning that the present value of expected values are given by,</p>
+<p><span class="math display">\[
+PV_t = \frac{EV_t}{(1+r)^t}
+\]</span> The simplest way to aggregate discounted costs across model cycles is with the net present value,</p>
+<p><span class="math display">\[
+NPV = \sum_{t} PV_t
+\]</span></p>
+<p>It is important to note that in mathematical terms, this a discrete approximation to a continuous integral, also known as a Riemann sum. This means that we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we assume that events occur at the start of model cycles (i.e., a left Riemann sum), then expected values will be underestimated; conversely, if we assume that they occur at the end of model cycles (i.e., a right Riemann sum), then they will be overestimated. Another option is to use average of values at the left and right endpoints (i.e., the trapezoid rule). In this example, we will assume events occur at the start of model cycles.</p>
+</div>
 </div>
 <div id="model-settings" class="section level1">
 <h1 class="hasAnchor">
 <a href="#model-settings" class="anchor"></a><span class="header-section-number">3</span> Model settings</h1>
-<p>Define initial distribution over the 4 health states</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">initial</span><span class="kw">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)</pre></body></html></div>
-<p>Show initial distribution</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">initial</span></pre></body></html></div>
-<pre><code>##      [,1] [,2] [,3] [,4]
-## [1,]    1    0    0    0</code></pre>
-<p>Set duration of follow-up</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">follow_up</span> <span class="kw">&lt;-</span> <span class="fl">20</span></pre></body></html></div>
-<p>Set discount rates for life years and costs</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">discount_LY</span> <span class="kw">&lt;-</span> <span class="fl">0.00</span>
-<span class="no">discount_cost</span> <span class="kw">&lt;-</span> <span class="fl">0.06</span></pre></body></html></div>
+<p>Our example model will be simulated for a cohort of 25-year old individuals until a maximum age of 110; that is, for 85 years.</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">n_cycles</span> <span class="kw">&lt;-</span> <span class="fl">85</span></pre></body></html></div>
+<p>It is helpful to first initialize an empty cohort trace matrix where each row is a state vector and fill in the first row so that it contains the proportion of individuals that are initially in each of the four health states.</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">state_names</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"H"</span>, <span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"D"</span>)
+<span class="no">n_states</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">state_names</span>)
+<span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fl">NA</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="no">n_cycles</span> + <span class="fl">1</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="no">n_states</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">x_soc</span>) <span class="kw">&lt;-</span> <span class="no">state_names</span>
+<span class="no">x_soc</span>[<span class="fl">1</span>, ] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_soc</span>)</pre></body></html></div>
+<pre><code>##       H S1 S2  D
+## [1,]  1  0  0  0
+## [2,] NA NA NA NA
+## [3,] NA NA NA NA
+## [4,] NA NA NA NA
+## [5,] NA NA NA NA
+## [6,] NA NA NA NA</code></pre>
+<p>Discount rates are set for quality-adjusted life-years and costs.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">dr_qalys</span> <span class="kw">&lt;-</span> <span class="fl">0.03</span>
+<span class="no">dr_costs</span> <span class="kw">&lt;-</span> <span class="fl">0.03</span></pre></body></html></div>
 </div>
 <div id="model-parameters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#model-parameters" class="anchor"></a><span class="header-section-number">4</span> Model parameters</h1>
-<div id="transition-matrix-monotherapy" class="section level2">
+<div id="transition-probabilities-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#transition-matrix-monotherapy" class="anchor"></a><span class="header-section-number">4.1</span> Transition matrix monotherapy</h2>
-<p>Define the transition matrix with monotherapy</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">transitions_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.721</span>, <span class="fl">0.202</span>, <span class="fl">0.067</span>, <span class="fl">0.010</span>,
-                        <span class="fl">0</span>, <span class="fl">0.581</span>, <span class="fl">0.407</span>, <span class="fl">0.012</span>,
-                        <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.750</span>, <span class="fl">0.250</span>,
-                        <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>),
-                        <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
-<p>Show transition matrix</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">transitions_mono</span></pre></body></html></div>
-<pre><code>##       [,1]  [,2]  [,3]  [,4]
-## [1,] 0.721 0.202 0.067 0.010
-## [2,] 0.000 0.581 0.407 0.012
-## [3,] 0.000 0.000 0.750 0.250
-## [4,] 0.000 0.000 0.000 1.000</code></pre>
+<a href="#transition-probabilities-1" class="anchor"></a><span class="header-section-number">4.1</span> Transition probabilities</h2>
+<div id="standard-of-care" class="section level3">
+<h3 class="hasAnchor">
+<a href="#standard-of-care" class="anchor"></a><span class="header-section-number">4.1.1</span> Standard of care</h3>
+<p>The annual transition probabilities for SOC are defined as follows.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">p_hd</span> <span class="kw">&lt;-</span> <span class="fl">0.002</span> <span class="co"># constant probability of dying when Healthy (all-cause mortality)</span>
+<span class="no">p_hs1</span> <span class="kw">&lt;-</span> <span class="fl">0.15</span> <span class="co"># probability of becoming Sick when Healthy</span>
+<span class="no">p_s1h</span> <span class="kw">&lt;-</span> <span class="fl">0.5</span> <span class="co"># probability of becoming Healthy when Sick</span>
+<span class="no">p_s1s2</span> <span class="kw">&lt;-</span> <span class="fl">0.105</span> <span class="co"># probability of becoming Sicker when Sick</span>
+<span class="no">p_s1d</span> <span class="kw">&lt;-</span> <span class="fl">.006</span> <span class="co"># constant probability of dying when Sick</span>
+<span class="no">p_s2d</span> <span class="kw">&lt;-</span> <span class="fl">.02</span> <span class="co"># constant probability of dying when Sicker</span></pre></body></html></div>
+<p>These can be used to derive the probabilities of remaining in the same state during a model cycle.</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">p_hh</span> <span class="kw">&lt;-</span> <span class="fl">1</span>  - <span class="no">p_hs1</span> - <span class="no">p_hd</span>
+<span class="no">p_s1s1</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s1h</span> - <span class="no">p_s1s2</span>
+<span class="no">p_s2s2</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s2d</span></pre></body></html></div>
+<p>Using these probabilities, the transition probability matrix can then be defined.</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">p_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">p_hh</span>,  <span class="no">p_hs1</span>,  <span class="fl">0</span>,      <span class="no">p_hd</span>,
+    <span class="no">p_s1h</span>, <span class="no">p_s1s1</span>, <span class="no">p_s1s2</span>, <span class="no">p_s1d</span>,
+    <span class="fl">0</span>,     <span class="fl">0</span>,      <span class="no">p_s2s2</span>, <span class="no">p_s2d</span>,
+    <span class="fl">0</span>,     <span class="fl">0</span>,      <span class="fl">0</span>,      <span class="fl">1</span>),
+  <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+  <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">4</span>
+)
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">p_soc</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span>(<span class="no">p_soc</span>) <span class="kw">&lt;-</span> <span class="no">state_names</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">p_soc</span>)</pre></body></html></div>
+<pre><code>##        H    S1    S2     D
+## H  0.848 0.150 0.000 0.002
+## S1 0.500 0.395 0.105 0.006
+## S2 0.000 0.000 0.980 0.020
+## D  0.000 0.000 0.000 1.000</code></pre>
 </div>
-<div id="relative-treatment-effect-with-combination-therapy" class="section level2">
-<h2 class="hasAnchor">
-<a href="#relative-treatment-effect-with-combination-therapy" class="anchor"></a><span class="header-section-number">4.2</span> Relative treatment effect with combination therapy</h2>
-<p>Define the relative treatment effect with combination therapy relative to monotherapy</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">RR</span><span class="kw">&lt;-</span><span class="fl">0.509</span></pre></body></html></div>
-</div>
-<div id="transition-matrix-combination-therapy" class="section level2">
-<h2 class="hasAnchor">
-<a href="#transition-matrix-combination-therapy" class="anchor"></a><span class="header-section-number">4.3</span> Transition matrix combination therapy</h2>
-<p>Create transition matrix for combination therapy based on matrix for monotherapy and RR</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">transitions_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>((<span class="fl">1</span>-<span class="fl">0.202</span>*<span class="no">RR</span>-<span class="fl">0.067</span>*<span class="no">RR</span>-<span class="fl">0.010</span>*<span class="no">RR</span>), <span class="fl">0.202</span>*<span class="no">RR</span>, <span class="fl">0.067</span>*<span class="no">RR</span>, <span class="fl">0.010</span>*<span class="no">RR</span>,
-                                      <span class="fl">0</span>, (<span class="fl">1</span>-<span class="fl">0.407</span>*<span class="no">RR</span>-<span class="fl">0.012</span>*<span class="no">RR</span>), <span class="fl">0.407</span>*<span class="no">RR</span>, <span class="fl">0.012</span>*<span class="no">RR</span>,
-                                      <span class="fl">0</span>, <span class="fl">0</span>, (<span class="fl">1</span>-<span class="fl">0.250</span>*<span class="no">RR</span>), <span class="fl">0.250</span>*<span class="no">RR</span>,
-                                      <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>),
-                                      <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
-<p>Show the transition matrix</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">transitions_combi</span></pre></body></html></div>
-<pre><code>##          [,1]     [,2]     [,3]     [,4]
-## [1,] 0.857989 0.102818 0.034103 0.005090
-## [2,] 0.000000 0.786729 0.207163 0.006108
-## [3,] 0.000000 0.000000 0.872750 0.127250
-## [4,] 0.000000 0.000000 0.000000 1.000000</code></pre>
-</div>
-<div id="lifeyears-and-costs-by-health-state" class="section level2">
-<h2 class="hasAnchor">
-<a href="#lifeyears-and-costs-by-health-state" class="anchor"></a><span class="header-section-number">4.4</span> Lifeyears and costs by health state</h2>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">LY</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)
+<div id="new-treatment" class="section level3">
+<h3 class="hasAnchor">
+<a href="#new-treatment" class="anchor"></a><span class="header-section-number">4.1.2</span> New treatment</h3>
+<p>In evidence synthesis and cost-effectiveness modeling, treatment effects are typically estimated in relative terms; i.e., the effect of an intervention is assessed relative to a reference treatment. In this case, the SOC is the reference treatment and the effectiveness of the new treatment is assessed relative to the SOC. For simplicity, we will assume that treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. Note that this is somewhat unrealistic since relative risks are a function of baseline risk and would be unlikely to be equal for each transition. A more appropriate model would define treatment effects in terms of a measure that is invariant to baseline risk such as an odds ratio (which might still vary for each transition).</p>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">rr</span> <span class="kw">&lt;-</span> <span class="fl">.8</span></pre></body></html></div>
+<p>The relative risk can then be used to create the transition matrix for the new treatment.</p>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">p_new</span> <span class="kw">&lt;-</span> <span class="no">p_soc</span>
 
-<span class="no">drug_cost_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2278</span>, <span class="fl">2278</span>, <span class="fl">2278</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)
-<span class="no">drug_cost_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2278</span>+<span class="fl">2087</span>, <span class="fl">2278</span>+<span class="fl">2087</span>, <span class="fl">2278</span>+<span class="fl">2087</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)
-<span class="no">other_cost</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2756</span>, <span class="fl">3052</span>, <span class="fl">9007</span>, <span class="fl">0</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="fl">1</span>)</pre></body></html></div>
-<p>Show matrices</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">LY</span></pre></body></html></div>
-<pre><code>##      [,1] [,2] [,3] [,4]
-## [1,]    1    1    1    0</code></pre>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">drug_cost_mono</span></pre></body></html></div>
-<pre><code>##      [,1] [,2] [,3] [,4]
-## [1,] 2278 2278 2278    0</code></pre>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">drug_cost_combi</span></pre></body></html></div>
-<pre><code>##      [,1] [,2] [,3] [,4]
-## [1,] 4365 4365 4365    0</code></pre>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">other_cost</span></pre></body></html></div>
-<pre><code>##      [,1] [,2] [,3] [,4]
-## [1,] 2756 3052 9007    0</code></pre>
-</div>
-</div>
-<div id="basic-example-calculations" class="section level1">
-<h1 class="hasAnchor">
-<a href="#basic-example-calculations" class="anchor"></a><span class="header-section-number">5</span> Basic example calculations</h1>
-<div id="health-state-occupancy-with-monotherapy" class="section level2">
-<h2 class="hasAnchor">
-<a href="#health-state-occupancy-with-monotherapy" class="anchor"></a><span class="header-section-number">5.1</span> Health state occupancy with monotherapy</h2>
-<p>State occupancy at 1 year</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">initial</span> <span class="kw">%*%</span> <span class="no">transitions_mono</span></pre></body></html></div>
-<pre><code>##       [,1]  [,2]  [,3] [,4]
-## [1,] 0.721 0.202 0.067 0.01</code></pre>
-<p>State occupancy at 5 years</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">initial</span> <span class="kw">%*%</span> <span class="no">transitions_mono</span> <span class="kw">%*%</span> <span class="no">transitions_mono</span> <span class="kw">%*%</span> <span class="no">transitions_mono</span> <span class="kw">%*%</span> <span class="no">transitions_mono</span> <span class="kw">%*%</span> <span class="no">transitions_mono</span></pre></body></html></div>
-<pre><code>##           [,1]     [,2]      [,3]      [,4]
-## [1,] 0.1948392 0.185603 0.3634815 0.2560763</code></pre>
-<p>State occupancy at 5 years (efficient)</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">5</span>)</pre></body></html></div>
-<pre><code>##           [,1]     [,2]      [,3]      [,4]
-## [1,] 0.1948392 0.185603 0.3634815 0.2560763</code></pre>
-</div>
-<div id="expected-life-years-and-costs-with-monotherapy" class="section level2">
-<h2 class="hasAnchor">
-<a href="#expected-life-years-and-costs-with-monotherapy" class="anchor"></a><span class="header-section-number">5.2</span> Expected life years and costs with monotherapy</h2>
-<p>The discounted expected life years after 5 years of follow-up can be calculated as follows:</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">expected_LY_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">1</span>) * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="fl">1</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">2</span>) * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="fl">2</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">3</span>) * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="fl">3</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">4</span>) * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="fl">4</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">5</span>) * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="fl">5</span>
-            )
-<span class="no">expected_LY_mono</span></pre></body></html></div>
-<pre><code>## [1] 4.441473</code></pre>
-<p>The discounted expected costs after 5 years of follow-up can be calculated as follows:</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="no">expected_total_cost_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">1</span>) * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="fl">1</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">2</span>) * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="fl">2</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">3</span>) * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="fl">3</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">4</span>) * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="fl">4</span>,
-            <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> <span class="fl">5</span>) * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="fl">5</span>
-            )
-<span class="no">expected_total_cost_mono</span></pre></body></html></div>
-<pre><code>## [1] 25501.45</code></pre>
-</div>
-</div>
-<div id="model-output" class="section level1">
-<h1 class="hasAnchor">
-<a href="#model-output" class="anchor"></a><span class="header-section-number">6</span> Model output</h1>
-<div id="monotherapy" class="section level2">
-<h2 class="hasAnchor">
-<a href="#monotherapy" class="anchor"></a><span class="header-section-number">6.1</span> Monotherapy</h2>
-<p>Create an empty trace matrix for 6 variables and 20 cycles to record health occupancy and outcomes</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">trace_mono</span><span class="kw">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="fl">6</span> * <span class="no">follow_up</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">follow_up</span>)</pre></body></html></div>
-<p>Create column headings</p>
-<div class="sourceCode" id="cb34"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">trace_mono</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"State A"</span>, <span class="st">"State B"</span>, <span class="st">"State C"</span>, <span class="st">"Death"</span>, <span class="st">"Disc LY"</span>, <span class="st">"Disc cost"</span>)</pre></body></html></div>
-<p>Trace health state occupancy for a time-horizon of 20 years</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="kw">for</span>(<span class="no">t</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">follow_up</span>){
-<span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span><span class="no">t</span>)
-<span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="no">t</span>  )
-<span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_mono</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="no">t</span>  )
-}
-<span class="no">trace_mono</span></pre></body></html></div>
-<pre><code>##           State A     State B    State C      Death    Disc LY Disc cost
-##  [1,] 0.721000000 0.202000000 0.06700000 0.01000000 0.99000000 5153.0840
-##  [2,] 0.519841000 0.263004000 0.18077100 0.03638400 0.96361600 5392.2140
-##  [3,] 0.374805361 0.257813206 0.27745022 0.08993121 0.91006879 5366.7964
-##  [4,] 0.270234665 0.225500156 0.33812960 0.16613558 0.83386442 5052.0286
-##  [5,] 0.194839194 0.185602993 0.36348149 0.25607633 0.74392367 4537.3315
-##  [6,] 0.140479059 0.147192856 0.36120576 0.35112233 0.64887767 3925.1614
-##  [7,] 0.101285401 0.113895819 0.34022391 0.44459487 0.55540513 3296.2640
-##  [8,] 0.073026774 0.086633122 0.30830965 0.53203045 0.46796955 2703.2976
-##  [9,] 0.052652304 0.065085252 0.27138471 0.61087773 0.38912227 2174.9502
-## [10,] 0.037962311 0.048450297 0.23355594 0.68003145 0.31996855 1722.6597
-## [11,] 0.027370827 0.035818009 0.19742970 0.73938147 0.26061853 1346.8318
-## [12,] 0.019734366 0.026339170 0.16448405 0.78944241 0.21055759 1041.6145
-## [13,] 0.014228478 0.019289400 0.13540528 0.83107684 0.16892316  798.1925
-## [14,] 0.010258733 0.014081294 0.11035806 0.86530192 0.13469808  606.8751
-## [15,] 0.007396546 0.010253496 0.08918696 0.89316300 0.10683700  458.3073
-## [16,] 0.005332910 0.007451383 0.07155896 0.91565674 0.08434326  344.0880
-## [17,] 0.003845028 0.005406501 0.05705924 0.93368923 0.06631077  257.0161
-## [18,] 0.002772265 0.003917873 0.04525249 0.94805737 0.05194263  191.1168
-## [19,] 0.001998803 0.002836282 0.03571969 0.95944523 0.04055477  141.5508
-## [20,] 0.001441137 0.002051638 0.02807805 0.96842917 0.03157083  104.4704</code></pre>
-<p>Expected discounted life years with monotherapy for a 20-year time horizon</p>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">Expected_LY_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_mono</span>[,<span class="fl">5</span>])
-<span class="no">Expected_LY_mono</span></pre></body></html></div>
-<pre><code>## [1] 7.979173</code></pre>
-<p>Expected discounted total costs with with monotherapy for a 20-year time horizon</p>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="no">Expected_total_cost_mono</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_mono</span>[,<span class="fl">6</span>])
-<span class="no">Expected_total_cost_mono</span></pre></body></html></div>
-<pre><code>## [1] 44613.85</code></pre>
-</div>
-<div id="combination-therapy" class="section level2">
-<h2 class="hasAnchor">
-<a href="#combination-therapy" class="anchor"></a><span class="header-section-number">6.2</span> Combination therapy</h2>
-<p>Health state occupancy with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles).</p>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="no">trace_combi</span><span class="kw">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>, <span class="fl">6</span> * <span class="no">follow_up</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">follow_up</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">trace_combi</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"State A"</span>, <span class="st">"State B"</span>, <span class="st">"State C"</span>, <span class="st">"Death"</span>, <span class="st">"Disc LY"</span>, <span class="st">"Disc cost"</span>)
+<span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"S1"</span>] <span class="kw">&lt;-</span> <span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"S1"</span>] * <span class="no">rr</span>
+<span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
+<span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
+<span class="no">p_new</span>[<span class="st">"H"</span>, <span class="st">"H"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p_new</span>[<span class="st">"H"</span>, -<span class="fl">1</span>])
 
-<span class="kw">for</span>(<span class="no">t</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">2</span>){
-  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">initial</span> <span class="kw">%*%</span> (<span class="no">transitions_combi</span> <span class="kw">%^%</span><span class="no">t</span>)
-  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="no">t</span>  )
-  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] * (<span class="no">drug_cost_combi</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="no">t</span>  )
-}
-<span class="kw">for</span>(<span class="no">t</span> <span class="kw">in</span> <span class="fl">3</span>:<span class="no">follow_up</span>){
-  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] <span class="kw">&lt;-</span> <span class="no">trace_combi</span>[<span class="fl">2</span>,<span class="fl">1</span>:<span class="fl">4</span>] <span class="kw">%*%</span> (<span class="no">transitions_mono</span> <span class="kw">%^%</span> (<span class="no">t</span>-<span class="fl">2</span>))
-  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">5</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] * <span class="no">LY</span> * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_LY</span>)^<span class="no">t</span>  )
-  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">6</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(  <span class="no">trace_combi</span>[<span class="no">t</span>,<span class="fl">1</span>:<span class="fl">4</span>] * (<span class="no">drug_cost_mono</span> + <span class="no">other_cost</span>) * <span class="fl">1</span>/(<span class="fl">1</span>+<span class="no">discount_cost</span>)^<span class="no">t</span>  )
-}
-<span class="no">trace_combi</span></pre></body></html></div>
-<pre><code>##           State A     State B    State C      Death    Disc LY Disc cost
-##  [1,] 0.857989000 0.102818000 0.03410300 0.00509000 0.99491000 6913.5529
-##  [2,] 0.736145124 0.169106615 0.08032348 0.01442478 0.98557522 6737.6635
-##  [3,] 0.530760634 0.246952259 0.17839072 0.04389638 0.95610362 5038.7601
-##  [4,] 0.382678417 0.250692910 0.26986357 0.09676510 0.90323490 4996.5322
-##  [5,] 0.275911139 0.222953621 0.33006915 0.17106609 0.82893391 4709.3031
-##  [6,] 0.198931931 0.185270104 0.35678003 0.25901793 0.74098207 4240.4615
-##  [7,] 0.143429922 0.147826181 0.35631840 0.35242550 0.64757450 3678.4262
-##  [8,] 0.103412974 0.114859855 0.33701386 0.44471331 0.55528669 3096.8983
-##  [9,] 0.074560754 0.087622997 0.30643702 0.53137923 0.46862077 2545.4660
-## [10,] 0.053758304 0.065970233 0.27048590 0.60978557 0.39021443 2051.9188
-## [11,] 0.038759737 0.049187883 0.23331611 0.67873627 0.32126373 1627.9106
-## [12,] 0.027945770 0.036407627 0.19760346 0.73804315 0.26195685 1274.5707
-## [13,] 0.020148900 0.026797877 0.16489286 0.78816036 0.21183964  986.9428
-## [14,] 0.014527357 0.019639644 0.13592636 0.82990664 0.17009336  757.1038
-## [15,] 0.010474225 0.014345160 0.11091144 0.86426918 0.13573082  576.1690
-## [16,] 0.007551916 0.010450331 0.08972383 0.89227392 0.10772608  435.4712
-## [17,] 0.005444931 0.007597129 0.07205214 0.91490580 0.08509420  327.1761
-## [18,] 0.003925796 0.005513808 0.05749594 0.93306445 0.06693555  244.5374
-## [19,] 0.002830499 0.003996533 0.04562911 0.94754386 0.05245614  181.9391
-## [20,] 0.002040789 0.002893747 0.03603806 0.95902740 0.04097260  134.8202</code></pre>
-<p>Expected discounted life years with combination treatment for a 20-year time horizon</p>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="no">Expected_LY_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_combi</span>[,<span class="fl">5</span>])
-<span class="no">Expected_LY_combi</span></pre></body></html></div>
-<pre><code>## [1] 8.925505</code></pre>
-<p>Expected discounted total costs with combination treatment for a 20-year time horizon</p>
-<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="no">Expected_total_cost_combi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">trace_combi</span>[,<span class="fl">6</span>])
-<span class="no">Expected_total_cost_combi</span></pre></body></html></div>
-<pre><code>## [1] 50555.62</code></pre>
+<span class="no">p_new</span>[<span class="st">"S1"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="no">p_new</span>[<span class="st">"S1"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
+<span class="no">p_new</span>[<span class="st">"S1"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p_new</span>[<span class="st">"S1"</span>, <span class="st">"D"</span>] * <span class="no">rr</span>
+<span class="no">p_new</span>[<span class="st">"S1"</span>, <span class="st">"S1"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p_new</span>[<span class="st">"S1"</span>, -<span class="fl">2</span>])
+
+<span class="no">p_new</span>[<span class="st">"S2"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p_new</span>[<span class="st">"S2"</span>, <span class="st">"D"</span>] * <span class="no">rr</span>
+<span class="no">p_new</span>[<span class="st">"S2"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p_new</span>[<span class="st">"S2"</span>, -<span class="fl">3</span>])
+
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">p_new</span>)</pre></body></html></div>
+<pre><code>##       H     S1    S2      D
+## H  0.88 0.1200 0.000 0.0000
+## S1 0.50 0.4112 0.084 0.0048
+## S2 0.00 0.0000 0.984 0.0160
+## D  0.00 0.0000 0.000 1.0000</code></pre>
 </div>
-<div id="incremental-cost-effectiveness-ratio" class="section level2">
+</div>
+<div id="utility-and-costs" class="section level2">
 <h2 class="hasAnchor">
-<a href="#incremental-cost-effectiveness-ratio" class="anchor"></a><span class="header-section-number">6.3</span> Incremental Cost-Effectiveness Ratio</h2>
-<p>Incremental cost-effectiveness ratio (ICER) in terms costs per life years with combination therapy relative to monotherapy</p>
-<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="no">ICER</span>  <span class="kw">&lt;-</span> (<span class="no">Expected_total_cost_combi</span> - <span class="no">Expected_total_cost_mono</span>) / (<span class="no">Expected_LY_combi</span> - <span class="no">Expected_LY_mono</span>)
-<span class="no">ICER</span></pre></body></html></div>
-<pre><code>## [1] 6278.737</code></pre>
+<a href="#utility-and-costs" class="anchor"></a><span class="header-section-number">4.2</span> Utility and costs</h2>
+<p>Utility and (annualized) costs are defined below. We consider two types of costs: medical and treatment. Both utility and costs are 0 in the death state. Treatment costs are assumed equal in each health state.</p>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">utility</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">.075</span>, <span class="fl">0.5</span>, <span class="fl">0</span>)
+<span class="no">costs_medical</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2000</span>, <span class="fl">4000</span>, <span class="fl">15000</span>, <span class="fl">0</span>)
+<span class="no">costs_treat_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">2000</span>, <span class="fl">3</span>), <span class="fl">0</span>)
+<span class="no">costs_treat_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">12000</span>, <span class="fl">3</span>), <span class="fl">0</span>)</pre></body></html></div>
 </div>
+</div>
+<div id="simulation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#simulation" class="anchor"></a><span class="header-section-number">5</span> Simulation</h1>
+<div id="health-state-probabilities" class="section level2">
+<h2 class="hasAnchor">
+<a href="#health-state-probabilities" class="anchor"></a><span class="header-section-number">5.1</span> Health state probabilities</h2>
+<p>The state vector during cycle <span class="math inline">\(1\)</span> for SOC is computed using simple matrix multiplication.</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">x_soc</span>[<span class="fl">1</span>, ] <span class="kw">%*%</span> <span class="no">p_soc</span></pre></body></html></div>
+<pre><code>##          H   S1 S2     D
+## [1,] 0.848 0.15  0 0.002</code></pre>
+<p>We can also easily compute the state vector at cycle 2 for SOC.</p>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">x_soc</span>[<span class="fl">1</span>, ] <span class="kw">%*%</span>
+  <span class="no">p_soc</span> <span class="kw">%*%</span>
+  <span class="no">p_soc</span></pre></body></html></div>
+<pre><code>##             H      S1      S2        D
+## [1,] 0.794104 0.18645 0.01575 0.004596</code></pre>
+<p>A for loop is used to compute the state vector at each model cycle. We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">x_new</span> <span class="kw">&lt;-</span> <span class="no">x_soc</span>
+<span class="kw">for</span> (<span class="no">t</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">n_cycles</span>){
+  <span class="no">x_soc</span>[<span class="no">t</span> + <span class="fl">1</span>, ] <span class="kw">&lt;-</span> <span class="no">x_soc</span>[<span class="no">t</span>, ] <span class="kw">%*%</span> <span class="no">p_soc</span>
+  <span class="no">x_new</span>[<span class="no">t</span> + <span class="fl">1</span>, ] <span class="kw">&lt;-</span> <span class="no">x_new</span>[<span class="no">t</span>, ] <span class="kw">%*%</span> <span class="no">p_new</span>
+}
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_soc</span>)</pre></body></html></div>
+<pre><code>##              H        S1         S2           D
+## [1,] 1.0000000 0.0000000 0.00000000 0.000000000
+## [2,] 0.8480000 0.1500000 0.00000000 0.002000000
+## [3,] 0.7941040 0.1864500 0.01575000 0.004596000
+## [4,] 0.7666252 0.1927633 0.03501225 0.007617908
+## [5,] 0.7464798 0.1911353 0.05455216 0.011007983
+## [6,] 0.7285826 0.1874704 0.07353032 0.014738798</code></pre>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_new</span>)</pre></body></html></div>
+<pre><code>##              H        S1         S2           D
+## [1,] 1.0000000 0.0000000 0.00000000 0.000000000
+## [2,] 0.8800000 0.1200000 0.00000000 0.000000000
+## [3,] 0.8344000 0.1549440 0.01008000 0.000576000
+## [4,] 0.8117440 0.1638410 0.02293402 0.001481011
+## [5,] 0.7962552 0.1647807 0.03632971 0.002634392
+## [6,] 0.7830949 0.1633084 0.04959002 0.004006615</code></pre>
+</div>
+<div id="expected-costs-and-quality-adjusted-life-years" class="section level2">
+<h2 class="hasAnchor">
+<a href="#expected-costs-and-quality-adjusted-life-years" class="anchor"></a><span class="header-section-number">5.2</span> Expected costs and quality-adjusted life-years</h2>
+<p>To compute discounted costs and QALYS, it is helpful to write a simple general function for computing a present value.</p>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">pv</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">z</span>, <span class="no">dr</span>, <span class="no">t</span>) {
+  <span class="no">z</span>/(<span class="fl">1</span> + <span class="no">dr</span>)^<span class="no">t</span>
+}</pre></body></html></div>
+<p>To illustrate a computation, lets start with discounted expected QALYs after the first model cycle.</p>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">x_soc</span>[<span class="fl">2</span>, ] <span class="co"># State occupancy probabilities after 1st cycle</span></pre></body></html></div>
+<pre><code>##     H    S1    S2     D 
+## 0.848 0.150 0.000 0.002</code></pre>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, <span class="fl">1</span>:<span class="fl">3</span>])) <span class="co"># Expected life-years after 1st cycle</span>
+<span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, ] * <span class="no">utility</span>)) <span class="co"># Expected utility after 1st cycle</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="fu">pv</span>(<span class="no">x_soc</span>[<span class="fl">2</span>, ] * <span class="no">utility</span>, <span class="fl">.03</span>, <span class="fl">1</span>)) <span class="co"># Expected discounted utility after 1st cycle</span></pre></body></html></div>
+<pre><code>## [1] 0.8342233</code></pre>
+<p>Now let’s compute expected discounted QALYs for each cycle</p>
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">qalys_soc</span> <span class="kw">&lt;-</span> <span class="no">x_soc</span> <span class="kw">%*%</span> <span class="no">utility</span>
+<span class="no">dqalys_soc</span> <span class="kw">&lt;-</span> <span class="fu">pv</span>(<span class="no">x_soc</span> <span class="kw">%*%</span> <span class="no">utility</span>, <span class="no">dr_qalys</span>, <span class="fl">1</span>:(<span class="no">n_cycles</span> + <span class="fl">1</span>))
+<span class="no">dqalys_new</span> <span class="kw">&lt;-</span> <span class="fu">pv</span>(<span class="no">x_new</span> <span class="kw">%*%</span> <span class="no">utility</span>, <span class="no">dr_qalys</span>, <span class="fl">1</span>:(<span class="no">n_cycles</span> + <span class="fl">1</span>))
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">qalys_soc</span>)</pre></body></html></div>
+<pre><code>##           [,1]
+## [1,] 1.0000000
+## [2,] 0.8592500
+## [3,] 0.8159627
+## [4,] 0.7985886
+## [5,] 0.7880911
+## [6,] 0.7794080</code></pre>
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_soc</span>)</pre></body></html></div>
+<pre><code>##           [,1]
+## [1,] 0.9708738
+## [2,] 0.8099255
+## [3,] 0.7467215
+## [4,] 0.7095356
+## [5,] 0.6798143
+## [6,] 0.6527419</code></pre>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_new</span>)</pre></body></html></div>
+<pre><code>##           [,1]
+## [1,] 0.9708738
+## [2,] 0.8379678
+## [3,] 0.7788412
+## [4,] 0.7423301
+## [5,] 0.7131865
+## [6,] 0.6868527</code></pre>
+<p>We can do the same for costs. The first column is medical costs and the second column is treatment costs.</p>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">dcosts_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(
+  <span class="fu">pv</span>(<span class="no">x_soc</span> <span class="kw">%*%</span> <span class="no">costs_medical</span>, <span class="no">dr_costs</span>, <span class="fl">1</span>:(<span class="no">n_cycles</span> + <span class="fl">1</span>)),
+  <span class="fu">pv</span>(<span class="no">x_soc</span> <span class="kw">%*%</span> <span class="no">costs_treat_soc</span>, <span class="no">dr_costs</span>, <span class="fl">1</span>:(<span class="no">n_cycles</span> + <span class="fl">1</span>))
+)
+
+<span class="no">dcosts_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(
+  <span class="fu">pv</span>(<span class="no">x_new</span> <span class="kw">%*%</span> <span class="no">costs_medical</span>, <span class="no">dr_costs</span>, <span class="fl">1</span>:(<span class="no">n_cycles</span> + <span class="fl">1</span>)),
+  <span class="fu">pv</span>(<span class="no">x_new</span> <span class="kw">%*%</span> <span class="no">costs_treat_new</span>, <span class="no">dr_costs</span>, <span class="fl">1</span>:(<span class="no">n_cycles</span> + <span class="fl">1</span>))
+)
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dcosts_soc</span>)</pre></body></html></div>
+<pre><code>##          [,1]     [,2]
+## [1,] 1941.748 1941.748
+## [2,] 2164.200 1881.421
+## [3,] 2352.150 1823.519
+## [4,] 2513.963 1767.024
+## [5,] 2653.198 1711.704
+## [6,] 2772.074 1657.521</code></pre>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dcosts_new</span>)</pre></body></html></div>
+<pre><code>##          [,1]     [,2]
+## [1,] 1941.748 11650.49
+## [2,] 2111.415 11311.15
+## [3,] 2232.741 10975.37
+## [4,] 2330.379 10646.05
+## [5,] 2412.353 10324.04
+## [6,] 2481.695 10009.55</code></pre>
+</div>
+</div>
+<div id="cost-effectiveness-analysis" class="section level1">
+<h1 class="hasAnchor">
+<a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">6</span> Cost-effectiveness analysis</h1>
+<p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC.</p>
+<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="co"># Sum costs and QALYs over model cycles</span>
+<span class="no">total_dcosts_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>)
+<span class="no">total_dcosts_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>)
+<span class="no">total_dqalys_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>)
+<span class="no">total_dqalys_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>)
+
+<span class="co"># Compute ICER</span>
+<span class="no">incr_total_dcosts</span> <span class="kw">&lt;-</span> <span class="no">total_dcosts_new</span> - <span class="no">total_dcosts_soc</span>
+<span class="no">incr_total_dqalys</span> <span class="kw">&lt;-</span> <span class="no">total_dqalys_new</span> - <span class="no">total_dqalys_soc</span>
+
+<span class="no">icer</span> <span class="kw">&lt;-</span> <span class="no">incr_total_dcosts</span>/<span class="no">incr_total_dqalys</span></pre></body></html></div>
+<p>For presentation, we will make a nice looking table.</p>
+<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="no">format_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>)
+<span class="no">format_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"f"</span>, <span class="kw">digits</span> <span class="kw">=</span> <span class="fl">2</span>)
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span>(
+  <span class="kw">`Costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_dcosts_soc</span>, <span class="no">total_dcosts_new</span>) <span class="kw">%&gt;%</span>
+    <span class="fu">format_costs</span>(),
+  <span class="kw">`QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_dqalys_soc</span>, <span class="no">total_dqalys_new</span>) <span class="kw">%&gt;%</span>
+    <span class="fu">format_qalys</span>(),
+  <span class="kw">`Inremental costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">incr_total_dcosts</span> <span class="kw">%&gt;%</span> <span class="fu">format_costs</span>()),
+  <span class="kw">`Inremental QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">incr_total_dqalys</span> <span class="kw">%&gt;%</span> <span class="no">format_qalys</span>),
+  <span class="kw">`ICER`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">icer</span> <span class="kw">%&gt;%</span> <span class="fu">format_costs</span>())
+) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>() <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span>() <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/footnote.html">footnote</a></span>(<span class="kw">general</span> <span class="kw">=</span> <span class="st">"Costs and QALYs are discounted at 3% per annum."</span>,
+           <span class="kw">footnote_as_chunk</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<table class="table table">
+<thead><tr>
+<th style="text-align:left;">
+Costs
+</th>
+<th style="text-align:left;">
+QALYs
+</th>
+<th style="text-align:left;">
+Inremental costs
+</th>
+<th style="text-align:left;">
+Inremental QALYs
+</th>
+<th style="text-align:left;">
+ICER
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+206,511
+</td>
+<td style="text-align:left;">
+19.37
+</td>
+<td style="text-align:left;">
+–
+</td>
+<td style="text-align:left;">
+–
+</td>
+<td style="text-align:left;">
+–
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+476,861
+</td>
+<td style="text-align:left;">
+21.72
+</td>
+<td style="text-align:left;">
+270,350
+</td>
+<td style="text-align:left;">
+2.35
+</td>
+<td style="text-align:left;">
+115,106
+</td>
+</tr>
+</tbody>
+<tfoot><tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<span style="font-style: italic;">Note: </span> <sup></sup> Costs and QALYs are discounted at 3% per annum.
+</td>
+</tr></tfoot>
+</table>
 </div>
   </div>
 

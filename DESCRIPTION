@@ -17,12 +17,14 @@ Imports:
     stats
 Suggests:
   data.table,
-  expm,
   flexsurv,
   ggplot2,
   hesim,
+  kableExtra,
   knitr,
-  scales
+  magrittr,
+  scales,
+  tibble
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.1
