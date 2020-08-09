@@ -14,195 +14,261 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 # Overview
-We illustrate the implementation of a simple Markov cohort model by replicating the HIV model developed by [Chancellor et al.](https://link.springer.com/article/10.2165/00019053-199712010-00006) and used for didactic purposes in the [*Decision Modeling for Health Economic Evaluation*](https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation). The analysis compares two treatment strategies, zidovudine monotherapy and zidovudine + lamivudine combination therapy. The model is time-inhomogeneous because patients are assumed to only use lamivudine for 2 years before switching back to monotherapy.
+The most commonly used model for cost-effectiveness analysis (CEA) is the cohort discrete time state transition model (cDTSTM), commonly referred to as a Markov cohort model. In this tutorial we demonstrate implementation with `R` of the simplest of cDSTMs, a time-homogeneous model with transition probabilities that are constant over time. The entire analysis can be run using [Base R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html) (i.e., without installing any packages). However, we will use the following packages to create a nice looking cost-effectiveness table. 
 
-The model consists 4 health states. Ordered from worst to best to worst, they are: State A (CD4 cells > 200 and < 500 cells/mm3), State B (CD4 < 200 cells/mm3), State C (AIDS), and State D (death). The model assumes that patients can transition to any state that is more severe (i.e., progress) but cannot transition back to a more severe state.
+```{r}
+library("knitr")
+library("kableExtra")
+library("magrittr")
+library("tibble")
+```
+
+As an example, we will consider the 4-state sick-sicker model that has been described in more detail by [Alarid-Escudero et al](https://arxiv.org/abs/2001.07824). The model will be used to compare two treatment strategies, a "New" treatment and the existing "standard of care (SOC)". The sick- fare  consists 4 health states. Ordered from worst to best to worst, they are: Healthy (*H*), Sick (*S1*), Sicker (*S2*), and Death (*D*). Possible transitions from each state are displayed in the figure below.
 
 ```{r, out.width = "700px", echo = FALSE}
-knitr::include_graphics("simple-markov-cohort-model.png")
+knitr::include_graphics("sick-sicker.png")
 ```
 
-# Required R-package 
-Install and load R Package ‘expm’ to compute the k-th power of a matrix
-```{r, message = FALSE, warning=FALSE, results='hide'}
-install.packages("expm",repos = "http://cran.us.r-project.org")
-library(expm)
-```
+# Theory
+
+## Transition probabilities
+Transition probabilities are the building blocks of Markov cohort models and used to simulate the probability that a cohort of patients is in each health state at each model cycle. To set notation, let $p_t$ be the transition probability matrix governing transitions from one time period (i.e., model cycle) to the next. $x_t$ is the state occupancy vector at time $t$. In this example, $p_t$ is a $4 \times 4$ matrix and $x_t$ is a $1 \times 4$ vector containing the proportion of patients in each of the 4 health states. 
+
+At time $0$, the state vector, $x_0 = (1, 0, 0, 0)$ since all patients are healthy. The state vector at time $t+1$ for each of $T$ model cycles can be computed using matrix multiplication,
+
+$$
+x_{t+1}= x_t p_t, \quad t = 0,\ldots,T
+$$
+The matrix containing state vectors across all model cycles is often referred to as the "Markov trace" in health economics. Note that since we are considering a time-homogeneous model in this example, we can remove the subscript from the transition matrix and set $p_t = p$.
+
+## Costs and outcome
+To perform cost-effectiveness analysis (CEA), Markov models estimate expected (i.e., average) costs and outcomes for the cohort of interest. In our examples, quality-adjusted life-years (QALYs) will be used as the outcome. 
+
+Costs and QALYs are computed by assigning values to the health states (i.e., "state values") and weighting the time spent in each state by these state values. For example, if utility in each of the four health states is given by the $4 \times 1$ vector $u = (1, 0.75, 0.5, 0)^T$ and say, $x_1 = (.8, .1, 0.08, 0.02)$, then the weighted average utility would be given by $x_{1}u = 0.915$. More generally, we can define a state vector at time $t$ as $z_t$ so that the expected value at time $t$ is given by
+
+$$
+EV_t = x_{t}z_{t}.
+$$
+
+In health economics, future cost and outcomes are discounted using a discount rate. In discrete time, the "discount weight" at time $t$ is given by $1/(1 + r)^t$ where $r$ is the discount rate; in continuous time, it is given by $e^{-rt}$. In this example we will use discrete time, meaning that the present value of expected values are given by,
+
+$$
+PV_t = \frac{EV_t}{(1+r)^t}
+$$
+The simplest way to aggregate discounted costs across model cycles is with the net present value,
+
+$$
+NPV = \sum_{t} PV_t
+$$
+
+It is important to note that in mathematical terms, this a discrete approximation to a continuous integral, also known as a Riemann sum. This means that we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we assume that events occur at the start of model cycles (i.e., a left Riemann sum), then expected values will be underestimated; conversely, if we assume that they occur at the end of model cycles (i.e., a right Riemann sum), then they will be overestimated. Another option is to use average of values at the left and right endpoints (i.e., the trapezoid rule). In this example, we will assume events occur at the start of model cycles.
 
 # Model settings
-Define initial distribution over the 4 health states
-```{r, message=FALSE}
-initial<-matrix(c(1,0,0,0),nrow=1)
+Our example model will be simulated for a cohort of 25-year old individuals until a maximum age of 110; that is, for 85 years.
+
+```{r, message = FALSE}
+n_cycles <- 85
 ```
-Show initial distribution
-```{r, message=FALSE}
-initial
+
+It is helpful to first initialize an empty cohort trace matrix where each row is a state vector and fill in the first row so that it contains the proportion of individuals that are initially in each of the four health states.
+
+```{r, message = FALSE}
+state_names <- c("H", "S1", "S2", "D")
+n_states <- length(state_names)
+x_soc <- matrix(NA, nrow = n_cycles + 1, ncol = n_states)
+colnames(x_soc) <- state_names
+x_soc[1, ] <- c(1, 0, 0, 0)
+head(x_soc)
 ```
-Set duration of follow-up
-```{r, message=FALSE}
-follow_up <- 20
-```
-Set discount rates for life years and costs
-```{r, message=FALSE}
-discount_LY <- 0.00
-discount_cost <- 0.06
+
+Discount rates are set for quality-adjusted life-years and costs.
+
+```{r, message = FALSE}
+dr_qalys <- 0.03
+dr_costs <- 0.03
 ```
 
 # Model parameters
-## Transition matrix monotherapy
-Define the transition matrix with monotherapy
-```{r, message=FALSE}
-transitions_mono <- matrix(c(0.721, 0.202, 0.067, 0.010,
-                        0, 0.581, 0.407, 0.012,
-                        0, 0, 0.750, 0.250,
-                        0, 0, 0, 1), 
-                        ncol = 4, nrow = 4, byrow = TRUE)
-```
-Show transition matrix
-```{r, message=FALSE}
-transitions_mono
+## Transition probabilities
+### Standard of care
+The annual transition probabilities for SOC are defined as follows.
+
+```{r}
+p_hd <- 0.002 # constant probability of dying when Healthy (all-cause mortality)
+p_hs1 <- 0.15 # probability of becoming Sick when Healthy
+p_s1h <- 0.5 # probability of becoming Healthy when Sick
+p_s1s2 <- 0.105 # probability of becoming Sicker when Sick
+p_s1d <- .006 # constant probability of dying when Sick
+p_s2d <- .02 # constant probability of dying when Sicker
 ```
 
-## Relative treatment effect with combination therapy
-Define the relative treatment effect with combination therapy relative to monotherapy
-```{r, message=FALSE}
-RR<-0.509
+These can be used to derive the probabilities of remaining in the same state during a model cycle.
+
+```{r, message = FALSE}
+p_hh <- 1  - p_hs1 - p_hd
+p_s1s1 <- 1 - p_s1h - p_s1s2 
+p_s2s2 <- 1 - p_s2d
 ```
 
-## Transition matrix combination therapy
-Create transition matrix for combination therapy based on matrix for monotherapy and RR
-```{r, message=FALSE}
-transitions_combi <- matrix(c((1-0.202*RR-0.067*RR-0.010*RR), 0.202*RR, 0.067*RR, 0.010*RR,
-                                      0, (1-0.407*RR-0.012*RR), 0.407*RR, 0.012*RR,
-                                      0, 0, (1-0.250*RR), 0.250*RR,
-                                      0, 0, 0, 1),
-                                      ncol = 4, nrow = 4, byrow = TRUE)
-```
-Show the transition matrix
-```{r, message=FALSE}
-transitions_combi
+Using these probabilities, the transition probability matrix can then be defined.
+
+```{r}
+p_soc <- matrix(
+  c(p_hh,  p_hs1,  0,      p_hd,
+    p_s1h, p_s1s1, p_s1s2, p_s1d,
+    0,     0,      p_s2s2, p_s2d,
+    0,     0,      0,      1),
+  byrow = TRUE,
+  nrow = 4, ncol = 4
+)
+colnames(p_soc) <- rownames(p_soc) <- state_names
+print(p_soc)
 ```
 
-## Lifeyears and costs by health state
-```{r, message=FALSE}
-LY <- matrix(c(1, 1, 1, 0),nrow=1)
+### New treatment
+In evidence synthesis and cost-effectiveness modeling, treatment effects are typically estimated in relative terms; i.e., the effect of an intervention is assessed relative to a reference treatment. In this case, the SOC is the reference treatment and the effectiveness of the new treatment is assessed relative to the SOC. For simplicity, we will assume that treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. Note that this is somewhat unrealistic since relative risks are a function of baseline risk and would be unlikely to be equal for each transition. A more appropriate model would define treatment effects in terms of a measure that is invariant to baseline risk such as an odds ratio (which might still vary for each transition). 
 
-drug_cost_mono <- matrix(c(2278, 2278, 2278, 0),nrow=1)
-drug_cost_combi <- matrix(c(2278+2087, 2278+2087, 2278+2087, 0),nrow=1)
-other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
-```
-Show matrices
-```{r, message=FALSE}
-LY
-drug_cost_mono
-drug_cost_combi
-other_cost
+```{r, message = FALSE}
+rr <- .8
 ```
 
-# Basic example calculations
-## Health state occupancy with monotherapy
-State occupancy at 1 year
-```{r, message=FALSE}
-initial %*% transitions_mono
-```
-State occupancy at 5 years
-```{r, message=FALSE}
-initial %*% transitions_mono %*% transitions_mono %*% transitions_mono %*% transitions_mono %*% transitions_mono
-```
-State occupancy at 5 years (efficient)
-```{r, message=FALSE}
-initial %*% (transitions_mono %^% 5)
+The relative risk can then be used to create the transition matrix for the new treatment. 
+
+```{r, message = FALSE}
+p_new <- p_soc
+
+p_new["H", "S1"] <- p_new["H", "S1"] * rr
+p_new["H", "S2"] <- p_new["H", "S2"] * rr
+p_new["H", "D"] <- p_new["H", "S2"] * rr
+p_new["H", "H"] <- 1 - sum(p_new["H", -1])
+
+p_new["S1", "S2"] <- p_new["S1", "S2"] * rr
+p_new["S1", "D"] <- p_new["S1", "D"] * rr
+p_new["S1", "S1"] <- 1 - sum(p_new["S1", -2])
+
+p_new["S2", "D"] <- p_new["S2", "D"] * rr
+p_new["S2", "S2"] <- 1 - sum(p_new["S2", -3])
+
+print(p_new)
 ```
 
-## Expected life years and costs with monotherapy
-The discounted expected life years after 5 years of follow-up can be calculated as follows:
-```{r, message=FALSE}
-expected_LY_mono <- sum(
-            initial %*% (transitions_mono %^% 1) * LY * 1/(1+discount_LY)^1,
-            initial %*% (transitions_mono %^% 2) * LY * 1/(1+discount_LY)^2,
-            initial %*% (transitions_mono %^% 3) * LY * 1/(1+discount_LY)^3,
-            initial %*% (transitions_mono %^% 4) * LY * 1/(1+discount_LY)^4,
-            initial %*% (transitions_mono %^% 5) * LY * 1/(1+discount_LY)^5 
-            )
-expected_LY_mono
+## Utility and costs
+Utility and (annualized) costs are defined below. We consider two types of costs: medical and treatment. Both utility and costs are 0 in the death state. Treatment costs are assumed equal in each health state. 
+
+```{r, message = FALSE}
+utility <- c(1, .075, 0.5, 0)
+costs_medical <- c(2000, 4000, 15000, 0)
+costs_treat_soc <- c(rep(2000, 3), 0)
+costs_treat_new <- c(rep(12000, 3), 0)
 ```
 
-The discounted expected costs after 5 years of follow-up can be calculated as follows:
-```{r, message=FALSE}
-expected_total_cost_mono <- sum(
-            initial %*% (transitions_mono %^% 1) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^1,
-            initial %*% (transitions_mono %^% 2) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^2,
-            initial %*% (transitions_mono %^% 3) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^3,
-            initial %*% (transitions_mono %^% 4) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^4,
-            initial %*% (transitions_mono %^% 5) * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^5  
-            ) 
-expected_total_cost_mono
+# Simulation
+## Health state probabilities
+The state vector during cycle $1$ for SOC is computed using simple matrix multiplication.
+
+```{r, message = FALSE}
+x_soc[1, ] %*% p_soc  
 ```
 
-# Model output
-## Monotherapy
-Create an empty trace matrix for 6 variables and 20 cycles to record health occupancy and outcomes
-```{r, message=FALSE}
-trace_mono<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)  
+We can also easily compute the state vector at cycle 2 for SOC.
+```{r, message = FALSE}
+x_soc[1, ] %*% 
+  p_soc %*% 
+  p_soc 
 ```
-Create column headings
-```{r, message=FALSE}
-colnames(trace_mono) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost") 
-```
-Trace health state occupancy for a time-horizon of 20 years
-```{r, message=FALSE}
-for(t in 1:follow_up){
-trace_mono[t,1:4] <- initial %*% (transitions_mono %^%t)
-trace_mono[t,5] <- sum(  trace_mono[t,1:4] * LY * 1/(1+discount_LY)^t  )
-trace_mono[t,6] <- sum(  trace_mono[t,1:4] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
+
+A for loop is used to compute the state vector at each model cycle. We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.
+
+```{r, message = FALSE}
+x_new <- x_soc
+for (t in 1:n_cycles){
+  x_soc[t + 1, ] <- x_soc[t, ] %*% p_soc
+  x_new[t + 1, ] <- x_new[t, ] %*% p_new
 }
-trace_mono
-```
-Expected discounted life years with monotherapy for a 20-year time horizon
-```{r, message=FALSE}
-Expected_LY_mono <- sum(trace_mono[,5])
-Expected_LY_mono
-```
-Expected discounted total costs with with monotherapy for a 20-year time horizon
-```{r, message=FALSE}
-Expected_total_cost_mono <- sum(trace_mono[,6])
-Expected_total_cost_mono
+head(x_soc)
+head(x_new)
 ```
 
-## Combination therapy
-Health state occupancy with combination therapy for a time-horizon of 20 years. Please note combination therapy is only provided for 2 years (2 cycles). 
-```{r, message=FALSE}
-trace_combi<-matrix(rep(NA, 6 * follow_up), nrow=follow_up)
-colnames(trace_combi) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
+## Expected costs and quality-adjusted life-years 
+To compute discounted costs and QALYS, it is helpful to write a simple general function for computing a present value.
 
-for(t in 1:2){
-  trace_combi[t,1:4] <- initial %*% (transitions_combi %^%t)
-  trace_combi[t,5] <- sum(  trace_combi[t,1:4] * LY * 1/(1+discount_LY)^t  )
-  trace_combi[t,6] <- sum(  trace_combi[t,1:4] * (drug_cost_combi + other_cost) * 1/(1+discount_cost)^t  )
+```{r}
+pv <- function(z, dr, t) {
+  z/(1 + dr)^t
 }
-for(t in 3:follow_up){
-  trace_combi[t,1:4] <- trace_combi[2,1:4] %*% (transitions_mono %^% (t-2))
-  trace_combi[t,5] <- sum(  trace_combi[t,1:4] * LY * 1/(1+discount_LY)^t  )
-  trace_combi[t,6] <- sum(  trace_combi[t,1:4] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
-}
-trace_combi
-```
-Expected discounted life years with combination treatment for a 20-year time horizon
-```{r, message=FALSE}
-Expected_LY_combi <- sum(trace_combi[,5])
-Expected_LY_combi
-```
-Expected discounted total costs with combination treatment for a 20-year time horizon
-```{r, message=FALSE}
-Expected_total_cost_combi <- sum(trace_combi[,6])
-Expected_total_cost_combi
 ```
 
-## Incremental Cost-Effectiveness Ratio
-Incremental cost-effectiveness ratio (ICER) in terms costs per life years with combination therapy relative to monotherapy
-```{r, message=FALSE}
-ICER  <- (Expected_total_cost_combi - Expected_total_cost_mono) / (Expected_LY_combi - Expected_LY_mono)
-ICER
+To illustrate a computation, lets start with discounted expected QALYs after the first model cycle. 
+
+```{r}
+x_soc[2, ] # State occupancy probabilities after 1st cycle
+invisible(sum(x_soc[2, 1:3])) # Expected life-years after 1st cycle
+invisible(sum(x_soc[2, ] * utility)) # Expected utility after 1st cycle
+sum(pv(x_soc[2, ] * utility, .03, 1)) # Expected discounted utility after 1st cycle
 ```
 
+Now let's compute expected discounted QALYs for each cycle
 
+```{r}
+qalys_soc <- x_soc %*% utility
+dqalys_soc <- pv(x_soc %*% utility, dr_qalys, 1:(n_cycles + 1))
+dqalys_new <- pv(x_new %*% utility, dr_qalys, 1:(n_cycles + 1))
+
+head(qalys_soc)
+head(dqalys_soc)
+head(dqalys_new)
+```
+
+We can do the same for costs. The first column is medical costs and the second column is treatment costs.
+
+```{r}
+dcosts_soc <- cbind(
+  pv(x_soc %*% costs_medical, dr_costs, 1:(n_cycles + 1)),
+  pv(x_soc %*% costs_treat_soc, dr_costs, 1:(n_cycles + 1))
+)
+
+dcosts_new <- cbind(
+  pv(x_new %*% costs_medical, dr_costs, 1:(n_cycles + 1)),
+  pv(x_new %*% costs_treat_new, dr_costs, 1:(n_cycles + 1))
+)
+
+head(dcosts_soc)
+head(dcosts_new)
+```
+
+# Cost-effectiveness analysis
+We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC.
+
+```{r, message=FALSE}
+# Sum costs and QALYs over model cycles
+total_dcosts_soc <- sum(dcosts_soc)
+total_dcosts_new <- sum(dcosts_new)
+total_dqalys_soc <- sum(dqalys_soc)
+total_dqalys_new <- sum(dqalys_new)
+
+# Compute ICER
+incr_total_dcosts <- total_dcosts_new - total_dcosts_soc
+incr_total_dqalys <- total_dqalys_new - total_dqalys_soc
+
+icer <- incr_total_dcosts/incr_total_dqalys
+```
+
+For presentation, we will make a nice looking table.
+
+```{r}
+format_costs <- function(x) formatC(x, format = "d", big.mark = ",")
+format_qalys <- function(x) formatC(x, format = "f", digits = 2)
+tibble(
+  `Costs` = c(total_dcosts_soc, total_dcosts_new) %>%
+    format_costs(), 
+  `QALYs` = c(total_dqalys_soc, total_dqalys_new) %>%
+    format_qalys(),
+  `Inremental costs` = c("--", incr_total_dcosts %>% format_costs()),
+  `Inremental QALYs` = c("--", incr_total_dqalys %>% format_qalys),
+  `ICER` = c("--", icer %>% format_costs())
+) %>%
+  kable() %>%
+  kable_styling() %>%
+  footnote(general = "Costs and QALYs are discounted at 3% per annum.",
+           footnote_as_chunk = TRUE)
+```
