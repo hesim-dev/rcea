@@ -163,6 +163,8 @@ A for loop can be used to compute the state vector at each model cycle. Let's cr
 sim_markov_trace <- function(x0, p, n_cycles = 85){
   x <- matrix(NA, ncol = length(x0), nrow = n_cycles) # Initialize Markov trace
   x <- rbind(x0, x) # Markov trace at cycle 0 is initial state vector
+  colnames(x) <- colnames(p) # Columns are the health states
+  rownames(x) <- 0:n_cycles # Rows are the model cycles
   for (t in 1:n_cycles){ # Simulating state vectors at each cycle with for loop
     x[t + 1, ] <- x[t, ] %*% p
   }
