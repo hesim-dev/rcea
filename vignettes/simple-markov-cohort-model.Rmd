@@ -23,7 +23,7 @@ library("magrittr")
 library("tibble")
 ```
 
-As an example, we will consider the 4-state sick-sicker model that has been described in more detail by [Alarid-Escudero et al](https://arxiv.org/abs/2001.07824). The model will be used to compare two treatment strategies, a "New" treatment and the existing "standard of care (SOC)". The sick- fare  consists 4 health states. Ordered from worst to best to worst, they are: Healthy (*H*), Sick (*S1*), Sicker (*S2*), and Death (*D*). Possible transitions from each state are displayed in the figure below.
+As an example, we will consider the 4-state sick-sicker model that has been described in more detail by [Alarid-Escudero et al](https://arxiv.org/abs/2001.07824). The model will be used to compare two treatment strategies, a "New" treatment and the existing "standard of care (SOC)". The model consists 4 health states. Ordered from worst to best to worst, they are: Healthy (*H*), Sick (*S1*), Sicker (*S2*), and Death (*D*). Possible transitions from each state are displayed in the figure below.
 
 ```{r, out.width = "700px", echo = FALSE}
 knitr::include_graphics("sick-sicker.png")
@@ -34,7 +34,7 @@ knitr::include_graphics("sick-sicker.png")
 ## Transition probabilities
 Transition probabilities are the building blocks of Markov cohort models and used to simulate the probability that a cohort of patients is in each health state at each model cycle. To set notation, let $p_t$ be the transition probability matrix governing transitions from one time period (i.e., model cycle) to the next. $x_t$ is the state occupancy vector at time $t$. In this example, $p_t$ is a $4 \times 4$ matrix and $x_t$ is a $1 \times 4$ vector containing the proportion of patients in each of the 4 health states. 
 
-At time $0$, the state vector, $x_0 = (1, 0, 0, 0)$ since all patients are healthy. The state vector at time $t+1$ for each of $T$ model cycles can be computed using matrix multiplication,
+At time $0$, the state vector is $x_0 = (1, 0, 0, 0)$ since all patients are healthy. The state vector at time $t+1$ for each of $T$ model cycles can be computed using matrix multiplication,
 
 $$
 x_{t+1}= x_t p_t, \quad t = 0,\ldots,T
@@ -42,15 +42,15 @@ $$
 The matrix containing state vectors across all model cycles is often referred to as the "Markov trace" in health economics. Note that since we are considering a time-homogeneous model in this example, we can remove the subscript from the transition matrix and set $p_t = p$.
 
 ## Costs and outcome
-To perform cost-effectiveness analysis (CEA), Markov models estimate expected (i.e., average) costs and outcomes for the cohort of interest. In our examples, quality-adjusted life-years (QALYs) will be used as the outcome. 
+To perform a CEA, Markov models estimate expected (i.e., average) costs and outcomes for the cohort of interest. In our examples, quality-adjusted life-years (QALYs) will be used as the outcome. 
 
 Costs and QALYs are computed by assigning values to the health states (i.e., "state values") and weighting the time spent in each state by these state values. For example, if utility in each of the four health states is given by the $4 \times 1$ vector $u = (1, 0.75, 0.5, 0)^T$ and say, $x_1 = (.8, .1, 0.08, 0.02)$, then the weighted average utility would be given by $x_{1}u = 0.915$. More generally, we can define a state vector at time $t$ as $z_t$ so that the expected value at time $t$ is given by
 
 $$
-EV_t = x_{t}z_{t}.
+EV_t = x_{t}z_{t}
 $$
 
-In health economics, future cost and outcomes are discounted using a discount rate. In discrete time, the "discount weight" at time $t$ is given by $1/(1 + r)^t$ where $r$ is the discount rate; in continuous time, it is given by $e^{-rt}$. In this example we will use discrete time, meaning that the present value of expected values are given by,
+Future cost and outcomes are discounted using a discount rate. In discrete time, the "discount weight" at time $t$ is given by $1/(1 + r)^t$ where $r$ is the discount rate; in continuous time, it is given by $e^{-rt}$. We will use discrete time here, meaning that the present value of expected values are given by,
 
 $$
 PV_t = \frac{EV_t}{(1+r)^t}
@@ -61,37 +61,12 @@ $$
 NPV = \sum_{t} PV_t
 $$
 
-It is important to note that in mathematical terms, this a discrete approximation to a continuous integral, also known as a Riemann sum. This means that we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we assume that events occur at the start of model cycles (i.e., a left Riemann sum), then expected values will be underestimated; conversely, if we assume that they occur at the end of model cycles (i.e., a right Riemann sum), then they will be overestimated. Another option is to use average of values at the left and right endpoints (i.e., the trapezoid rule). In this example, we will assume events occur at the start of model cycles.
-
-# Model settings
-Our example model will be simulated for a cohort of 25-year old individuals until a maximum age of 110; that is, for 85 years.
-
-```{r, message = FALSE}
-n_cycles <- 85
-```
-
-It is helpful to first initialize an empty cohort trace matrix where each row is a state vector and fill in the first row so that it contains the proportion of individuals that are initially in each of the four health states.
-
-```{r, message = FALSE}
-state_names <- c("H", "S1", "S2", "D")
-n_states <- length(state_names)
-x_soc <- matrix(NA, nrow = n_cycles + 1, ncol = n_states)
-colnames(x_soc) <- state_names
-x_soc[1, ] <- c(1, 0, 0, 0)
-head(x_soc)
-```
-
-Discount rates are set for quality-adjusted life-years and costs.
-
-```{r, message = FALSE}
-dr_qalys <- 0.03
-dr_costs <- 0.03
-```
+It is important to note that in mathematical terms this a discrete approximation to a continuous integral, also known as a Riemann sum. That is, we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we assume that events occur at the start of model cycles (i.e., a left Riemann sum), then expected values will be underestimated; conversely, if we assume that they occur at the end of model cycles (i.e., a right Riemann sum), then they will be overestimated. Another option is to use average of values at the left and right endpoints (i.e., the trapezoid rule). We will assume events occur at the start of model cycles.
 
 # Model parameters
 ## Transition probabilities
 ### Standard of care
-The annual transition probabilities for SOC are defined as follows.
+The annual transition probabilities for SOC among our cohort of interest, say 25-year old patients, are defined as follows.
 
 ```{r}
 p_hd <- 0.002 # constant probability of dying when Healthy (all-cause mortality)
@@ -121,6 +96,7 @@ p_soc <- matrix(
   byrow = TRUE,
   nrow = 4, ncol = 4
 )
+state_names <- c("H", "S1", "S2", "D")
 colnames(p_soc) <- rownames(p_soc) <- state_names
 print(p_soc)
 ```
@@ -128,28 +104,26 @@ print(p_soc)
 ### New treatment
 In evidence synthesis and cost-effectiveness modeling, treatment effects are typically estimated in relative terms; i.e., the effect of an intervention is assessed relative to a reference treatment. In this case, the SOC is the reference treatment and the effectiveness of the new treatment is assessed relative to the SOC. For simplicity, we will assume that treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. Note that this is somewhat unrealistic since relative risks are a function of baseline risk and would be unlikely to be equal for each transition. A more appropriate model would define treatment effects in terms of a measure that is invariant to baseline risk such as an odds ratio (which might still vary for each transition). 
 
-```{r, message = FALSE}
-rr <- .8
-```
-
-The relative risk can then be used to create the transition matrix for the new treatment. 
+The relative risk can then be used to create the transition matrix for the new treatment. We will use assume the relative risk is $0.8$. 
 
 ```{r, message = FALSE}
-p_new <- p_soc
+apply_rr <- function(p, rr = .8){
+  p["H", "S1"] <- p["H", "S1"] * rr
+  p["H", "S2"] <- p["H", "S2"] * rr
+  p["H", "D"] <- p["H", "S2"] * rr
+  p["H", "H"] <- 1 - sum(p["H", -1])
+  
+  p["S1", "S2"] <- p["S1", "S2"] * rr
+  p["S1", "D"] <- p["S1", "D"] * rr
+  p["S1", "S1"] <- 1 - sum(p["S1", -2])
+  
+  p["S2", "D"] <- p["S2", "D"] * rr
+  p["S2", "S2"] <- 1 - sum(p["S2", -3])
+  
+  return(p)
+}
 
-p_new["H", "S1"] <- p_new["H", "S1"] * rr
-p_new["H", "S2"] <- p_new["H", "S2"] * rr
-p_new["H", "D"] <- p_new["H", "S2"] * rr
-p_new["H", "H"] <- 1 - sum(p_new["H", -1])
-
-p_new["S1", "S2"] <- p_new["S1", "S2"] * rr
-p_new["S1", "D"] <- p_new["S1", "D"] * rr
-p_new["S1", "S1"] <- 1 - sum(p_new["S1", -2])
-
-p_new["S2", "D"] <- p_new["S2", "D"] * rr
-p_new["S2", "S2"] <- 1 - sum(p_new["S2", -3])
-
-print(p_new)
+p_new <- apply_rr(p_soc, rr = .8)
 ```
 
 ## Utility and costs
@@ -164,33 +138,51 @@ costs_treat_new <- c(rep(12000, 3), 0)
 
 # Simulation
 ## Health state probabilities
+To simulate health state probabilities, we must specify a state vector at time 0. Each patient will start in the Healthy state. 
+
+```{r, message = FALSE}
+x_init <- c(1, 0, 0, 0)
+```
+
 The state vector during cycle $1$ for SOC is computed using simple matrix multiplication.
 
 ```{r, message = FALSE}
-x_soc[1, ] %*% p_soc  
+x_init %*% p_soc  
 ```
 
 We can also easily compute the state vector at cycle 2 for SOC.
 ```{r, message = FALSE}
-x_soc[1, ] %*% 
+x_init %*% 
   p_soc %*% 
   p_soc 
 ```
 
-A for loop is used to compute the state vector at each model cycle. We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.
+A for loop can be used to compute the state vector at each model cycle. Let's create a function to do this. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.
+
+```{r}
+sim_markov_trace <- function(x0, p, n_cycles = 85){
+  x <- matrix(NA, ncol = length(x0), nrow = n_cycles) # Initialize Markov trace
+  x <- rbind(x0, x) # Markov trace at cycle 0 is initial state vector
+  for (t in 1:n_cycles){ # Simulating state vectors at each cycle with for loop
+    x[t + 1, ] <- x[t, ] %*% p
+  }
+  return(x)
+}
+```
+
+
+We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.
 
 ```{r, message = FALSE}
-x_new <- x_soc
-for (t in 1:n_cycles){
-  x_soc[t + 1, ] <- x_soc[t, ] %*% p_soc
-  x_new[t + 1, ] <- x_new[t, ] %*% p_new
-}
+x_soc <- sim_markov_trace(x_init, p_soc)
+x_new <- sim_markov_trace(x_init, p_new)
+
 head(x_soc)
 head(x_new)
 ```
 
 ## Expected costs and quality-adjusted life-years 
-To compute discounted costs and QALYS, it is helpful to write a simple general function for computing a present value.
+To compute discounted costs and QALYS, it is helpful to write a general function for computing a present value.
 
 ```{r}
 pv <- function(z, dr, t) {
@@ -198,6 +190,7 @@ pv <- function(z, dr, t) {
 }
 ```
 
+### QALYs
 To illustrate a computation, lets start with discounted expected QALYs after the first model cycle. 
 
 ```{r}
@@ -207,68 +200,84 @@ invisible(sum(x_soc[2, ] * utility)) # Expected utility after 1st cycle
 sum(pv(x_soc[2, ] * utility, .03, 1)) # Expected discounted utility after 1st cycle
 ```
 
-Now let's compute expected discounted QALYs for each cycle
+Now let's compute expected (discounted) QALYs for each cycle.
 
 ```{r}
-qalys_soc <- x_soc %*% utility
-dqalys_soc <- pv(x_soc %*% utility, dr_qalys, 1:(n_cycles + 1))
-dqalys_new <- pv(x_new %*% utility, dr_qalys, 1:(n_cycles + 1))
+compute_qalys <- function(x, utility, dr = .03){
+  n_cycles <- nrow(x) - 1
+  pv(x %*% utility, dr, 0:n_cycles)
+}
+
+qalys_soc <- x_soc %*% utility 
+dqalys_soc <- compute_qalys(x_soc, utility = utility)
+dqalys_new <- compute_qalys(x_new, utility = utility)
 
 head(qalys_soc)
 head(dqalys_soc)
 head(dqalys_new)
 ```
 
+### Costs
 We can do the same for costs. The first column is medical costs and the second column is treatment costs.
 
 ```{r}
-dcosts_soc <- cbind(
-  pv(x_soc %*% costs_medical, dr_costs, 1:(n_cycles + 1)),
-  pv(x_soc %*% costs_treat_soc, dr_costs, 1:(n_cycles + 1))
-)
+compute_costs <- function(x, costs_medical, costs_treat, dr = .03){
+  n_cycles <- nrow(x) - 1
+  costs <- cbind(
+    pv(x %*% costs_medical, dr, 0:n_cycles),
+    pv(x %*% costs_treat, dr, 0:n_cycles)
+  )
+  colnames(costs) <- c("medical", "treatment")
+  return(costs)
+}
 
-dcosts_new <- cbind(
-  pv(x_new %*% costs_medical, dr_costs, 1:(n_cycles + 1)),
-  pv(x_new %*% costs_treat_new, dr_costs, 1:(n_cycles + 1))
-)
+dcosts_soc <- compute_costs(x_soc, costs_medical, costs_treat_soc)
+dcosts_new <- compute_costs(x_new, costs_medical, costs_treat_new)
 
 head(dcosts_soc)
 head(dcosts_new)
 ```
 
 # Cost-effectiveness analysis
-We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC.
+We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles.
 
 ```{r, message=FALSE}
-# Sum costs and QALYs over model cycles
-total_dcosts_soc <- sum(dcosts_soc)
-total_dcosts_new <- sum(dcosts_new)
-total_dqalys_soc <- sum(dqalys_soc)
-total_dqalys_new <- sum(dqalys_new)
-
-# Compute ICER
-incr_total_dcosts <- total_dcosts_new - total_dcosts_soc
-incr_total_dqalys <- total_dqalys_new - total_dqalys_soc
-
-icer <- incr_total_dcosts/incr_total_dqalys
+(sum(dcosts_new) - sum(dcosts_soc))/(sum(dqalys_new) - sum(dqalys_soc))
 ```
 
-For presentation, we will make a nice looking table.
+For the sake of presentation, we might want to do a some extra work and create a nice looking table.
 
 ```{r}
 format_costs <- function(x) formatC(x, format = "d", big.mark = ",")
 format_qalys <- function(x) formatC(x, format = "f", digits = 2)
-tibble(
-  `Costs` = c(total_dcosts_soc, total_dcosts_new) %>%
-    format_costs(), 
-  `QALYs` = c(total_dqalys_soc, total_dqalys_new) %>%
-    format_qalys(),
-  `Inremental costs` = c("--", incr_total_dcosts %>% format_costs()),
-  `Inremental QALYs` = c("--", incr_total_dqalys %>% format_qalys),
-  `ICER` = c("--", icer %>% format_costs())
+make_icer_tbl <- function(costs0, costs1, qalys0, qalys1){
+  # Computations
+  total_costs0 <- sum(costs0)
+  total_costs1 <- sum(costs1)
+  total_qalys0 <- sum(qalys0)
+  total_qalys1 <- sum(qalys1)
+  incr_total_costs <- total_costs1 - total_costs0
+  inc_total_qalys <- total_qalys1 - total_qalys0
+  icer <- incr_total_costs/inc_total_qalys
+  
+  # Make table
+  tibble(
+    `Costs` = c(total_costs0, total_costs1) %>%
+      format_costs(), 
+    `QALYs` = c(total_qalys0, total_qalys1) %>%
+      format_qalys(),
+    `Inremental costs` = c("--", incr_total_costs %>% 
+                             format_costs()),
+    `Inremental QALYs` = c("--", inc_total_qalys %>% 
+                             format_qalys()),
+    `ICER` = c("--", icer %>% format_costs())
 ) %>%
   kable() %>%
   kable_styling() %>%
   footnote(general = "Costs and QALYs are discounted at 3% per annum.",
            footnote_as_chunk = TRUE)
+}
+make_icer_tbl(costs0 = dcosts_soc, costs1 = dcosts_new,
+              qalys0 = dqalys_soc, qalys1 = dqalys_new)
+
 ```
