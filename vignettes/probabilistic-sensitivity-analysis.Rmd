@@ -10,194 +10,172 @@ pkgdown:
   as_is: true
 vignette: >
   %\VignetteIndexEntry{Incorporating Probabilistic Sensitivity Analysis}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{fknitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
-# Required R-packages 
+# Overview
+Probabilistic sensitivity analysis (PSA) is used to quantify the impact of parameter uncertainty on the uncertainty of model outputs. PSA is typically performed via a simulate approach whereby the model parameters are randomly sampled from suitable probability distributions and the entire model is simulated for each random draw of the parameters. 
+
+In this example, we extend the deterministic [simple Markov cohort model](simple-markov-cohort-model.html) to incorporate PSA. We will continue to rely primarily on Base `R` but will use the `hesim` package to help make the code more readable.
+
 ```{r, message = FALSE, warning=FALSE, results='hide'}
-#install.packages("expm")
-#install.packages("hesim")
-#install.packages("data.table")
-library("expm")
+library("learnCEA")
 library("hesim")
-library("data.table")
-
-rm(list=ls())
-```
-
-# Model settings
-Set starting distribution over the 4 health states
-```{r, message=FALSE}
-initial<-matrix(c(1,0,0,0),nrow=1)
-```
-Set duration of follow-up
-```{r, message=FALSE}
-follow_up <- 20
-```
-Set discount rates
-```{r, message=FALSE}
-discount_LY <- 0.00
-discount_cost <- 0.06
-```
-Number of PSA simulations
-```{r, message=FALSE}
-PSA_samples  <- 1000
+library("magrittr")
 ```
 
 # Model parameters
-## Transition matrix monotherapy
-Create PSA samples for transition matrix monotherapy based on Dirichlet distribution (using rdirichlet_mat function from hesim package). See Appendix for more detail. 
+## Transition probabilities for SOC
+The probability distribution used for transition probabilities will depend on the underlying data. In this case, we assume that summary level data is available on transitions from the Healthy state (n = 900), Sick state (n = 900), and Sicker state (n = 800). The transitions from each state to the othe 4 states can be modeled using a Dirichlet distribution (see Appendix).
+
 ```{r, message=FALSE}
-transitions_mono <- matrix(c(1251, 350, 116, 17,
-                             0, 731, 512, 15,
-                             0, 0, 1312, 437,
-                             0, 0, 0, 469),
-                             nrow = 4, byrow = TRUE)
-p_mono = rdirichlet_mat(n=PSA_samples,transitions_mono)
-```
-Show first 10 PSA samples
-```{r, message=FALSE}
-print(p_mono[, , 1:10])
+transitions_soc <- matrix(
+  c(848, 150, 0,   2,
+    450, 355, 95,  5,
+    0,   0,   784, 16,
+    0,   0,   0,   23),
+  nrow = 4, byrow = TRUE)
+state_names <- c("H", "S1", "S2", "D")
+colnames(transitions_soc) <- rownames(transitions_soc) <- tolower(state_names)
 ```
 
-## Relative treatment effect with combination therapy
-Create PSA samples for relative risk according to a normal distribution of log-transformed relative risk
-```{r, message=FALSE}
-RR<-0.509
-RR_low<-0.365
-RR_high<-0.710
+## Relative risk
+We estimate treatment effects in terms of the log relative risk since it is approximately normally distributed; that is, the relative risk follows a lognormal distribution. The mean is given by the log of the point estimate of the relatie risk, or $log(0.8)$. 
 
-RR_combi <- exp( rnorm(PSA_samples, log(RR), (log(RR_high)-log(RR_low))/3.92 )   )
-```
-Show first 10 PSA samples
-```{r, message=FALSE}
-RR_combi[1:10]
+Since academic studies often report 95\% confidence intervals for a parameter, but not its standard error, we will assume that is the case. Specifically, let the lower bound be $log(0.71)$ and the upper bound be $log(0.91)$. The standard error is then given by $(log(0.91) - log(0.71))/(2z)$ where $z = \Phi^{-1}(0.975)\approx 1.96$. See the Appendix for details.
+
+## Costs
+### Medical costs
+Medical costs are of often assumed to follow a gamma distribution because it can be used to model right skewed distributions. The gamma distribtution is defined in terms of a shape and scale (or rate) parameter. However, these parameters can be derived form the mean and standard deviation of a distribution using the [method of moments](https://hesim-dev.github.io/hesim/reference/mom_gamma.html). Mean costs follow those in the deterministic example (H = $2,000, S1 = $4,000, and S2 = $2,000). The standard deviation in each state is assume to be equal to the mean. 
+
+### Treatment costs
+Treatment costs are fixed and equal to the costs in the deterministic example.
+
+## Utility
+The utility associated with each state is assumed to follow a beta distribution, which is bounded between 0 and 1. The beta distribution is defined in terms of 2 shape parameters, but like the gamma distribution , these can be derived using the [method of moments](https://hesim-dev.github.io/hesim/reference/mom_beta.html). We assume that the mean (standard error) of utility is estimated to be $1 (0.0)$, $0.75 (0,03)$, $0.5 (0.05)$, and $0 (0.0)$ in state H, S1, S2, and D, respectively. 
+
+## Combining the parameters
+All model parameters (transition probabilities, relative risk, costs, and utility) can be stored in a list for use in the simulation.
+
+```{r}
+params <- list(
+  alpha_soc = transitions_soc,
+  lrr_mean = log(.8),
+  lrr_lower = log(.71),
+  lrr_upper = log(.9),
+  c_medical = c(H = 2000, S1 = 4000, S2 = 15000, D = 0),
+  c_soc = 2000,
+  c_new = 12000,
+  u = c(H = 1, S1 = .075, S2 = 0.5, D = 0)
+)
 ```
 
-## Transition matrix combination therapy
-Define array for transition matrix for combination therapy for each PSA sample
-```{r, message=FALSE}
-p_combi <- array(NA, dim = c(4, 4, PSA_samples))
+# Simulation
+## Sampling the parameters
+```{r}
+rng_def <- define_rng({
+  lrr_se <- (lrr_upper - lrr_lower)/(2 * qnorm(.975)) # Local object 
+                                                      # not returned
+  list( # Parameters to return
+    p_soc = dirichlet_rng(alpha_soc),
+    rr_new = lognormal_rng(lrr_mean, lrr_se),
+    c_medical = gamma_rng(mean = c_medical, sd = c_medical),
+    c_soc = c_soc,
+    c_new = c_new,
+    u = fixed(u)
+  )
+}, n = 1000)
+params_rng <- eval_rng(rng_def, params = params)
+attr(params_rng, "n") <- rng_def$n
 ```
-Create PSA samples for transition matrix for combination therapy based on samples for monotherapy and RR
-```{r, message=FALSE}
-for (i in 1:PSA_samples){ 
-p_combi[,,i] <- matrix(c((1-p_mono[1,2,i]*RR_combi[i]-p_mono[1,3,i]*RR_combi[i]-p_mono[1,4,i]*RR_combi[i]), p_mono[1,2,i]*RR_combi[i], p_mono[1,3,i]*RR_combi[i], p_mono[1,4,i]*RR_combi[i],
-                                      0, (1-p_mono[2,3,i]*RR_combi[i]-p_mono[2,4,i]*RR_combi[i]), p_mono[2,3,i]*RR_combi[i], p_mono[2,4,i]*RR_combi[i],
-                                      0, 0, (1-p_mono[3,4,i]*RR_combi[i]), p_mono[3,4,i]*RR_combi[i],
-                                      0, 0, 0, 1),
-                                      ncol = 4, nrow = 4, byrow = TRUE)
+
+## Simulating the Markov model
+```{r}
+data <- data.frame(
+  strategy = c("New", "SOC")
+)
+```
+
+```{r}
+sim_stateprobs <- function(p0, rr, strategy, n_cycles){
+  rr <- ifelse(strategy == "New", rr, 1)
+  p <- tpmatrix(
+    C,       p0$h_s1 * rr,  p0$h_s2 * rr,  p0$h_d * rr,
+    p0$s1_h, C,             p0$s1_s2 * rr, p0$s1_d * rr,
+    p0$s2_h, p0$s2_s1,      C,             p0$s2_d * rr,
+    0,       0,             0,             1
+  )
+  x <- sim_markov_chain(x0 = c(1, 0, 0, 0),
+                        p = matrix(as.matrix(p), ncol = 4, byrow = TRUE),
+                        n_cycles = n_cycles)
+  return(x)
 }
 ```
-Show first 10 PSA samples
-```{r, message=FALSE}
-print(p_combi[, , 1:10])
-```
 
-## Other parameters
-Parameters for which no uncertainty is propagated in the model
-```{r, message=FALSE}
-# define LY by health state per cycle
-LY <- matrix(c(1, 1, 1, 0),nrow=1)
-
-# define costs by health state per cycle
-drug_cost_mono <- matrix(c(2278, 2278, 2278, 0),nrow=1)
-drug_cost_combi <- matrix(c(2278+2087, 2278+2087, 2278+2087, 0),nrow=1)
-other_cost <- matrix(c(2756, 3052, 9007, 0),nrow=1)
-```
-
-
-
-# Model output
-## Monotherapy
-Define an array for trace and outcomes by follow-up time for each PSA sample
-```{r, message=FALSE}
-trace_mono <- array(NA, dim = c(follow_up, 6, PSA_samples))
-colnames(trace_mono) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
-```
-Define a matrix for expected outcomes for each PSA sample
-```{r, message=FALSE}
-Expected_LY_mono <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
-Expected_total_cost_mono <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
-```
-Trace and expected LY and cost for each PSA sample
-```{r, message=FALSE}
-for(i in 1:PSA_samples){
-for(t in 1:follow_up){
-trace_mono[t,1:4,i] <- initial %*% (p_mono[,,i] %^%t)
-trace_mono[t,5,i] <- sum(  trace_mono[t,1:4,i] * LY * 1/(1+discount_LY)^t  )
-trace_mono[t,6,i] <- sum(  trace_mono[t,1:4,i] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
+```{r}
+# QALYs
+compute_qalys <- function(x, utility, dr = .03){
+  n_cycles <- nrow(x) - 1
+  pv(x %*% utility, dr, 0:n_cycles)
 }
-Expected_LY_mono[i] <- sum(trace_mono[,5,i])
-Expected_total_cost_mono[i] <- sum(trace_mono[,6,i])
+
+# Costs
+compute_costs <- function(x, costs_medical, costs_treat, dr = .03){
+  n_cycles <- nrow(x) - 1
+  costs_treat <- c(rep(costs_treat, 3), 0)
+  costs <- cbind(
+    pv(x %*% costs_medical, dr, 0:n_cycles),
+    pv(x %*% costs_treat, dr, 0:n_cycles)
+  )
+  colnames(costs) <- c("dcost_med", "dcost_treat")
+  return(costs)
 }
 ```
-Presentation of results for the first 10 PSA samples
-```{r, message=FALSE}
-trace_mono[,,1:10]
-Expected_LY_mono[1:10]
-Expected_total_cost_mono[1:10]
-```
 
-## Combination therapy
-Define an array for trace and outcomes by follow-up time for each PSA sample
-```{r, message=FALSE}
-trace_combi <- array(NA, dim = c(follow_up, 6, PSA_samples))
-colnames(trace_combi) <- c("State A", "State B", "State C", "Death", "Disc LY", "Disc cost")
-```
-Define a matrix for expected outcomes for each PSA sample
-```{r, message=FALSE}
-Expected_LY_combi <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
-Expected_total_cost_combi <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
-```
-Trace and expected LY and cost for each PSA sample
-```{r, message=FALSE}
-for(i in 1:PSA_samples){
-for(t in 1:2){
-trace_combi[t,1:4,i] <- initial %*% (p_combi[,,i] %^%t)
-trace_combi[t,5,i] <- sum(  trace_combi[t,1:4,i] * LY * 1/(1+discount_LY)^t  )
-trace_combi[t,6,i] <- sum(  trace_combi[t,1:4,i] * (drug_cost_combi + other_cost) * 1/(1+discount_cost)^t  )
-}
-for(t in 3:follow_up){
-trace_combi[t,1:4,i] <- trace_combi[2,1:4,i] %*% (p_mono[,,i] %^% (t-2))
-trace_combi[t,5,i] <- sum(  trace_combi[t,1:4,i] * LY * 1/(1+discount_LY)^t  )
-trace_combi[t,6,i] <- sum(  trace_combi[t,1:4,i] * (drug_cost_mono + other_cost) * 1/(1+discount_cost)^t  )
-}
-Expected_LY_combi[i] <- sum(trace_combi[,5,i])
-Expected_total_cost_combi[i] <- sum(trace_combi[,6,i])
-}
-```
-Presentation of results for the first 10 PSA samples
-```{r, message=FALSE}
-trace_combi[,,1:10]
-Expected_LY_combi[1:10]
-Expected_total_cost_combi[1:10]
-```
-
-## Incremental Cost-Effectiveness Ratio
-```{r, message=FALSE}
-ICER <- matrix(rep(NA, PSA_samples), nrow=PSA_samples)
-for(i in 1:PSA_samples){
-ICER[i]  <- (Expected_total_cost_combi[i] - Expected_total_cost_mono[i]) / (Expected_LY_combi[i] - Expected_LY_mono[i])
+```{r}
+sim_model <- function(params_rng, data, n_cycles = 85, 
+                      dr_qalys = .03, dr_costs = .03){
+  # Initialize array of matrices
+  n_samples <- attr(params_rng, "n")
+  n_strategies <- nrow(data)
+  out <- array(NA, dim = c(n_cycles + 1, 7, n_samples * n_strategies))
+  dimnames(out) <- list(NULL, 
+                        c("H", "S1", "S2", "D",
+                          "dqalys", "dcosts_med", "dcosts_treat"), 
+                        NULL)
+  
+  # Run the simulation
+  i <- 1
+  for (s in 1:n_samples){ # Start PSA loop
+    for (k in 1:n_strategies) { # Start treatment strategy loop
+      x <- sim_stateprobs(p0 = params_rng$p_soc[s, ],
+                          rr = params_rng$rr_new[s],
+                          strategy = data$strategy[k],
+                          n_cycles = n_cycles)
+     dqalys <- compute_qalys(x, utility = unlist(params_rng$u[s]), 
+                             dr = dr_qalys)
+     dcosts <- compute_costs(x, 
+                             costs_medical = unlist(params_rng$c_medical[s]), 
+                             costs_treat = ifelse(data$strategy[k] == "SOC", 
+                                                  params_rng$c_soc,
+                                                  params_rng$c_new),
+                             dr = dr_costs)
+      out[, , i] <- cbind(x, dqalys, dcosts)
+      i <- i + 1
+    } # End treatment strategy loop
+  } # End PSA loop
+  return(out)
 }
 ```
-Presentation of results for first 10 PSA samples
-```{r, message=FALSE}
-ICER[1:10]
+
+```{r, cache = TRUE}
+sim_out <- sim_model(params_rng, data = data)
+head(sim_out[, , 1])
 ```
 
-## Overview PSA results
-```{r, message=FALSE}
-Results_by_PSA_sample <- cbind(Expected_LY_mono, Expected_LY_combi, Expected_total_cost_mono, Expected_total_cost_combi, ICER)
-colnames(Results_by_PSA_sample) <- c("Disc LY mono", "Disc LY combi", "Disc cost mono", "Disc cost combi", "ICER")
-```
-Presentation of results first 10 PSA samples
-```{r, message=FALSE}
-Results_by_PSA_sample[1:10,]
-```
-
-# Appendix: Dirichlet distribution
+# Appendix
+## Dirichlet distribution
 The multinomial distribution is a discrete probability distribution for the number of successes for each of k mutually exclusive categories in n trials. The probabilities of the categories are given by $\pi_1,\ldots, \pi_k$ with $\sum_{j=1}^k \pi_j=1$ and each $\pi_j$ defined on $[0,1]$. The Dirichlet distribution is parameterized by the concentration parameters $\alpha_1,\ldots, \alpha_k$ with $\alpha_j > 0$. Letting $x_1,\ldots, x_k$ denote the number of successes in each category, the prior distribution and likelihood are,
 
 $$
@@ -206,3 +184,5 @@ p(\pi_1,\ldots,\pi_k |\alpha_1,\ldots, \alpha_k) = \text{Dirichlet}(\alpha_1,\ld
 p(x_1,\ldots,x_k | \pi_1,\ldots,\pi_k) = \text{Multin}(n, \pi_1,\ldots,\pi_k).
 \end{aligned}
 $$
+
+## Confidence intervals and standard errors
