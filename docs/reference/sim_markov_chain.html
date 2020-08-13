@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>learnCEA: Learn Cost-effectiveness Modeling with R — learnCEA • learnCEA</title>
+<title>Simulate a Markov chain — sim_markov_chain • learnCEA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="learnCEA: Learn Cost-effectiveness Modeling with R — learnCEA" />
-<meta property="og:description" content="Course materials for learning how to perform applied cost-effectiveness analysis with R." />
+<meta property="og:title" content="Simulate a Markov chain — sim_markov_chain" />
+<meta property="og:description" content="This is a simple function that will simulate a time-homogeneous Markov chain;
+that is, a Markov chain with constant transition probabilities." />
 
 
 
@@ -127,18 +128,50 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>learnCEA: Learn Cost-effectiveness Modeling with R</h1>
-    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/learn-cea.R'><code>R/learn-cea.R</code></a></small>
-    <div class="hidden name"><code>learnCEA.Rd</code></div>
+    <h1>Simulate a Markov chain</h1>
+    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/sim_markov_chain.R'><code>R/sim_markov_chain.R</code></a></small>
+    <div class="hidden name"><code>sim_markov_chain.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Course materials for learning how to perform applied cost-effectiveness analysis with R.</p>
+    <p>This is a simple function that will simulate a time-homogeneous Markov chain;
+that is, a Markov chain with constant transition probabilities.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>sim_markov_chain</span>(<span class='no'>x0</span>, <span class='no'>p</span>, <span class='kw'>n_cycles</span> <span class='kw'>=</span> <span class='fl'>85</span>)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x0</th>
+      <td><p>The state vector at model cycle 0 (i.e., the initial state vector).</p></td>
+    </tr>
+    <tr>
+      <th>p</th>
+      <td><p>The transition probability matrix.</p></td>
+    </tr>
+    <tr>
+      <th>n_cycles</th>
+      <td><p>The number of model cycles. Default is 85 as in the
+example from the tutorials.</p></td>
+    </tr>
+    </table>
 
 
-
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>x0</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>)
+<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(
+  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.848</span>, <span class='fl'>0.15</span>,  <span class='fl'>0</span>,     <span class='fl'>0.002</span>,
+    <span class='fl'>0.5</span>,   <span class='fl'>0.395</span>, <span class='fl'>0.105</span>, <span class='fl'>0.006</span>,
+    <span class='fl'>0</span>,     <span class='fl'>0</span>,     <span class='fl'>0.98</span>,  <span class='fl'>0</span>,<span class='fl'>02</span>,
+    <span class='fl'>0</span>,     <span class='fl'>0</span>,     <span class='fl'>0</span>,     <span class='fl'>1</span>),
+  <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>4</span>
+)</div><div class='output co'>#&gt; <span class='warning'>Warning: data length [17] is not a sub-multiple or multiple of the number of rows [4]</span></div><div class='input'><span class='fu'>sim_markov_chain</span>(<span class='kw'>x0</span> <span class='kw'>=</span> <span class='no'>x0</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>n_cycles</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;       [,1]    [,2]    [,3]     [,4]
+#&gt; 0 1.000000 0.00000 0.00000 0.000000
+#&gt; 1 0.848000 0.15000 0.00000 0.002000
+#&gt; 2 0.798104 0.18645 0.01575 0.002596</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

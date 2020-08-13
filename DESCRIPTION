@@ -27,4 +27,4 @@ Suggests:
   tibble
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.1
+RoxygenNote: 7.1.0
