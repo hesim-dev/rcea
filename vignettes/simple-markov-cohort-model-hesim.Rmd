@@ -1,5 +1,5 @@
 ---
-title: "Simple Markov Cohort Model (hesim)"
+title: "Markov Cohort Model wth hesim"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -14,74 +14,40 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-# hesim
-`hesim` is a modular and computationally efficient R package for health economic simulation modeling and decision analysis that provides a general framework for integrating statistical analyses with economic evaluation. The package supports cohort discrete time state transition models (DTSTMs), N-state partitioned survival models (PSMs), and individual-level continuous time state transition models (CTSTMs), encompassing both Markov (time-homogeneous and time-inhomogeneous) and semi-Markov processes. It heavily utilizes `Rcpp` and `data.table`, making individual-patient simulation, probabilistic sensitivity analysis (PSA), and incorporation of patient heterogeneity fast.
+# Overview
+This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](probabilistic-sensitivity-analysis.html). More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
 
-Features of the current version can be summarized as follows:
-
-- Cohort DTSTMs, N-state PSMs, and individual-level CTSTMs that encompass Markov and semi-Markov processes
-- Options to build models via mathematical expressions using nonstandard evaluation or directly from fitted statistical models
-- Parameter estimates from either an R based model or from an external source
-- Convenience functions for sampling model parameters from parametric distributions or via bootstrapping
-- Parameter uncertainty propagated with PSA
-- Modeling patient heterogeneity
-- Performing cost-effectiveness analyses and representing decision uncertainty from PSAs
-- Simulation code written in C++ to boost performance
-
-With `hesim` an economic model is constructed by combining statistical models for disease progression, costs, and utilities. As shown in the figure, a typical analysis proceeds in a 3-step process as follows:
-
-<br>
-```{r, out.width = "600px", echo = FALSE}
-knitr::include_graphics("econ-eval-process-hesim.png")
-```
-<br>
-<br>
-
-1. **Parameterization**: An economic model is parameterized by estimating statistical models for disease progression, costs, and utilities using "estimation" datasets, such as extracted data from published studies for a meta-analysis or multi-state survival data from a clinical trial. 
-2. **Simulation**: The statistical models estimated in Step 1 are combined to construct an economic model. For a given model structure, disease progression, QALYs, and costs are simulated from "input data", based on the target population and treatment strategies of interest.
-3. **Decision analysis**: Simulated outcomes from Step 2 are used to perform decision analysis using approaches such as [cost-effectiveness analysis (CEA)](https://en.wikipedia.org/wiki/Cost-effectiveness_analysis) and [multi-criteria decision analysis (MCDA)](https://en.wikipedia.org/wiki/Multiple-criteria_decision_analysis). 
-
-The entire analysis is inherently Bayesian, as uncertainty in the parameters from the statistical models is propagated throughout the economic model and decision analysis with probabilistic sensitivity analysis (PSA). Furthermore, since the statistical and economic models are integrated, patient heterogeneity can be easily introduced with patient level covariates.
-
-#Installation of hesim
-```{r, warning = FALSE, results='hide'}
-# Install from CRAN:
-# install.packages("hesim")
-
-# Install the most up to date development version from GitHub:
-# install.packages("devtools")
-# devtools::install_github("hesim-dev/hesim")
-```
-
-# Simple Markov cohort model
-The simplest models in `hesim` are cohort discrete time state transitions models (cDTSTMs), which encompass both time-homogeneous and time-inhomogeneous Markov models. cDTSTMs (that can easily incorporate patient heterogeneity and parameter uncertainty) are most conveniently simulated with a four step process specifying:
+Markov cohort models (time-homogeneous and time-homogeneous) are referred to as cohort discrete time state transition models (`cDTSTMs`) in `hesim`. They are most conveniently simulated with a four step process by defining:
 
 1. *Data* consisting of the treatment strategies and patient population
 2. *Parameter* objects storing the values of all parameters used in the model
 3. *Random number generation* expressions that randomly generate probability distributions for the parameters for probabilistic sensitivity analysis (PSA)
 4. *Transformed parameter* expressions that transform the parameter estimates into values used for simulation
 
-We illustrate by replicating the HIV model developed by [Chancellor et al.](https://link.springer.com/article/10.2165/00019053-199712010-00006) and used for didactic purposes in the [*Decision Modeling for Health Economic Evaluation*](https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation) textbook. The analysis compares two treatment strategies, zidovudine monotherapy and zidovudine + lamivudine combination therapy. The model is time-inhomogeneous because patients are assumed to only use lamivudine for 2 years before switching back to monotherapy. 
+This analysis can be performed using the `hesim` package alone. 
 
-The model consists 4 health states. Ordered from worst to best to worst, they are: State A (CD4 cells > 200 and < 500 cells/mm3), State B (CD4 < 200 cells/mm3), State C (AIDS), and State D (death). The model assumes that patients can transition to any state that is more severe (i.e., progress) but cannot transition back to a more severe state.
-
-```{r, out.width = "700px", echo = FALSE}
-knitr::include_graphics("simple-markov-cohort-model.png")
+```{r, message = FALSE, warning=FALSE, results='hide'}
+library("hesim")
 ```
+
 
 # Define the model
 ## Data
-Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We set up the analysis for two treatment strategies and one representative patient.
+Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We continue to run an analysis for two treatment strategies ("SOC" and the "New" treatment) and one representative 25-year old patient.
 
 ```{r, warning = FALSE, message = FALSE}
-library("hesim")
-library("data.table")
-
-strategies <- data.table(strategy_id = 1:2,
-                         strategy_name = c("Monotherapy", "Combination therapy"))
-patients <- data.table(patient_id = 1)
-hesim_dat <- hesim_data(strategies = strategies,
-                        patients = patients)
+strategies <- data.frame(
+  strategy_id = 1:2,
+  strategy_name = c("SOC", "New")
+)
+patients <- data.frame(
+  patient_id = 1,
+  age = 25
+)
+hesim_dat <- hesim_data(
+  strategies = strategies,
+  patients = patients
+)
 print(hesim_dat)
 ```
 
@@ -93,100 +59,84 @@ head(data)
 ```
 
 ## Parameters
-Counts of transitions at yearly intervals between each of the 4 health states were available from a longitudinal dataset from Chelsea and Westminister hospital, which will be used to define the transition probabilities from state $r$ to each of the 4 states (State A, State B, State C, and State D). 
+We will use the same list of parameters as in the previous tutorial.
 
-
-```{r}
-trans_mono <- matrix(c(1251, 350, 116, 17,
-                       0, 731, 512, 15,
-                       0, 0, 1312, 437,
-                       0, 0, 0, 469),
-                      ncol = 4, nrow = 4, byrow = TRUE)
-colnames(trans_mono) <- rownames(trans_mono) <-  c("A", "B", "C", "D")
-print(trans_mono)
+```{r, include = FALSE, results = "hide"}
+transitions_soc <- matrix(
+  c(848, 150, 0,   2,
+    450, 355, 95,  5,
+    0,   0,   784, 16,
+    0,   0,   0,   23),
+  nrow = 4, byrow = TRUE)
+state_names <- c("H", "S1", "S2", "D")
+colnames(transitions_soc) <- rownames(transitions_soc) <- tolower(state_names)
 ```
 
 
-Treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. We work with the log relative risk since it is approximately normally distributed. The estimated relative risk of disease progression is 0.509 (95% CI 0.365 to 0.710). 
-
-The cost-effectiveness analysis is based on life-years, meaning that each health state is assigned a utility value of 1. The costs of zidovudine and lamivudine are \$2,278 and \$2,086.50, respectively. Medical costs are split into direct medical and community medical costs.
-
-The parameter estimates are stored in a list.
-
 ```{r}
 params <- list(
-  alpha_mono = trans_mono, 
-  lrr_mean = log(.509), 
-  lrr_lower <- log(.365),
-  lrr_upper = log(.710),
-  u = 1,
-  c_zido = 2278,
-  c_lam = 2086.50,
-  c_dmed_mean = c(A = 1701, B = 1774, C = 6948),
-  c_cmed_mean = c(A = 1055, B = 1278, C = 2059)
+  alpha_soc = transitions_soc,
+  lrr_mean = log(.8),
+  lrr_lower = log(.71),
+  lrr_upper = log(.9),
+  c_medical = c(H = 2000, S1 = 4000, S2 = 15000),
+  c_soc = 2000,
+  c_new = 12000,
+  u = c(H = 1, S1 = .075, S2 = 0.5)
 )
 ```
 
 ## Random number generation
-To perform a PSA, it is necessary to draw samples of the parameters from suitable probability distributions. While the probability distributions could have been drawn manually and stored in the `params` object above, it can be more easily done by using random number generation functions with `define_rng()`. 
-
-We draw the transition probabilities with monotherapy from a dirichlet distribution and the relative risk  from a lognormal distribution. Drug costs and utility are assumed to be fixed while medical costs are drawn from gamma distributions.
-
-Sampled parameter values are stored in a list, meaning that samples for each parameter can be stored as either a vector or matrix. For instance, we sample medical costs for each (non-death) health state from gamma distributions and they a stored in a matrix (one row for each sample and one column for each health state). Likewise, the parameters of each cell in the transition probability matrix are store in a matrix, with parameters of the matrix ordered rowwise across the columns. On the other hand, samples of the relatve risk are stored in a vector. 
+The random number generation process for the PSA is once again defined using `define_rng()`. 
 
 ```{r}
 rng_def <- define_rng({
   lrr_se <- (lrr_upper - lrr_lower)/(2 * qnorm(.975)) # Local object 
                                                       # not returned
   list( # Parameters to return
-    p_mono = dirichlet_rng(alpha_mono),
-    rr_comb = lognormal_rng(lrr_mean, lrr_se),
-    c_zido = c_zido,
-    c_lam = c_lam,
-    c_dmed = gamma_rng(mean = c_dmed_mean, sd = c_dmed_mean),
-    c_cmed = gamma_rng(mean = c_cmed_mean, sd = c_cmed_mean),
-    u = u
+    p_soc = dirichlet_rng(alpha_soc),
+    rr_new = lognormal_rng(lrr_mean, lrr_se),
+    c_medical = gamma_rng(mean = c_medical, sd = c_medical),
+    c_soc = c_soc,
+    c_new = c_new,
+    u = fixed(u)
   )
 }, n = 1000)
 ```
 
 ## Transformed parameters
-The next step is to "transform" the parameters for use in the economic model using `define_tparams()`. This typically involves modeling them as a function of the treatment strategies and patient (i.e.,  the `data`). To maximize computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.
+The next step in `hesim` is to "transform" the parameters for use in the economic model using `define_tparams()`. This typically involves modeling them as a function of the treatment strategies and patient (i.e.,  the `data`). To maximize computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.
 
-An important helper function is `tpmatrix()`, which allows users to define transition matrices as a function of other parameters. In this example "vectorized" transition probabilities are defined in terms of the transition matrix for monotherapy (`p_mono`) and the relative risk (`rr`). The relative risk is simply 1 for monotherapy (since the corresponding transition matrix is just `p_mono`) and equal to `rr_comb` for combination therapy. 
+A `define_tparams()` block must return a named list with the following possible elements:
 
-The only costs in the model that vary across treatment strategies (rather than just states) are drug costs. The monotherapy treatment strategy include the cost of zidovudine only whereas the combination therapy includes the costs of both zidovudine and lamivudine.
-
-Parameters may depend on time (since the start of the model) by using the package defined `time` variable. The `time` variable corresponds to the starting time of time intervals, which are specified using the `times` argument in `define_tparams()`. Since patients are only assumed to use lamivudine for two years, `rr_comb` and the costs of lamivudine are not applied beyond year 2.
+* **tpmatrix**: The transition probability matrix used to simulate transition probabilities in the economic model. 
+* **utility**: The utility values to attach to states and used to simulate quality-adjusted life-years in the economic model. Either a vector (in which case utility is the same in each health state) or a matrix with a column for each (non-death) health state.
+* **costs**: A named list of costs for each category used to simulate costs in the economic model. Each element of the list must be in the same format as utility.
 
 ```{r}
 tparams_def <- define_tparams({
   ## The treatment effect (relative risk) is transformed so that it varies by 
-  ## strategies and only applies for the first 2 years (Monotherapy is 
-  ## the reference strategy). Time intervals are closed on the left
-  ## and open on the right so we use strict equality.  
-  rr <- ifelse(strategy_name == "Monotherapy" | time > 2, 1, rr_comb)
+  ## strategies (SOC is the reference strategy)
+  rr <- ifelse(strategy_name == "SOC", 1, rr_new)
   
   list(
     tpmatrix = tpmatrix(
-      C, p_mono$A_B * rr, p_mono$A_C * rr, p_mono$A_D * rr,
-      0, C, p_mono$B_C * rr, p_mono$B_D * rr,
-      0, 0, C, p_mono$C_D * rr,
-      0, 0, 0, 1
+      C,          p_soc$h_s1 * rr, p_soc$h_s2 * rr,  p_soc$h_d * rr,
+      p_soc$s1_h, C,               p_soc$s1_s2 * rr, p_soc$s1_d * rr,
+      p_soc$s2_h, p_soc$s2_s1,     C,                p_soc$s2_d * rr,
+      0,          0,               0,                1
     ),
     utility = u,
     costs = list(
-        drug = ifelse(strategy_name == "Monotherapy" | time > 2,
-                    c_zido, c_zido + c_lam),
-        community_medical = c_cmed,
-        direct_medical = c_dmed
+      treatment = ifelse(strategy_name == "SOC", c_soc, c_new),
+      medical = c_medical
     )
   )
-}, times = c(2, Inf))
+})
 ```
 
 ## The model
-The model is defined using `define_model()` function. The names of transition probability matrix, utility, and cost objects are specified, as are the names of the health states.  
+The model is defined using `define_model()` function. The names of transition probability matrix, utility, and cost objects are specified.
 
 ```{r}
 mod_def <- define_model(tparams_def = tparams_def, 
@@ -202,66 +152,34 @@ econmod <- create_CohortDtstm(mod_def, data)
 ```
 
 ## Health state probabilities
-At the start of the model, all patients are assumed to be in State A (the default setting of the transition model of class `CohortDtstmTrans`). State occupancy probabilities are generated by simulating the discrete time Markov chain; as expected, patients survive longer with combination therapy. 
+State occupancy probabilities are generated by simulating the discrete time Markov chain. 
 
 ```{r simStateprobs, warning = FALSE, message = FALSE}
-econmod$sim_stateprobs(n_cycles = 20)
-
-# Plot
-library("ggplot2")
-theme_set(theme_bw())
-
-stateprob_summary <- econmod$stateprobs_[, .(prob_mean = mean(prob),
-                                              prob_lower = quantile(prob, .025),
-                                              prob_upper = quantile(prob, .975)),
-                                          by = c("strategy_id", "state_id", "t")]
-stateprob_summary[, strategy_name := factor(strategy_id,
-                                          labels = strategies$strategy_name)]
-ggplot(stateprob_summary, aes(x = t, y = prob_mean)) +
-  geom_line(aes(col = strategy_name)) +
-  geom_ribbon(aes(x = t, ymin = prob_lower, ymax = prob_upper,
-                  fill = strategy_name), alpha = .3) +
-  facet_wrap(~factor(state_id, labels = LETTERS[1:4])) +
-  xlab("Year") + ylab("Probability") +
-  scale_fill_discrete("Strategy") + scale_color_discrete("Strategy")
+econmod$sim_stateprobs(n_cycles = 85)
 ```
 
 ## Costs and QALYs
-Costs and quality-adjusted life-years (QALYs) are computed by integrating the previously simulated state probabilities. To maintain consistency with Chancellor et al., we approximate the integral with a right Riemann sum, which is simply a sum of costs and QALYs measured at the right endpoint of each interval (e.g., costs during model cycle 1 are measured at time 1 (rather than at say, time 0)).
+Costs and quality-adjusted life-years (QALYs) are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum.
 
 ```{r simStateVals}
-econmod$sim_qalys(dr = 0, integrate_method = "riemann_right")
-econmod$sim_costs(dr = 0.06, integrate_method = "riemann_right")
+econmod$sim_qalys(dr = 0.03, integrate_method = "riemann_left")
+econmod$sim_costs(dr = 0.03, integrate_method = "riemann_left")
 ```
 
-# Decision analysis
-Once output has been generated with an economic model, a decision analysis can be performed. Cost-effectiveness analyses can be performed using other R packages such as [BCEA](https://sites.google.com/a/statistica.it/gianluca/bcea) or directly with `hesim` as described in more detail [here](icea.html). `hesim` does not currently provide support for MCDA. 
-
-A decision analysis is performed by comparing combination therapy to monotherapy. 
+# Cost-effectiveness analysis
+Cost-effectiveness analyses can be performed directly from the simulation output with `hesim` as described in more detail [here](icea.html). Other R packages such as [BCEA](https://sites.google.com/a/statistica.it/gianluca/bcea) could also be considered. Here, we will consider a pairwise comparison between the new treatment and SOC with the `hesim::icea_pw()` function.
 
 ```{r icea}
 ce_sim <- econmod$summarize()
 wtp <- seq(0, 25000, 500)
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = 0, dr_costs = .06,
+icea_pw_out <- icea_pw(ce_sim, comparator = 1, 
+                       dr_qalys = 0.03, dr_costs = 0.03,
                        k = wtp)
 ```
 
-The incremental cost-effectiveness ratio (ICER) estimated using means from the PSA is $`r icer_tbl(icea_pw_out)["ICER", 2]`, which is very close to the estimate from the deterministic analysis from Chancellor et al.  
+Although `icea_pw()` allows users to summarize a PSA we will just create an ICER table using means from the PSA for now. An analysis of PSA output will be covered in a later tutorial.  
 
 ```{r icer}
-icer_tbl(icea_pw_out)
+icer_tbl(icea_pw_out, colnames = strategies$strategy_name) 
 ```
-
-A cost-effectiveness acceptability curve shows that the probability that combination therapy is more cost-effective than monotherapy increases quickly with the willingness to pay (WTP) for a QALY. At $10,000, the probability is `r icea_pw_out$ceac[k == 10000, prob]` and approaches 1 at slightly higher WTP values.   
-
-```{r ceac}
-ggplot(icea_pw_out$ceac, 
-       aes(x = k, y = prob, 
-           col = factor(strategy_id, labels = strategies$strategy_name[-1]))) +
-  geom_line()  + xlab("Willingness to pay") +
-  ylab("Probability cost-effective") +
-  scale_x_continuous(breaks = seq(0, max(wtp), 5000), label = scales::dollar) +
-  theme(legend.position = "bottom") + scale_colour_discrete(name = "Strategy")
-```
-
 
