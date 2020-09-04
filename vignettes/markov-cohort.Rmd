@@ -17,7 +17,7 @@ vignette: >
 The most commonly used model for cost-effectiveness analysis (CEA) is the cohort discrete time state transition model (cDTSTM), commonly referred to as a Markov cohort model. In this tutorial we demonstrate implementation with `R` of the simplest of cDSTMs, a time-homogeneous model with transition probabilities that are constant over time. The entire analysis can be run using [Base R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html) (i.e., without installing any packages). However, we will use the following packages to create a nice looking cost-effectiveness table. 
 
 ```{r}
-library("learnCEA")
+library("rcea")
 library("knitr")
 library("kableExtra")
 library("magrittr")
@@ -161,7 +161,7 @@ x_init %*%
 A for loop can be used to compute the state vector at each model cycle. Let's create a function to do this. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.
 
 ```{r}
-learnCEA::sim_markov_chain
+rcea::sim_markov_chain
 ```
 
 We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.
@@ -178,7 +178,7 @@ head(x_new)
 To compute discounted costs and QALYS, it is helpful to write a general function for computing a present value.
 
 ```{r}
-learnCEA::pv
+rcea::pv
 ```
 
 ### QALYs

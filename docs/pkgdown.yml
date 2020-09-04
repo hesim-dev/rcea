@@ -3,10 +3,10 @@ pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   decision-analysis: decision-analysis.html
-  individual-patient-simulation: individual-patient-simulation.html
+  markov-cohort-hesim: markov-cohort-hesim.html
+  markov-cohort-psa: markov-cohort-psa.html
+  markov-cohort: markov-cohort.html
+  mstate: mstate.html
   partitioned-survival-model: partitioned-survival-model.html
-  probabilistic-sensitivity-analysis: probabilistic-sensitivity-analysis.html
-  simple-markov-cohort-model-hesim: simple-markov-cohort-model-hesim.html
-  simple-markov-cohort-model: simple-markov-cohort-model.html
-last_built: 2020-07-31T04:48Z
+last_built: 2020-09-04T05:22Z
 
