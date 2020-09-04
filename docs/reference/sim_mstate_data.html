@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Present value — pv • rcea</title>
+<title>Simulate example multi-state data — sim_mstate_data • rcea</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="Present value — pv" />
-<meta property="og:description" content="Compute the present value of a numeric quantiy z given a discount rate
-dr and times t." />
+<meta property="og:title" content="Simulate example multi-state data — sim_mstate_data" />
+<meta property="og:description" content="Simulate a 3-state healthy-sick-dead dataset with
+right censoring using Weibull distributions for each transition." />
 
 
 
@@ -128,38 +128,28 @@ dr and times t." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Present value</h1>
-    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/pv.R'><code>R/pv.R</code></a></small>
-    <div class="hidden name"><code>pv.Rd</code></div>
+    <h1>Simulate example multi-state data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/sim_mstate_data.R'><code>R/sim_mstate_data.R</code></a></small>
+    <div class="hidden name"><code>sim_mstate_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute the present value of a numeric quantiy <code>z</code> given a discount rate
-<code>dr</code> and times <code>t</code>.</p>
+    <p>Simulate a 3-state healthy-sick-dead dataset with
+right censoring using Weibull distributions for each transition.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pv</span>(<span class='no'>z</span>, <span class='no'>dr</span>, <span class='no'>t</span>)</pre>
+    <pre class="usage"><span class='fu'>sim_mstate_data</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>2000</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>z</th>
-      <td><p>A numeric quantity.</p></td>
-    </tr>
-    <tr>
-      <th>dr</th>
-      <td><p>The discount rate.</p></td>
-    </tr>
-    <tr>
-      <th>t</th>
-      <td><p>A vector of times to compute the present value.</p></td>
+      <th>n</th>
+      <td><p>The number of patients to simulate.</p></td>
     </tr>
     </table>
 
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>pv</span>(<span class='fl'>1000</span>, <span class='kw'>dr</span> <span class='kw'>=</span> <span class='fl'>.03</span>, <span class='kw'>t</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>4</span>)</div><div class='output co'>#&gt; [1] 1000.0000  970.8738  942.5959  915.1417  888.4870</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

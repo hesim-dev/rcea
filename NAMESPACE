@@ -2,3 +2,6 @@
 
 export(pv)
 export(sim_markov_chain)
+export(sim_mstate_data)
+import(data.table)
+import(hesim)

@@ -1,6 +1,6 @@
-Package: learnCEA
+Package: rcea
 Type: Package
-Title: Learn Cost-effectiveness Modeling with R
+Title: Cost-effectiveness Modeling with R
 Version: 0.0.0.9000
 Authors@R: c(
     person("Devin", "Incerti", , "devin.incerti@gmail.com", role = c("aut", "cre")),

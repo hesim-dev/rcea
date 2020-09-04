@@ -9,7 +9,7 @@ output:
 pkgdown:
   as_is: true
 vignette: >
-  %\VignetteIndexEntry{Incorporating Probabilistic Sensitivity Analysis}
+  %\VignetteIndexEntry{Incorporating Probabilistic Sensitivity Analysis in a Markov Cohort Model}
   %\VignetteEngine{fknitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -20,7 +20,7 @@ Probabilistic sensitivity analysis (PSA) is used to quantify the impact of param
 In this example, we extend the deterministic [simple Markov cohort model](simple-markov-cohort-model.html) to incorporate PSA. We will continue to rely primarily on Base `R` but will use the `hesim` package to help make the code more readable.
 
 ```{r, message = FALSE, warning=FALSE, results='hide'}
-library("learnCEA")
+library("rcea")
 library("hesim")
 library("data.table")
 library("magrittr")
