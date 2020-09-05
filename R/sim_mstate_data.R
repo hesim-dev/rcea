@@ -15,8 +15,7 @@ sim_mstate_data <- function(n = 2000){
     strategy_id = 1,
     patient_id = 1:n,
     female = rbinom(n, 1, .5),
-    strategy_name = sample(c("SOC", "New"), n, replace = TRUE,
-                           prob = c(.5, .5)),
+    new = rbinom(n, 1, .5),
     age = rnorm(n, mean = 60, sd = 5.5)
   )
   attr(data, "id_vars") <- c("strategy_id", "patient_id")
@@ -27,6 +26,7 @@ sim_mstate_data <- function(n = 2000){
     c(NA,  NA, 3),
     c(NA, NA, NA)
   )
+  trans_dt <- create_trans_dt(tmat)
   
   # Parameters for each transition
   get_scale <- function(shape, mean) {
@@ -38,12 +38,17 @@ sim_mstate_data <- function(n = 2000){
     return(x)
   }
   
-  params_wei <- function(shape, mean){
+  params_wei <- function(shape, mean, 
+                         beta_new = log(.6), 
+                         beta_female = log(1.4)){
     log_shape <- matrixv(log(shape))
     scale = get_scale(shape, mean)
-    log_scale <- matrixv(log(scale))
+    beta_intercept <- log(scale) - beta_new
+    scale_coefs <-  matrix(c(beta_intercept, beta_new, beta_female), 
+                           ncol = 3)
+    colnames(scale_coefs) <- c("intercept", "new", "female")
     params_surv(coefs = list(shape = log_shape,
-                             scale = log_scale),
+                             scale = scale_coefs),
                 dist = "weibull")
   }
     
@@ -56,7 +61,7 @@ sim_mstate_data <- function(n = 2000){
     params_wei(shape = 3, mean = 10),
     
     # 3. S -> D
-    params_wei(shape = 3.5, mean = 1/.006)
+    params_wei(shape = 3.5, mean = 1/.12)
   )
   
   # Create multi-state model
@@ -74,6 +79,7 @@ sim_mstate_data <- function(n = 2000){
     data[match(sim$patient_id, data$patient_id)][, patient_id := NULL],
     sim
   )
+  sim <- merge(sim, trans_dt, by = c("from", "to"))
   sim[, ":=" (intercept = NULL, strategy_id = NULL, status = 1, added = 0)]
   
   ## Add all possible states for each transition
@@ -96,6 +102,12 @@ sim_mstate_data <- function(n = 2000){
   sim[, time_stop := pmin(time_stop, 8)]
   sim <- sim[time_start <= 8]
 
+  ## Final data cleaning
+  sim[, strategy_id := ifelse(new == 0, 1, 2)]
+  sim[, strategy_name := factor(strategy_id, labels = c("SOC", "New"))]
+  sim[, new := NULL]
+  
   # Return
-  return(sim)
+  sim[, time := time_stop - time_start]
+  return(sim[, ])
 }
