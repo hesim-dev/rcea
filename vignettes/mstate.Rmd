@@ -1,5 +1,5 @@
 ---
-title: Semi-Markov Multi-state Models
+title: Semi-Markov Multi-state Model
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -9,31 +9,42 @@ output:
 pkgdown:
   as_is: true
 vignette: >
-  %\VignetteIndexEntry{Semi-Markov Multi-state Models}
+  %\VignetteIndexEntry{Semi-Markov Multi-state Model}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 # Overview
-Our sick-sicker Markov cohort was time homogeneous, meaning that transition probabilities were constant over time. Although the model could be extended to be time-inhomogeneous so that transition probabilities depend on time since the *start of the model*, transition probabilities cannot depend on prior history. The partitioned survival model are similarly limited in that it made the somewhat implausible assumption that transition probabilities between the healthy and death and sick and death states are equal. An alternative approach is to use a *semi-Markov* model which relaxes these assumptions by allowing transition probabilities to depend on *time since entering a new state*.
+In this tutorial we use a continuous time state transition model (CTSTM) and relax many of the assumptions made in cohort discrete time state transition models (DTSTMs). First, since the model is in continuous time we do not require model cycles. Second, we estimate the parameters of the health state transitions using a multi-state model so that the simulation model is completely integrated with an underlying statistical model. Third, we use individual patient simulation (IPS) to simulate a semi-Markov model, meaning that (unlike in a Markov model) transitions cannot depend on prior history. 
 
-If individual patient data is available, semi-Markov models can be parameterized using multi-state models, which are generalizations of survival models to more than 2 states that estimate hazard functions for each possible transition. This is ideal because it ensures that the simulation model is completely integrated with an underlying statistical model. To illustrate, we will continue the 3-state example from the partitioned survival model (PSM) but explicitly model the hazards of each transition: (1) healthy to sick, (2) healthy to dead, and (3) sick to dead. (Note that we could also fit a reversible model where there is also a transition from sick to healhy but we will not do that here to maintain consistency with the PSM.) 
+To illustrate, we simplify the sick-sicker model so that it only contains three health states: *Healthy*, *Sick*, and *Dead*. This is a useful specification because it mimics the three state model commonly used in oncology where patients transition from stable disease to progression to death. There are three transitions: (1) *Healthy* to *Sick*, (2) *Healthy* to *Dead*, and (3) *Sick* to *Dead*.
 
 ```{r, out.width = "600px", echo = FALSE}
 knitr::include_graphics("illness-death.png")
 ```
 
-In multi-state modeling, a semi-Markov model is referred to as a "clock reset" model since time resets to 0 each time a patient enters a new state. State occupancy probabilities in clock-reset models can only be simulated in a general fashion using individual-patient simulation. While individual-level simulations can be computationally intensive, they run very quickly in the `hesim` package because they are implemented fully in `C++` under the hood. `hesim` also simulates patients trajectories in continuous-time, which is faster than a discrete time approach. We refer to these types of models as individual-level continuous-time state transition models (iCTSTMs). You can learn more about them in the [`hesim` package vignettes](https://hesim-dev.github.io/hesim/articles/mstate.html).
+The following packages and settings will be used for the analysis. Note that while individual-level simulations can be computationally intensive, they run very quickly in `hesim` because they are implemented fully in `C++` under the hood. You can learn more by looking at the `hesim` [multi-state modeling](https://hesim-dev.github.io/hesim/articles/mstate.html) vignette. 
 
-
-# Model setup
-```{r}
+```{r, warning = FALSE, message = FALSE}
 library("hesim")
 library("data.table")
 library("ggplot2")
+library("flexsurv")
 
-set.seed(101)
+set.seed(101) # Make random number generation reproducible
 ```
+
+# Background
+Multi-state models are generalizations of survival models to more than 2 states that estimate hazard functions for each possible transition. Flexible survival models can be used for each transition ensuring that the rates at which patients transition between states are consistent with the available data. 
+
+Different assumptions can be made about the time scales used to determine the hazards. In a *clock forward* (i.e., *Markov*) model, transition hazards depends on time since entering the initial health state. Conversely, in a *clock reset* (i.e., *semi-Markov*) model, the hazards are a function of time since entering the current state (i.e., time resets to 0 each time a patient enters a new state). 
+
+Importantly, state occupancy probabilities in clock-reset models can only be simulated in a general fashion using IPS (although tunnel states can be used in a cohort model to approximate a semi-Markov process). In an IPS multiple patients are simulated and the expected value of outcomes is computed by averaging across patients. It is important to simulate enough patients so that the expected values are stable and not subject to significant Monte Carlo error. 
+
+We suggest the tutorial by [Putter et al.](https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2712) for additional details on multi-state modeling.
+
+# Model setup
+The transitions of a multi-state model in `hesim` must be characterized by a matrix where each element denotes a transition from a row to a column. If a transition is not possible it is marked with `NA`; otherwise, an integer denotes the transition number.  
 
 ```{r}
 tmat <- rbind(
@@ -44,6 +55,8 @@ tmat <- rbind(
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Sick", "Dead")
 print(tmat)
 ```
+
+As in the cohort model, we must specify the target population and treatment strategies of interest. Unlike the cohort model we simulate 1,000 patients which should be enough to produce reasonably stable results. We also explicitly define the health states, which we will use to model utility and costs. 
 
 ```{r}
 n_patients <- 1000
@@ -57,11 +70,13 @@ states <- data.table(
   state_id = c(1, 2),
   state_name = c("Healthy", "Sick") # Non-death health states
 )
+n_states <- nrow(states)
 
 strategies <- data.frame(
   strategy_id = 1:2,
   strategy_name = c("SOC", "New")
 )
+n_strategies <- nrow(strategies)
 
 hesim_dat <- hesim_data(
   strategies = strategies,
@@ -72,14 +87,19 @@ print(hesim_dat)
 ```
 
 # Parameter estimation
+In the cohort examples, we used parameter estimates derived from external sources. An alternative approach is to estimate the parameters directly with `R`. We will take that approach here for the multi-state model and estimate the transition specific hazards using `flexsurv`. Conversely, we will continue to use mean values for utility and costs.
+
 ## Multi-state model
+Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function `sim_mstate_data()` which leverages `hesim` to simulate a hypothetical cohort of 2000 patients for a healthy-sick-dead model.
 
 ```{r}
 data <- rcea::sim_mstate_data(n = 2000)
+data[patient_id %in% c(1, 2)]
 ```
 
+Multi-state models can be fit by estimating a joint survival model with interaction terms for different transition (see the `hesim` [introductory vignette](https://hesim-dev.github.io/hesim/articles/intro.html) for more details) or by fitting separate survival models for each transition. We will take the latter approach and and fit 3 parametric Weibull models. (Note that in an applied example you should compare the performance of multiple distributions.) 
+
 ```{r}
-library("flexsurv")
 n_trans <- max(tmat, na.rm = TRUE) # Number of transitions
 wei_fits <- vector(length = n_trans, mode = "list")
 for (i in 1:length(wei_fits)){
@@ -93,6 +113,8 @@ wei_fits <- flexsurvreg_list(wei_fits)
 ```
 
 ## Utility and costs
+In the cohort model, we assigned utility and cost values to health states using `hesim::define_tparams()` within the `hesim::define_model()` framework. An alternative (and more direct) approach is to use a `hesim::stateval_tbl`. We will continue to assume that the utility associated with each state follows a beta distribution. Utility in the *Sick* state is assumed to be equal to the average of utility in the sick and sicker states in the 4-state model. 
+
 ```{r}
 utility_tbl <- stateval_tbl(
   data.table(state_id = states$state_id,
@@ -101,16 +123,12 @@ utility_tbl <- stateval_tbl(
             ),
   dist = "beta",
   hesim_data = hesim_dat)
+print(utility_tbl)
 ```
 
-```{r}
-drugcost_tbl <- stateval_tbl(
-  data.table(strategy_id = strategies$strategy_id,
-            est = c(2000, 12000)
-            ),
-  dist = "fixed",
-  hesim_data = hesim_dat)
+Similarly, we continue to assume that medical costs vary by health state and follow a gamma distribution.
 
+```{r}
 medcost_tbl <- stateval_tbl(
   data.table(state_id = states$state_id,
              mean = c(H = 2000, S = 9500),
@@ -118,22 +136,49 @@ medcost_tbl <- stateval_tbl(
              ),
   dist = "gamma",
   hesim_data = hesim_dat)
+print(medcost_tbl)
+```
+
+We also use the same treatment costs as in the cohort model, but now allow costs to vary over time in the sick state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months and then \$10,000 thereafter. This approximate a common scenario in in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. It would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the *Sick* state.  
+
+
+```{r}
+n_times <- 2
+drugcost_tbl <- stateval_tbl(
+  data.table(
+    strategy_id = rep(strategies$strategy_id, each = n_states * n_times),
+    state_id = rep(rep(states$state_id, each = n_strategies), n_times),
+    time_start = rep(c(0, 3/12), n_states * n_strategies),
+    est = c(rep(2000, 4), # Costs are always the same with SOC
+            12000, 12000, 12000, 10000 # Costs with new drop after 3 months in Sick state
+          )  
+    ),
+  dist = "fixed",
+  hesim_data = hesim_dat)
+print(drugcost_tbl)
 ```
 
 # Simulation
 ## Constructing the economic model
+Economic models in `hesim` can be constructed in one of two ways: first, by defining the model using `hesim::define_model()`, and secondly, with explicit statistical models. We used the first approach for the cohort model but will use the latter here. 
+
+500 iterations are used for the probabilistic sensitivity analysis. (In an applied application you should check the sensitivity of the results to this number and may want to increase it.) 
 
 ```{r}
 n_samples <- 500
 ```
 
 ### Disease model
+Health state transition models in `hesim` are a function of input data (i.e., covariates) and a fitted multi-state model (or a parameter object such as `hesim::params_surv()`). Since we fit separate models for each transition, the input data consists of one observation for each treatment strategy and patient combination (joint models consist of one observation for each treatment strategy, patient, and transition combination). The data can be created easily by using the `hesim::expand()` function to expand the `hesim_data` object created above.
 
 ```{r}
 transmod_data <- expand(hesim_dat,
                         by = c("strategies", "patients"))
 head(transmod_data)
 ```
+
+In addition to the input data and model, we must also specify the viable transitions, the clock ("reset" or "forward"), and the starting age of each simulated patient (so that we can control the maximum age they can live to and ensure that they do not live to unrealistically high ages).
+
 ```{r}
 transmod <- create_IndivCtstmTrans(wei_fits, transmod_data,
                                    trans_mat = tmat, n = n_samples,
@@ -142,6 +187,7 @@ transmod <- create_IndivCtstmTrans(wei_fits, transmod_data,
 ```
 
 ### Utility and cost models
+Since the utility and cost models are based on predicted means (see `hesim::tparams_mean()`), they do not include covariates and therefore do not require input data. The cost and utility models can therefore be constructed directly from the utility and cost tables.
 
 ```{r}
 # Utility
@@ -155,6 +201,7 @@ costmods <- list(Drug = drugcostmod,
 ```
 
 ### Combining the disease progression, cost, and utility models
+In the cohort model we initialized the economic model from a `model_def` object (the output of `define_model()`) and the separate the transition, utility, and cost models were constructed under the hood. We do that directly here.
 
 ```{r}
 econmod <- IndivCtstm$new(trans_model = transmod,
@@ -165,17 +212,21 @@ econmod <- IndivCtstm$new(trans_model = transmod,
 ## Simulating outcomes
 
 ### Disease progression
+Disease progression is simulated using the `$sim_disease()` method, which simulates unique trajectories through the multi-state model for each patient, treatment strategy, and PSA sample. Patients transition `from` an old health state that was entered at time `time_start` `to` a new health state at time `time_stop`. 
 
 ```{r}
 econmod$sim_disease(max_age = 100)
 head(econmod$disprog_)
 ```
+
+The IPS can be summarized by computing state occupancy probabilities at different time points. We do that using `$sim_stateprobs()`. 
+
 ```{r}
-econmod$sim_stateprobs(t = seq(0, 20 , 1/12))
+econmod$sim_stateprobs(t = seq(0, 30 , 1/12))
 ```
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 4}
-# Short funtion add create state name variable to data.tabale
+# Short function add create state name variable to data.table
 add_state_name <- function(x){
   x[, state_name := factor(state_id,
                            levels = 1:nrow(tmat),
@@ -199,30 +250,27 @@ ggplot(stprobs, aes(x = t, y = prob_mean, col = factor(strategy_id))) +
   theme_bw()
 ```
 
-### QALYs
+### QALYs and costs
+Like the cohort model, we can compute quality-adjusted life-years (QALYs) after simulating disease progression using the `$sim_qalys()` method. Let's compute QALYs for different discount rates, which might be useful for summarizing the impact of the new treatment on QALYs. 
 
 ```{r}
 econmod$sim_qalys(dr = c(0,.03))
 head(econmod$qalys_)
 ```
 
-### Costs
-
+Costs for each category are simulated in a similar fashion.
 ```{r}
 econmod$sim_costs(dr = 0.03)
 head(econmod$costs_)
 ```
 
 # Cost-effectiveness analysis
+As in the cohort model, cost-effectiveness analyses can be performed seamlessly from the simulation output.
 
 ```{r}
 ce_sim <- econmod$summarize()
 icea_pw_out <- icea_pw(ce_sim, comparator = 1, 
                        dr_qalys = .03, dr_costs = .03,
                        k = seq(0, 25000, 500))
+icer_tbl(icea_pw_out, colnames = strategies$strategy_name)
 ```
-
-```{r icer}
-icer_tbl(icea_pw_out, colnames = strategies$strategy_name) 
-```
-

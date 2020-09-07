@@ -2,11 +2,11 @@ pandoc: 2.7.3
 pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
-  decision-analysis: decision-analysis.html
+  cea: cea.html
   markov-cohort-hesim: markov-cohort-hesim.html
   markov-cohort-psa: markov-cohort-psa.html
   markov-cohort: markov-cohort.html
   mstate: mstate.html
   partitioned-survival-model: partitioned-survival-model.html
-last_built: 2020-09-04T05:22Z
+last_built: 2020-09-05T23:09Z
 

@@ -13,7 +13,7 @@ articles:
   - markov-cohort-hesim
   - partitioned-survival-model
   - mstate
-  - decision-analysis
+  - cea
 
 navbar:
   title: learnCEA
@@ -26,11 +26,11 @@ navbar:
         href: articles/markov-cohort-psa.html 
       - text: "Markov Cohort Model with hesim"
         href: articles/markov-cohort-hesim.html
+      - text: "Semi-Markov Multi-state Model"
+        href: articles/mstate.html 
       - text: "Partitioned Survival Model"
         href: articles/partitioned-survival-model.html
-      - text: "Semi-Markov Multi-state Models"
-        href: articles/mstate.html 
-      - text: "Decision Analysis"
-        href: articles/decision-analysis.html 
+      - text: "Cost-effectiveness Analysis"
+        href: articles/cea.html 
       - text: "---" 
       

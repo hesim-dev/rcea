@@ -54,13 +54,13 @@
       <a href="../articles/markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
     </li>
     <li>
+      <a href="../articles/mstate.html">Semi-Markov Multi-state Model</a>
+    </li>
+    <li>
       <a href="../articles/partitioned-survival-model.html">Partitioned Survival Model</a>
     </li>
     <li>
-      <a href="../articles/mstate.html">Semi-Markov Multi-state Models</a>
-    </li>
-    <li>
-      <a href="../articles/decision-analysis.html">Decision Analysis</a>
+      <a href="../articles/cea.html">Cost-effectiveness Analysis</a>
     </li>
     <li class="divider">
   </ul>
@@ -88,7 +88,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-09-03</h4>
+            <h4 class="date">2020-09-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/markov-cohort-psa.Rmd"><code>vignettes/markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>markov-cohort-psa.Rmd</code></div>
@@ -147,7 +147,7 @@
 <div id="utility" class="section level2">
 <h2 class="hasAnchor">
 <a href="#utility" class="anchor"></a><span class="header-section-number">2.4</span> Utility</h2>
-<p>The utility associated with each state is assumed to follow a beta distribution, which is bounded between 0 and 1. The beta distribution is defined in terms of 2 shape parameters, but like the gamma distribution , these can be derived using the <a href="https://hesim-dev.github.io/hesim/reference/mom_beta.html">method of moments</a>. We assume that the mean (standard error) of utility is estimated to be <span class="math inline">\(1\)</span> <span class="math inline">\((0.0)\)</span>, <span class="math inline">\(0.75\)</span> <span class="math inline">\((0,03)\)</span>, <span class="math inline">\(0.5\)</span> <span class="math inline">\((0.05)\)</span>, and <span class="math inline">\(0\)</span> <span class="math inline">\((0.0)\)</span> in state H, S1, S2, and D, respectively.</p>
+<p>The utility associated with each state is assumed to follow a beta distribution, which is bounded between 0 and 1. The beta distribution is defined in terms of 2 shape parameters, but like the gamma distribution , these can be derived using the <a href="https://hesim-dev.github.io/hesim/reference/mom_beta.html">method of moments</a>. We assume that the mean (standard error) of utility is estimated to be <span class="math inline">\(1\)</span> <span class="math inline">\((0.0)\)</span>, <span class="math inline">\(0.75\)</span> <span class="math inline">\((0.03)\)</span>, <span class="math inline">\(0.5\)</span> <span class="math inline">\((0.05)\)</span>, and <span class="math inline">\(0\)</span> <span class="math inline">\((0.0)\)</span> in state H, S1, S2, and D, respectively.</p>
 </div>
 <div id="combining-the-parameters" class="section level2">
 <h2 class="hasAnchor">
@@ -161,7 +161,8 @@
   <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">4000</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">15000</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0</span>),
   <span class="kw">c_soc</span> <span class="kw">=</span> <span class="fl">2000</span>,
   <span class="kw">c_new</span> <span class="kw">=</span> <span class="fl">12000</span>,
-  <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">.075</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">0.5</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0</span>)
+  <span class="kw">u_mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">.075</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">0.5</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0</span>),
+  <span class="kw">u_se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0.0</span>)
 )</pre></body></html></div>
 </div>
 </div>
@@ -182,7 +183,7 @@
     <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">gamma_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">c_medical</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">c_medical</span>),
     <span class="kw">c_soc</span> <span class="kw">=</span> <span class="no">c_soc</span>,
     <span class="kw">c_new</span> <span class="kw">=</span> <span class="no">c_new</span>,
-    <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">fixed</a></span>(<span class="no">u</span>)
+    <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">beta_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">u_mean</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">u_se</span>)
   )
 }, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">1000</span>)
 <span class="no">params_rng</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">eval_rng</a></span>(<span class="no">rng_def</span>, <span class="kw">params</span> <span class="kw">=</span> <span class="no">params</span>)
@@ -190,20 +191,20 @@
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">params_rng</span>)</pre></body></html></div>
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">params_rng</span>$<span class="no">p_soc</span>))</pre></body></html></div>
-<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8612458 0.1375949    0 0.0011593836 0.5131702 0.3858843 0.09701380
-## [2,] 0.8252254 0.1724253    0 0.0023493130 0.5127723 0.3847997 0.09870490
-## [3,] 0.8381991 0.1599599    0 0.0018409772 0.4999830 0.3915388 0.10562694
-## [4,] 0.8826633 0.1151194    0 0.0022173358 0.4999700 0.3859576 0.10935502
-## [5,] 0.8457135 0.1441821    0 0.0101044100 0.5008412 0.3973101 0.09194161
-## [6,] 0.8517620 0.1476122    0 0.0006257731 0.4998213 0.3912158 0.10442167
+<pre><code>##            h_h      h_s1 h_s2         h_d      s1_h     s1_s1      s1_s2
+## [1,] 0.8465258 0.1518482    0 0.001626073 0.4919712 0.4083970 0.09689744
+## [2,] 0.8574148 0.1410294    0 0.001555796 0.4739394 0.3960019 0.12336795
+## [3,] 0.8413888 0.1565800    0 0.002031265 0.4879397 0.3876246 0.11512905
+## [4,] 0.8533533 0.1454317    0 0.001215029 0.4999302 0.3746727 0.11669777
+## [5,] 0.8255106 0.1737578    0 0.000731540 0.4805120 0.4027899 0.11089429
+## [6,] 0.8448607 0.1535665    0 0.001572807 0.5156482 0.3910831 0.09041047
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.003931729    0     0 0.9800797 0.01992025   0    0    0   1
-## [2,] 0.003723091    0     0 0.9764488 0.02355119   0    0    0   1
-## [3,] 0.002851270    0     0 0.9668467 0.03315332   0    0    0   1
-## [4,] 0.004717396    0     0 0.9733926 0.02660742   0    0    0   1
-## [5,] 0.009907077    0     0 0.9762138 0.02378616   0    0    0   1
-## [6,] 0.004541234    0     0 0.9860973 0.01390269   0    0    0   1</code></pre>
+## [1,] 0.002734421    0     0 0.9853966 0.01460336   0    0    0   1
+## [2,] 0.006690830    0     0 0.9829728 0.01702721   0    0    0   1
+## [3,] 0.009306679    0     0 0.9762774 0.02372260   0    0    0   1
+## [4,] 0.008699266    0     0 0.9791861 0.02081386   0    0    0   1
+## [5,] 0.005803824    0     0 0.9832927 0.01670734   0    0    0   1
+## [6,] 0.002858241    0     0 0.9783119 0.02168807   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
