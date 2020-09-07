@@ -18,6 +18,8 @@ articles:
 navbar:
   title: learnCEA
   left:
+  - text: "Reference"
+    href: reference/index.html
   - text: "Tutorials"
     menu:
       - text: "Simple Markov Cohort Model"

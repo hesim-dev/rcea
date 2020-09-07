@@ -37,6 +37,9 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Tutorials
@@ -88,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Markov Cohort Model wth hesim</h1>
             
-            <h4 class="date">2020-09-06</h4>
+            <h4 class="date">2020-09-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/markov-cohort-hesim.Rmd"><code>vignettes/markov-cohort-hesim.Rmd</code></a></small>
       <div class="hidden name"><code>markov-cohort-hesim.Rmd</code></div>
@@ -246,12 +249,12 @@
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr category      qalys
-## 1:      1           1          1      1        1 0.03    qalys 15.0953836
-## 2:      1           1          1      1        2 0.03    qalys  0.4901545
-## 3:      1           1          1      1        3 0.03    qalys  3.6333215
-## 4:      1           2          1      1        1 0.03    qalys 18.9267450
-## 5:      1           2          1      1        2 0.03    qalys  0.4732228
-## 6:      1           2          1      1        3 0.03    qalys  2.7821539</code></pre>
+## 1:      1           1          1      1        1 0.03    qalys 14.7454736
+## 2:      1           1          1      1        2 0.03    qalys  0.1794085
+## 3:      1           1          1      1        3 0.03    qalys  3.7048544
+## 4:      1           2          1      1        1 0.03    qalys 17.1417959
+## 5:      1           2          1      1        2 0.03    qalys  0.1778280
+## 6:      1           2          1      1        3 0.03    qalys  3.1796442</code></pre>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)</pre></body></html></div>
 </div>
 </div>
@@ -266,10 +269,10 @@
 <p>Although <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw()</a></code> allows users to summarize a PSA we will just create an ICER table using means from the PSA for now. An analysis of PSA output will be covered in a later tutorial.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.09 (1.03, 3.14)"           
-## Incremental costs "-" "266,737 (210,810, 296,919)"  
-## Incremental NMB   "-" "-162,367 (-220,016, -77,412)"
-## ICER              "-" "127,784"                     
+## Incremental QALYs "-" "2.07 (1.04, 3.18)"           
+## Incremental costs "-" "267,201 (215,829, 295,106)"  
+## Incremental NMB   "-" "-163,928 (-218,445, -90,851)"
+## ICER              "-" "129,367"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>
