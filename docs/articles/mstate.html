@@ -37,6 +37,9 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Tutorials
@@ -88,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Semi-Markov Multi-state Model</h1>
             
-            <h4 class="date">2020-09-06</h4>
+            <h4 class="date">2020-09-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/mstate.Rmd"><code>vignettes/mstate.Rmd</code></a></small>
       <div class="hidden name"><code>mstate.Rmd</code></div>
@@ -194,19 +197,21 @@
 <div id="multi-state-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#multi-state-model" class="anchor"></a><span class="header-section-number">4.1</span> Multi-state model</h2>
-<p>Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function <code><a href="../reference/sim_mstate_data.html">sim_mstate_data()</a></code> which leverages <code>hesim</code> to simulate a hypothetical cohort of 2000 patients for a healthy-sick-dead model.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="fu"><a href="../reference/sim_mstate_data.html">sim_mstate_data</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">2000</span>)
+<p>Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function <code>sim_mstate_data()</code> which leverages <code>hesim</code> to simulate a hypothetical cohort of 2000 patients for a healthy-sick-dead model.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="fu"><a href="../reference/sim_mstate3_data.html">sim_mstate3_data</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">2000</span>)
 <span class="no">data</span>[<span class="no">patient_id</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>)]</pre></body></html></div>
-<pre><code>##    from to female      age patient_id final time_start time_stop transition_id
-## 1:    1  2      1 54.37365          1     0          0         8             1
-## 2:    1  3      1 54.37365          1     0          0         8             1
-## 3:    1  2      1 58.93437          2     0          0         8             2
-## 4:    1  3      1 58.93437          2     1          0         8             2
-##    status strategy_id strategy_name time
-## 1:      0           2           New    8
-## 2:      0           2           New    8
-## 3:      0           1           SOC    8
-## 4:      0           1           SOC    8</code></pre>
+<pre><code>##    from to female      age patient_id final time_start time_stop status
+## 1:    1  2      1 54.37365          1     0    0.00000  11.66523      1
+## 2:    1  3      1 54.37365          1     0    0.00000  11.66523      0
+## 3:    2  3      1 54.37365          1     1   11.66523  15.00000      0
+## 4:    1  2      1 58.93437          2     0    0.00000  15.00000      0
+## 5:    1  3      1 58.93437          2     1    0.00000  15.00000      0
+##    transition_id strategy_id strategy_name      time
+## 1:             1           2           New 11.665231
+## 2:             2           2           New 11.665231
+## 3:             3           2           New  3.334769
+## 4:             1           1           SOC 15.000000
+## 5:             2           1           SOC 15.000000</code></pre>
 <p>Multi-state models can be fit by estimating a joint survival model with interaction terms for different transition (see the <code>hesim</code> <a href="https://hesim-dev.github.io/hesim/articles/intro.html">introductory vignette</a> for more details) or by fitting separate survival models for each transition. We will take the latter approach and and fit 3 parametric Weibull models. (Note that in an applied example you should compare the performance of multiple distributions.)</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">n_trans</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">tmat</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="co"># Number of transitions</span>
 <span class="no">wei_fits</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(<span class="kw">length</span> <span class="kw">=</span> <span class="no">n_trans</span>, <span class="kw">mode</span> <span class="kw">=</span> <span class="st">"list"</span>)
@@ -332,12 +337,12 @@
 <div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_disease</span>(<span class="kw">max_age</span> <span class="kw">=</span> <span class="fl">100</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">disprog_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id from to final time_start time_stop
-## 1:      1           1          1      1    1  3     1   0.000000  8.547690
-## 2:      1           1          2      1    1  2     0   0.000000  2.740025
-## 3:      1           1          2      1    2  3     1   2.740025 14.654683
-## 4:      1           1          3      1    1  2     0   0.000000  7.151150
-## 5:      1           1          3      1    2  3     1   7.151150 26.324771
-## 6:      1           1          4      1    1  2     0   0.000000 12.604367</code></pre>
+## 1:      1           1          1      1    1  2     0   0.000000 10.270374
+## 2:      1           1          1      1    2  3     1  10.270374 15.265547
+## 3:      1           1          2      1    1  2     0   0.000000  1.405695
+## 4:      1           1          2      1    2  3     1   1.405695  8.443941
+## 5:      1           1          3      1    1  2     0   0.000000  3.826669
+## 6:      1           1          3      1    2  3     1   3.826669 17.575081</code></pre>
 <p>The IPS can be summarized by computing state occupancy probabilities at different time points. We do that using <code>$sim_stateprobs()</code>.</p>
 <div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_stateprobs</span>(<span class="kw">t</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">30</span> , <span class="fl">1</span>/<span class="fl">12</span>))</pre></body></html></div>
 <p><img src="mstate_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
@@ -349,22 +354,22 @@
 <div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">.03</span>))
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id grp_id state_id dr     qalys       lys
-## 1:      1           1      1        1  0  7.333490  7.333490
-## 2:      1           1      1        2  0  5.282375  7.995782
-## 3:      1           2      1        1  0 11.858581 11.858581
-## 4:      1           2      1        2  0  6.594848  9.982434
-## 5:      2           1      1        1  0  7.260854  7.260854
-## 6:      2           1      1        2  0  3.838045  5.556297</code></pre>
+## 1:      1           1      1        1  0  6.826347  6.826347
+## 2:      1           1      1        2  0  5.506157  8.334513
+## 3:      1           2      1        1  0 11.260634 11.260634
+## 4:      1           2      1        2  0  9.218637 13.953990
+## 5:      2           1      1        1  0  6.903153  6.903153
+## 6:      2           1      1        2  0  5.416277  7.841088</code></pre>
 <p>Costs for each category are simulated in a similar fashion.</p>
 <div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
-<pre><code>##    sample strategy_id grp_id state_id   dr category      costs
-## 1:      1           1      1        1 0.03     Drug  12855.508
-## 2:      1           1      1        2 0.03     Drug  10401.950
-## 3:      1           2      1        1 0.03     Drug 115346.101
-## 4:      1           2      1        2 0.03     Drug  54735.910
-## 5:      2           1      1        1 0.03     Drug  12772.939
-## 6:      2           1      1        2 0.03     Drug   7765.597</code></pre>
+<pre><code>##    sample strategy_id grp_id state_id   dr category     costs
+## 1:      1           1      1        1 0.03     Drug  12041.74
+## 2:      1           1      1        2 0.03     Drug  11616.02
+## 3:      1           2      1        1 0.03     Drug 110147.39
+## 4:      1           2      1        2 0.03     Drug  77654.61
+## 5:      2           1      1        1 0.03     Drug  12150.26
+## 6:      2           1      1        2 0.03     Drug  10999.10</code></pre>
 </div>
 </div>
 </div>
@@ -378,10 +383,10 @@
                        <span class="kw">k</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">25000</span>, <span class="fl">500</span>))
 <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                         
-## Incremental QALYs "-" "3.49 (2.40, 4.53)"         
-## Incremental costs "-" "152,391 (125,763, 195,642)"
-## Incremental NMB   "-" "21,958 (-14,094, 59,000)"  
-## ICER              "-" "43,703"                    
+## Incremental QALYs "-" "4.42 (3.94, 5.01)"         
+## Incremental costs "-" "191,254 (164,247, 249,102)"
+## Incremental NMB   "-" "29,925 (-29,270, 66,594)"  
+## ICER              "-" "43,235"                    
 ## Conclusion        "-" "Cost-effective"</code></pre>
 </div>
   </div>

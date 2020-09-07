@@ -93,7 +93,7 @@ In the cohort examples, we used parameter estimates derived from external source
 Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function `sim_mstate_data()` which leverages `hesim` to simulate a hypothetical cohort of 2000 patients for a healthy-sick-dead model.
 
 ```{r}
-data <- rcea::sim_mstate_data(n = 2000)
+data <- rcea::sim_mstate3_data(n = 2000)
 data[patient_id %in% c(1, 2)]
 ```
 
