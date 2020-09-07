@@ -15,7 +15,7 @@ vignette: >
 ---
 
 # Overview
-This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](probabilistic-sensitivity-analysis.html). More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
+This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](probabilistic-sensitivity-analysis.html) using `hesim`. More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
 
 Markov cohort models (time-homogeneous and time-homogeneous) are referred to as cohort discrete time state transition models (`cDTSTMs`) in `hesim`. They are most conveniently simulated with a four step process by defining:
 
@@ -82,7 +82,8 @@ params <- list(
   c_medical = c(H = 2000, S1 = 4000, S2 = 15000),
   c_soc = 2000,
   c_new = 12000,
-  u = c(H = 1, S1 = .075, S2 = 0.5)
+  u_mean = c(H = 1, S1 = .075, S2 = 0.5),
+  u_se = c(H = 0, S1 = 0.03, S2 = 0.05)
 )
 ```
 
@@ -99,7 +100,7 @@ rng_def <- define_rng({
     c_medical = gamma_rng(mean = c_medical, sd = c_medical),
     c_soc = c_soc,
     c_new = c_new,
-    u = fixed(u)
+    u = beta_rng(mean = u_mean, sd = u_se)
   )
 }, n = 1000)
 ```
@@ -161,8 +162,12 @@ econmod$sim_stateprobs(n_cycles = 85)
 ## Costs and QALYs
 Costs and quality-adjusted life-years (QALYs) are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum.
 
-```{r simStateVals}
+```{r simQALYs}
 econmod$sim_qalys(dr = 0.03, integrate_method = "riemann_left")
+head(econmod$qalys_)
+```
+
+```{r simCosts}
 econmod$sim_costs(dr = 0.03, integrate_method = "riemann_left")
 ```
 
@@ -171,10 +176,9 @@ Cost-effectiveness analyses can be performed directly from the simulation output
 
 ```{r icea}
 ce_sim <- econmod$summarize()
-wtp <- seq(0, 25000, 500)
 icea_pw_out <- icea_pw(ce_sim, comparator = 1, 
                        dr_qalys = 0.03, dr_costs = 0.03,
-                       k = wtp)
+                       k = seq(0, 25000, 500))
 ```
 
 Although `icea_pw()` allows users to summarize a PSA we will just create an ICER table using means from the PSA for now. An analysis of PSA output will be covered in a later tutorial.  

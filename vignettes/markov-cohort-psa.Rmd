@@ -55,7 +55,7 @@ Medical costs are of often assumed to follow a gamma distribution because it can
 Treatment costs are fixed and equal to the costs in the deterministic example.
 
 ## Utility
-The utility associated with each state is assumed to follow a beta distribution, which is bounded between 0 and 1. The beta distribution is defined in terms of 2 shape parameters, but like the gamma distribution , these can be derived using the [method of moments](https://hesim-dev.github.io/hesim/reference/mom_beta.html). We assume that the mean (standard error) of utility is estimated to be $1$ $(0.0)$, $0.75$ $(0,03)$, $0.5$ $(0.05)$, and $0$ $(0.0)$ in state H, S1, S2, and D, respectively. 
+The utility associated with each state is assumed to follow a beta distribution, which is bounded between 0 and 1. The beta distribution is defined in terms of 2 shape parameters, but like the gamma distribution , these can be derived using the [method of moments](https://hesim-dev.github.io/hesim/reference/mom_beta.html). We assume that the mean (standard error) of utility is estimated to be $1$ $(0.0)$, $0.75$ $(0.03)$, $0.5$ $(0.05)$, and $0$ $(0.0)$ in state H, S1, S2, and D, respectively. 
 
 ## Combining the parameters
 All model parameters (transition probabilities, relative risk, costs, and utility) can be stored in a list for use in the simulation.
@@ -69,7 +69,8 @@ params <- list(
   c_medical = c(H = 2000, S1 = 4000, S2 = 15000, D = 0),
   c_soc = 2000,
   c_new = 12000,
-  u = c(H = 1, S1 = .075, S2 = 0.5, D = 0)
+  u_mean = c(H = 1, S1 = .075, S2 = 0.5, D = 0),
+  u_se = c(H = 0, S1 = 0.03, S2 = 0.05, D = 0.0)
 )
 ```
 
@@ -89,7 +90,7 @@ rng_def <- define_rng({
     c_medical = gamma_rng(mean = c_medical, sd = c_medical),
     c_soc = c_soc,
     c_new = c_new,
-    u = fixed(u)
+    u = beta_rng(mean = u_mean, sd = u_se)
   )
 }, n = 1000)
 params_rng <- eval_rng(rng_def, params = params)
