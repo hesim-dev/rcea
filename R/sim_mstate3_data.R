@@ -1,13 +1,43 @@
-#' Simulate example multi-state data
+#' Simulate example 3-state data
 #'
-#' Simulate a 3-state healthy-sick-dead dataset with  
-#' right censoring using Weibull distributions for each transition.
+#' Simulate example multi-state data for a 3-state healthy-sick-dead model 
+#' using Weibull distributions for each transition. Patients are 
+#' right censored after 15 years of followup. 
 #'
 #' @param n The number of patients to simulate.
+#' @param seed An integer to pass to `set.seed()`. If `NULL`, 
+#' then no seed is set. 
+#' @return Returns a `data.table` with multiple rows for patient. That is, 
+#' for a given patient there are rows for each possible transition from a given
+#' health state. The returned columns are as follows:
+#' \describe{
+#' \item{from}{The health state ID transitioned from.}
+#' \item{to}{he health state ID transitioned to.}
+#' \item{female}{`1` if female and `0` if male.}
+#' \item{age}{The age of the patient in years.}
+#' \item{patient_id}{The patient ID.}
+#' \item{final}{An indicator equal to 1 if a patient is in their final health 
+#'  state during the simulation and 0 otherwise.}
+#' \item{time_start}{The time at the start of the interval.}
+#' \item{time_stop}{The time and the end of the interval.}
+#' \item{time}{The duration of the interval: `time_stop` - `time_start`.}
+#' \item{status}{`1` if `time` is an observed transition and `0` if there was 
+#' right censoring.}
+#' \item{transition_id}{The transition ID representing a unique transition from
+#' `from` to `to`.}
+#' \item{strategy_id}{The treatment strategy ID.}
+#' \item{strategy_name}{The name of the treatment strategy. Either `"New` 
+#' or `"SOC`.}
+#' }
+#' 
+#' @examples 
+#' sim_mstate3_data(n = 3, seed = 101)
 #' @import hesim 
 #' @import data.table
 #' @export
-sim_mstate_data <- function(n = 2000){
+sim_mstate3_data <- function(n = 2000, seed = NULL){
+  
+  if (!is.null(seed)) set.seed(seed)
   
   # Data  
   data <- data.table(
@@ -79,13 +109,12 @@ sim_mstate_data <- function(n = 2000){
     data[match(sim$patient_id, data$patient_id)][, patient_id := NULL],
     sim
   )
-  sim <- merge(sim, trans_dt, by = c("from", "to"))
   sim[, ":=" (intercept = NULL, strategy_id = NULL, status = 1, added = 0)]
   
   ## Add all possible states for each transition
   ### Observed 1->2 add 1->3
   sim_13 <- sim[from == 1 & to == 2]
-  sim_13[, ":=" (to = 3, status = 0, final = 0, added = 1)]
+  sim_13[, ":=" (to = 3, status = 0, final = 0,  added = 1)]
   sim <- rbind(sim, sim_13)
   
   ### Observed 1->3 add 1->2
@@ -94,17 +123,20 @@ sim_mstate_data <- function(n = 2000){
   sim <- rbind(sim, sim_12)
   
   ### Sort and clean
+  sim <- merge(sim, trans_dt, by = c("from", "to")) # Add transition ID
   setorderv(sim, c("patient_id", "from", "to"))
   sim[, added := NULL]
   
   ## Add right censoring
-  sim[, status := ifelse(time_stop < 8, status, 0)]
-  sim[, time_stop := pmin(time_stop, 8)]
-  sim <- sim[time_start <= 8]
+  sim[, status := ifelse(time_stop < 15, status, 0)]
+  sim[, time_stop := pmin(time_stop, 15)]
+  sim <- sim[time_start <= 15]
 
   ## Final data cleaning
   sim[, strategy_id := ifelse(new == 0, 1, 2)]
-  sim[, strategy_name := factor(strategy_id, labels = c("SOC", "New"))]
+  sim[, strategy_name := factor(strategy_id, 
+                                levels = c(1, 2),
+                                labels = c("SOC", "New"))]
   sim[, new := NULL]
   
   # Return

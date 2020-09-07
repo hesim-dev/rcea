@@ -88,7 +88,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-09-05</h4>
+            <h4 class="date">2020-09-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/markov-cohort.Rmd"><code>vignettes/markov-cohort.Rmd</code></a></small>
       <div class="hidden name"><code>markov-cohort.Rmd</code></div>
@@ -242,7 +242,7 @@ NPV = \sum_{t} PV_t
 ##     }
 ##     return(x)
 ## }
-## &lt;bytecode: 0x7fe4fce96510&gt;
+## &lt;bytecode: 0x7f838911ab30&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -274,7 +274,7 @@ NPV = \sum_{t} PV_t
 ## {
 ##     z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7fe4fb0638a0&gt;
+## &lt;bytecode: 0x7f838a01f3a0&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">

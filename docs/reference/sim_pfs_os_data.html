@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulate example multi-state data — sim_mstate_data • rcea</title>
+<title>Simulate progression-free and overall survival — sim_pfs_os_data • rcea</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,10 @@
 
 
 
-<meta property="og:title" content="Simulate example multi-state data — sim_mstate_data" />
+<meta property="og:title" content="Simulate progression-free and overall survival — sim_pfs_os_data" />
 <meta property="og:description" content="Simulate a 3-state healthy-sick-dead dataset with
-right censoring using Weibull distributions for each transition." />
+sim_mstate3_date() and compute progression-free survival (PFS)
+and overall survival (OS)." />
 
 
 
@@ -128,17 +129,18 @@ right censoring using Weibull distributions for each transition." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Simulate example multi-state data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/sim_mstate_data.R'><code>R/sim_mstate_data.R</code></a></small>
-    <div class="hidden name"><code>sim_mstate_data.Rd</code></div>
+    <h1>Simulate progression-free and overall survival</h1>
+    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/sim_pfs_os.R'><code>R/sim_pfs_os.R</code></a></small>
+    <div class="hidden name"><code>sim_pfs_os_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Simulate a 3-state healthy-sick-dead dataset with
-right censoring using Weibull distributions for each transition.</p>
+<code>sim_mstate3_date()</code> and compute progression-free survival (PFS)
+and overall survival (OS).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sim_mstate_data</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>2000</span>)</pre>
+    <pre class="usage"><span class='fu'>sim_pfs_os_data</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>2000</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,9 +149,41 @@ right censoring using Weibull distributions for each transition.</p>
       <th>n</th>
       <td><p>The number of patients to simulate.</p></td>
     </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>An integer to pass to <code><a href='https://rdrr.io/r/base/Random.html'>set.seed()</a></code>. If <code>NULL</code>,
+then no seed is set.</p></td>
+    </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Returns a <code>data.table</code> with one rows for each patient.
+The returned columns are as follows:</p><dl'>
+<dt>patient_id</dt><dd><p>The patient ID.</p></dd>
+<dt>strategy_id</dt><dd><p>The treatment strategy ID.</p></dd>
+<dt>strategy_name</dt><dd><p>The name of the treatment strategy. Either <code>"New</code>
+or <code>"SOC</code>.</p></dd>
+<dt>female</dt><dd><p><code>1</code> if female and <code>0</code> if male.</p></dd>
+<dt>age</dt><dd><p>The age of the patient in years.</p></dd>
+<dt>pfs_time</dt><dd><p>Time to progression, death, or right censoring.</p></dd>
+<dt>pfs_status</dt><dd><p><code>1</code> if a progression or death event occured and <code>0</code>
+if there was right censoring.</p></dd>
+<dt>os_time</dt><dd><p>Time to death or right censoring.</p></dd>
+<dt>os_status</dt><dd><p><code>1</code> if a patient died and <code>0</code> if there was right censoring.</p></dd>
+
+</dl>
+
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>sim_pfs_os_data</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>101</span>)</div><div class='output co'>#&gt;    patient_id strategy_id strategy_name female      age  pfs_time pfs_status
+#&gt; 1:          1           2           New      0 61.17898  3.939316          1
+#&gt; 2:          2           1           SOC      0 61.70923  8.533489          1
+#&gt; 3:          3           1           SOC      1 66.45681 15.000000          0
+#&gt;    os_status  os_time
+#&gt; 1:         1 12.58914
+#&gt; 2:         0 15.00000
+#&gt; 3:         0 15.00000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

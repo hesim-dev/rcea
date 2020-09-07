@@ -243,15 +243,15 @@
 <h2 class="hasAnchor">
 <a href="#costs-and-qalys" class="anchor"></a><span class="header-section-number">3.2</span> Costs and QALYs</h2>
 <p>Costs and quality-adjusted life-years (QALYs) are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr category      qalys
-## 1:      1           1          1      1        1 0.03    qalys 15.4864564
-## 2:      1           1          1      1        2 0.03    qalys  0.1350743
-## 3:      1           1          1      1        3 0.03    qalys  3.2517626
-## 4:      1           2          1      1        1 0.03    qalys 18.0510463
-## 5:      1           2          1      1        2 0.03    qalys  0.1312790
-## 6:      1           2          1      1        3 0.03    qalys  2.6996855</code></pre>
+## 1:      1           1          1      1        1 0.03    qalys 15.0953836
+## 2:      1           1          1      1        2 0.03    qalys  0.4901545
+## 3:      1           1          1      1        3 0.03    qalys  3.6333215
+## 4:      1           2          1      1        1 0.03    qalys 18.9267450
+## 5:      1           2          1      1        2 0.03    qalys  0.4732228
+## 6:      1           2          1      1        3 0.03    qalys  2.7821539</code></pre>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)</pre></body></html></div>
 </div>
 </div>
@@ -266,10 +266,10 @@
 <p>Although <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw()</a></code> allows users to summarize a PSA we will just create an ICER table using means from the PSA for now. An analysis of PSA output will be covered in a later tutorial.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.08 (0.99, 3.20)"           
-## Incremental costs "-" "267,164 (215,390, 298,074)"  
-## Incremental NMB   "-" "-163,238 (-225,043, -87,692)"
-## ICER              "-" "128,536"                     
+## Incremental QALYs "-" "2.09 (1.03, 3.14)"           
+## Incremental costs "-" "266,737 (210,810, 296,919)"  
+## Incremental NMB   "-" "-162,367 (-220,016, -77,412)"
+## ICER              "-" "127,784"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>
