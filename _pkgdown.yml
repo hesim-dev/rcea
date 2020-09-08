@@ -11,7 +11,7 @@ articles:
   - markov-cohort
   - markov-cohort-psa
   - markov-cohort-hesim
-  - partitioned-survival-model
+  - psm
   - mstate
   - cea
 
@@ -31,7 +31,7 @@ navbar:
       - text: "Semi-Markov Multi-state Model"
         href: articles/mstate.html 
       - text: "Partitioned Survival Model"
-        href: articles/partitioned-survival-model.html
+        href: articles/psm.html
       - text: "Cost-effectiveness Analysis"
         href: articles/cea.html 
       - text: "---" 

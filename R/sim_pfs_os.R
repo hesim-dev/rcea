@@ -1,6 +1,6 @@
 #' Simulate progression-free and overall survival
 #'
-#' Simulate a 3-state healthy-sick-dead dataset with  
+#' Simulate a  multi-state dataset for a 3-state model with  
 #' `sim_mstate3_date()` and compute progression-free survival (PFS)
 #' and overall survival (OS).
 #'

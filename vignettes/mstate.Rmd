@@ -17,15 +17,16 @@ vignette: >
 # Overview
 In this tutorial we use a continuous time state transition model (CTSTM) and relax many of the assumptions made in cohort discrete time state transition models (DTSTMs). First, since the model is in continuous time we do not require model cycles. Second, we estimate the parameters of the health state transitions using a multi-state model so that the simulation model is completely integrated with an underlying statistical model. Third, we use individual patient simulation (IPS) to simulate a semi-Markov model, meaning that (unlike in a Markov model) transitions cannot depend on prior history. 
 
-To illustrate, we simplify the sick-sicker model so that it only contains three health states: *Healthy*, *Sick*, and *Dead*. This is a useful specification because it mimics the three state model commonly used in oncology where patients transition from stable disease to progression to death. There are three transitions: (1) *Healthy* to *Sick*, (2) *Healthy* to *Dead*, and (3) *Sick* to *Dead*.
+To illustrate, we simplify the sick-sicker model so that it only contains three health states and modify the states---*Stable*, *Progression*, and *Dead*---to mimic an oncology application where patients transition from stable disease to progression to death. There are three transitions: (1) *Stable* to *Progression*, (2) *Stable* to *Dead*, and (3) *Progression* to *Dead*.
 
 ```{r, out.width = "600px", echo = FALSE}
-knitr::include_graphics("illness-death.png")
+knitr::include_graphics("stable-progression-death.png")
 ```
 
 The following packages and settings will be used for the analysis. Note that while individual-level simulations can be computationally intensive, they run very quickly in `hesim` because they are implemented fully in `C++` under the hood. You can learn more by looking at the `hesim` [multi-state modeling](https://hesim-dev.github.io/hesim/articles/mstate.html) vignette. 
 
 ```{r, warning = FALSE, message = FALSE}
+library("rcea")
 library("hesim")
 library("data.table")
 library("ggplot2")
@@ -52,7 +53,7 @@ tmat <- rbind(
   c(NA, NA, 3),
   c(NA, NA, NA)
 )
-colnames(tmat) <- rownames(tmat) <- c("Healthy", "Sick", "Dead")
+colnames(tmat) <- rownames(tmat) <- c("Stable", "Progression", "Dead")
 print(tmat)
 ```
 
@@ -68,7 +69,7 @@ patients <- data.table(
 
 states <- data.table(
   state_id = c(1, 2),
-  state_name = c("Healthy", "Sick") # Non-death health states
+  state_name = c("Stable", "Progression") # Non-death health states
 )
 n_states <- nrow(states)
 
@@ -90,7 +91,7 @@ print(hesim_dat)
 In the cohort examples, we used parameter estimates derived from external sources. An alternative approach is to estimate the parameters directly with `R`. We will take that approach here for the multi-state model and estimate the transition specific hazards using `flexsurv`. Conversely, we will continue to use mean values for utility and costs.
 
 ## Multi-state model
-Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function `sim_mstate_data()` which leverages `hesim` to simulate a hypothetical cohort of 2000 patients for a healthy-sick-dead model.
+Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function `sim_mstate_data()` which leverages `hesim` to simulate a hypothetical cohort of 2000 patients for a stable-progression-death model.
 
 ```{r}
 data <- rcea::sim_mstate3_data(n = 2000)
@@ -113,13 +114,13 @@ wei_fits <- flexsurvreg_list(wei_fits)
 ```
 
 ## Utility and costs
-In the cohort model, we assigned utility and cost values to health states using `hesim::define_tparams()` within the `hesim::define_model()` framework. An alternative (and more direct) approach is to use a `hesim::stateval_tbl`. We will continue to assume that the utility associated with each state follows a beta distribution. Utility in the *Sick* state is assumed to be equal to the average of utility in the sick and sicker states in the 4-state model. 
+In the cohort model, we assigned utility and cost values to health states using `hesim::define_tparams()` within the `hesim::define_model()` framework. An alternative (and more direct) approach is to use a `hesim::stateval_tbl`. We will continue to assume that the utility associated with each state follows a beta distribution. 
 
 ```{r}
 utility_tbl <- stateval_tbl(
   data.table(state_id = states$state_id,
-             mean = c(H = 1, S = .625),
-             se = c(0, .05)
+             mean = c(H = .8, S = .6),
+             se = c(0.02, .05)
             ),
   dist = "beta",
   hesim_data = hesim_dat)
@@ -139,7 +140,7 @@ medcost_tbl <- stateval_tbl(
 print(medcost_tbl)
 ```
 
-We also use the same treatment costs as in the cohort model, but now allow costs to vary over time in the sick state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months and then \$10,000 thereafter. This approximate a common scenario in in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. It would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the *Sick* state.  
+Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months and then \$10,000 thereafter. This approximate a common scenario in in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.  
 
 
 ```{r}
@@ -150,7 +151,7 @@ drugcost_tbl <- stateval_tbl(
     state_id = rep(rep(states$state_id, each = n_strategies), n_times),
     time_start = rep(c(0, 3/12), n_states * n_strategies),
     est = c(rep(2000, 4), # Costs are always the same with SOC
-            12000, 12000, 12000, 10000 # Costs with new drop after 3 months in Sick state
+            12000, 12000, 12000, 10000 # Costs with new drop after 3 months in progression state
           )  
     ),
   dist = "fixed",
