@@ -1,0 +1,46 @@
+---
+title: "Partitioned Survival Model"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+pkgdown:
+  as_is: yes
+vignette: >
+  %\VignetteIndexEntry{Simple Markov Cohort Model (hesim)}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Overview
+While multi-state models can be used to estimate the parameters of a state transition model (STM) in a very flexible manner, data availability can make it difficult (or infeasible) to fit such a model. This is often the case when an evidence synthesis model based on summary level data is used to parameterize the STM. For example, in oncology, published articles of clinical trials often provide survival curves of progression-free survival (PFS) and overall survival (OS), but do not release information on time to event (and censoring) for each transition. In this setting partitioned survival analysis may consequently be a simpler approach.
+
+We will use the same packages as in the ["Semi-Markov Multi-state Model"](mstate.html) tutorial. 
+
+```{r, warning = FALSE, message = FALSE}
+library("rcea")
+library("hesim")
+library("data.table")
+library("ggplot2")
+library("flexsurv")
+```
+
+# Theory
+An 3-state partitioned survival model (PSM) simulates the probability that a patient is in each of 3 distinct health states at a given point of time when treated by a particular therapy. State membership is estimated from 2 survival curves (e.g., PFS and OS). Letting $S_{PFS}(t)$ be the PFS survival curve and $S_{OS}(t)$ be the OS curve, the probabilities of being in the Stable, Progression, and Death states at time $t$ are $S_{PFS}(t)$, $S_{OS}(t) - S_{PFS}(t)$, and $1 - S_{OS}(t)$, respectively. For a more general N-state case, refer to the [`hesim` vignette on partitioned survival models (PSMs)](https://hesim-dev.github.io/hesim/articles/psm.html) and the [NICE Decision Support report on partitioned survival analysis](http://nicedsu.org.uk/technical-support-documents/partitioned-survival-analysis-tsd/).
+
+Partitioned survival analysis can also be used to parameterize a time-inhomogeneous cohort discrete time state transition model (cDTSTM). This approach is identical to the PSM, except that discrete model cycles must be used. In a 3-state model, the transition probability matrix at time $t$ is given by, 
+
+$$
+\begin{pmatrix}
+C & p_1 - p_2 & p_2\\
+0 & C & p_2 \\
+0 & 0 & 1,
+\end{pmatrix}
+$$
+where $C$ is refers to complement of the sum of the remaining elements in a row and $p_1$ and $p_2$ are transition probabilities derived from survival curves. In the PFS and OS example with model cycles of length $u$, $p_1 =  1 - s_{PFS}(t)/s_{PFS}(t-u)$ and $p_2 = 1 - s_{OS}(t)/s_{OS}(t-u)$. From this matrix, one can immediately see that a PSM---in contrast to a multi-state model---make the implausible assumption that the probability of a transition from stable to death and from progression to death are equal. See the [`heemod` vignette on survival models](https://cran.r-project.org/web/packages/heemod/vignettes/j_survival.html) for an example cDTSTM based on a partitioned survival analysis.   
+
+
+
+

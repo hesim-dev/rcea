@@ -37,7 +37,7 @@ or \verb{"SOC}.}
 }
 }
 \description{
-Simulate example multi-state data for a 3-state healthy-sick-dead model
+Simulate example multi-state data for a 3-state model
 using Weibull distributions for each transition. Patients are
 right censored after 15 years of followup.
 }

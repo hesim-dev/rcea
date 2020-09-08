@@ -30,7 +30,7 @@ if there was right censoring.}
 }
 }
 \description{
-Simulate a 3-state healthy-sick-dead dataset with
+Simulate a  multi-state dataset for a 3-state model with
 \code{sim_mstate3_date()} and compute progression-free survival (PFS)
 and overall survival (OS).
 }

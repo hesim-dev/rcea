@@ -60,7 +60,7 @@
       <a href="../articles/mstate.html">Semi-Markov Multi-state Model</a>
     </li>
     <li>
-      <a href="../articles/partitioned-survival-model.html">Partitioned Survival Model</a>
+      <a href="../articles/psm.html">Partitioned Survival Model</a>
     </li>
     <li>
       <a href="../articles/cea.html">Cost-effectiveness Analysis</a>
@@ -104,10 +104,11 @@
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
 <p>In this tutorial we use a continuous time state transition model (CTSTM) and relax many of the assumptions made in cohort discrete time state transition models (DTSTMs). First, since the model is in continuous time we do not require model cycles. Second, we estimate the parameters of the health state transitions using a multi-state model so that the simulation model is completely integrated with an underlying statistical model. Third, we use individual patient simulation (IPS) to simulate a semi-Markov model, meaning that (unlike in a Markov model) transitions cannot depend on prior history.</p>
-<p>To illustrate, we simplify the sick-sicker model so that it only contains three health states: <em>Healthy</em>, <em>Sick</em>, and <em>Dead</em>. This is a useful specification because it mimics the three state model commonly used in oncology where patients transition from stable disease to progression to death. There are three transitions: (1) <em>Healthy</em> to <em>Sick</em>, (2) <em>Healthy</em> to <em>Dead</em>, and (3) <em>Sick</em> to <em>Dead</em>.</p>
-<p><img src="illness-death.png" width="600px"></p>
+<p>To illustrate, we simplify the sick-sicker model so that it only contains three health states and modify the states—<em>Stable</em>, <em>Progression</em>, and <em>Dead</em>—to mimic an oncology application where patients transition from stable disease to progression to death. There are three transitions: (1) <em>Stable</em> to <em>Progression</em>, (2) <em>Stable</em> to <em>Dead</em>, and (3) <em>Progression</em> to <em>Dead</em>.</p>
+<p><img src="stable-progression-death.png" width="600px"></p>
 <p>The following packages and settings will be used for the analysis. Note that while individual-level simulations can be computationally intensive, they run very quickly in <code>hesim</code> because they are implemented fully in <code>C++</code> under the hood. You can learn more by looking at the <code>hesim</code> <a href="https://hesim-dev.github.io/hesim/articles/mstate.html">multi-state modeling</a> vignette.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rcea"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"flexsurv"</span>)
@@ -131,12 +132,12 @@
   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">NA</span>, <span class="fl">NA</span>, <span class="fl">3</span>),
   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">NA</span>, <span class="fl">NA</span>, <span class="fl">NA</span>)
 )
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">tmat</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">tmat</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Healthy"</span>, <span class="st">"Sick"</span>, <span class="st">"Dead"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">tmat</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">tmat</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Stable"</span>, <span class="st">"Progression"</span>, <span class="st">"Dead"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">tmat</span>)</pre></body></html></div>
-<pre><code>##         Healthy Sick Dead
-## Healthy      NA    1    2
-## Sick         NA   NA    3
-## Dead         NA   NA   NA</code></pre>
+<pre><code>##             Stable Progression Dead
+## Stable          NA           1    2
+## Progression     NA          NA    3
+## Dead            NA          NA   NA</code></pre>
 <p>As in the cohort model, we must specify the target population and treatment strategies of interest. Unlike the cohort model we simulate 1,000 patients which should be enough to produce reasonably stable results. We also explicitly define the health states, which we will use to model utility and costs.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">n_patients</span> <span class="kw">&lt;-</span> <span class="fl">1000</span>
 <span class="no">patients</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
@@ -147,7 +148,7 @@
 
 <span class="no">states</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
   <span class="kw">state_id</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>),
-  <span class="kw">state_name</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Healthy"</span>, <span class="st">"Sick"</span>) <span class="co"># Non-death health states</span>
+  <span class="kw">state_name</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Stable"</span>, <span class="st">"Progression"</span>) <span class="co"># Non-death health states</span>
 )
 <span class="no">n_states</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">states</span>)
 
@@ -183,9 +184,9 @@
 ## 1000:       1000 39.15981      1
 ## 
 ## $states
-##    state_id state_name
-## 1:        1    Healthy
-## 2:        2       Sick
+##    state_id  state_name
+## 1:        1      Stable
+## 2:        2 Progression
 ## 
 ## attr(,"class")
 ## [1] "hesim_data"</code></pre>
@@ -197,7 +198,7 @@
 <div id="multi-state-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#multi-state-model" class="anchor"></a><span class="header-section-number">4.1</span> Multi-state model</h2>
-<p>Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function <code>sim_mstate_data()</code> which leverages <code>hesim</code> to simulate a hypothetical cohort of 2000 patients for a healthy-sick-dead model.</p>
+<p>Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function <code>sim_mstate_data()</code> which leverages <code>hesim</code> to simulate a hypothetical cohort of 2000 patients for a stable-progression-death model.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="fu"><a href="../reference/sim_mstate3_data.html">sim_mstate3_data</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">2000</span>)
 <span class="no">data</span>[<span class="no">patient_id</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>)]</pre></body></html></div>
 <pre><code>##    from to female      age patient_id final time_start time_stop status
@@ -227,18 +228,18 @@
 <div id="utility-and-costs" class="section level2">
 <h2 class="hasAnchor">
 <a href="#utility-and-costs" class="anchor"></a><span class="header-section-number">4.2</span> Utility and costs</h2>
-<p>In the cohort model, we assigned utility and cost values to health states using <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">hesim::define_tparams()</a></code> within the <code><a href="https://rdrr.io/pkg/hesim/man/define_model.html">hesim::define_model()</a></code> framework. An alternative (and more direct) approach is to use a <code><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">hesim::stateval_tbl</a></code>. We will continue to assume that the utility associated with each state follows a beta distribution. Utility in the <em>Sick</em> state is assumed to be equal to the average of utility in the sick and sicker states in the 4-state model.</p>
+<p>In the cohort model, we assigned utility and cost values to health states using <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">hesim::define_tparams()</a></code> within the <code><a href="https://rdrr.io/pkg/hesim/man/define_model.html">hesim::define_model()</a></code> framework. An alternative (and more direct) approach is to use a <code><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">hesim::stateval_tbl</a></code>. We will continue to assume that the utility associated with each state follows a beta distribution.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">utility_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
-             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">.625</span>),
-             <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">.05</span>)
+             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">.8</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">.6</span>),
+             <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.02</span>, <span class="fl">.05</span>)
             ),
   <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"beta"</span>,
   <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">utility_tbl</span>)</pre></body></html></div>
-<pre><code>##    state_id  mean   se
-## 1:        1 1.000 0.00
-## 2:        2 0.625 0.05</code></pre>
+<pre><code>##    state_id mean   se
+## 1:        1  0.8 0.02
+## 2:        2  0.6 0.05</code></pre>
 <p>Similarly, we continue to assume that medical costs vary by health state and follow a gamma distribution.</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">medcost_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
@@ -251,7 +252,7 @@
 <pre><code>##    state_id mean   se
 ## 1:        1 2000 2000
 ## 2:        2 9500 9500</code></pre>
-<p>We also use the same treatment costs as in the cohort model, but now allow costs to vary over time in the sick state. Specifically, we assume that costs for the new treatment are $12,000 for the first 3 months and then $10,000 thereafter. This approximate a common scenario in in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. It would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the <em>Sick</em> state.</p>
+<p>Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are $12,000 for the first 3 months and then $10,000 thereafter. This approximate a common scenario in in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">n_times</span> <span class="kw">&lt;-</span> <span class="fl">2</span>
 <span class="no">drugcost_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
@@ -259,7 +260,7 @@
     <span class="kw">state_id</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="no">states</span>$<span class="no">state_id</span>, <span class="kw">each</span> <span class="kw">=</span> <span class="no">n_strategies</span>), <span class="no">n_times</span>),
     <span class="kw">time_start</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">3</span>/<span class="fl">12</span>), <span class="no">n_states</span> * <span class="no">n_strategies</span>),
     <span class="kw">est</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">2000</span>, <span class="fl">4</span>), <span class="co"># Costs are always the same with SOC</span>
-            <span class="fl">12000</span>, <span class="fl">12000</span>, <span class="fl">12000</span>, <span class="fl">10000</span> <span class="co"># Costs with new drop after 3 months in Sick state</span>
+            <span class="fl">12000</span>, <span class="fl">12000</span>, <span class="fl">12000</span>, <span class="fl">10000</span> <span class="co"># Costs with new drop after 3 months in progression state</span>
           )
     ),
   <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"fixed"</span>,
@@ -337,12 +338,12 @@
 <div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_disease</span>(<span class="kw">max_age</span> <span class="kw">=</span> <span class="fl">100</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">disprog_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id from to final time_start time_stop
-## 1:      1           1          1      1    1  2     0   0.000000 10.270374
-## 2:      1           1          1      1    2  3     1  10.270374 15.265547
-## 3:      1           1          2      1    1  2     0   0.000000  1.405695
-## 4:      1           1          2      1    2  3     1   1.405695  8.443941
-## 5:      1           1          3      1    1  2     0   0.000000  3.826669
-## 6:      1           1          3      1    2  3     1   3.826669 17.575081</code></pre>
+## 1:      1           1          1      1    1  2     0   0.000000 10.403221
+## 2:      1           1          1      1    2  3     1  10.403221 20.171049
+## 3:      1           1          2      1    1  2     0   0.000000  4.759907
+## 4:      1           1          2      1    2  3     1   4.759907 19.568465
+## 5:      1           1          3      1    1  2     0   0.000000  5.384254
+## 6:      1           1          3      1    2  3     1   5.384254 19.427541</code></pre>
 <p>The IPS can be summarized by computing state occupancy probabilities at different time points. We do that using <code>$sim_stateprobs()</code>.</p>
 <div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_stateprobs</span>(<span class="kw">t</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">30</span> , <span class="fl">1</span>/<span class="fl">12</span>))</pre></body></html></div>
 <p><img src="mstate_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
@@ -353,23 +354,23 @@
 <p>Like the cohort model, we can compute quality-adjusted life-years (QALYs) after simulating disease progression using the <code>$sim_qalys()</code> method. Let’s compute QALYs for different discount rates, which might be useful for summarizing the impact of the new treatment on QALYs.</p>
 <div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">.03</span>))
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
-<pre><code>##    sample strategy_id grp_id state_id dr     qalys       lys
-## 1:      1           1      1        1  0  6.826347  6.826347
-## 2:      1           1      1        2  0  5.506157  8.334513
-## 3:      1           2      1        1  0 11.260634 11.260634
-## 4:      1           2      1        2  0  9.218637 13.953990
-## 5:      2           1      1        1  0  6.903153  6.903153
-## 6:      2           1      1        2  0  5.416277  7.841088</code></pre>
+<pre><code>##    sample strategy_id grp_id state_id dr    qalys       lys
+## 1:      1           1      1        1  0 5.518113  6.778010
+## 2:      1           1      1        2  0 5.596111  8.399302
+## 3:      1           2      1        1  0 9.171519 11.265563
+## 4:      1           2      1        2  0 9.377958 14.075543
+## 5:      2           1      1        1  0 5.573405  6.806206
+## 6:      2           1      1        2  0 4.870313  8.003933</code></pre>
 <p>Costs for each category are simulated in a similar fashion.</p>
 <div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id grp_id state_id   dr category     costs
-## 1:      1           1      1        1 0.03     Drug  12041.74
-## 2:      1           1      1        2 0.03     Drug  11616.02
-## 3:      1           2      1        1 0.03     Drug 110147.39
-## 4:      1           2      1        2 0.03     Drug  77654.61
-## 5:      2           1      1        1 0.03     Drug  12150.26
-## 6:      2           1      1        2 0.03     Drug  10999.10</code></pre>
+## 1:      1           1      1        1 0.03     Drug  11968.06
+## 2:      1           1      1        2 0.03     Drug  11710.68
+## 3:      1           2      1        1 0.03     Drug 110002.04
+## 4:      1           2      1        2 0.03     Drug  78208.25
+## 5:      2           1      1        1 0.03     Drug  11998.25
+## 6:      2           1      1        2 0.03     Drug  11226.46</code></pre>
 </div>
 </div>
 </div>
@@ -383,11 +384,11 @@
                        <span class="kw">k</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">25000</span>, <span class="fl">500</span>))
 <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                         
-## Incremental QALYs "-" "4.42 (3.94, 5.01)"         
-## Incremental costs "-" "191,254 (164,247, 249,102)"
-## Incremental NMB   "-" "29,925 (-29,270, 66,594)"  
-## ICER              "-" "43,235"                    
-## Conclusion        "-" "Cost-effective"</code></pre>
+## Incremental QALYs "-" "3.79 (3.26, 4.38)"         
+## Incremental costs "-" "191,245 (164,182, 251,532)"
+## Incremental NMB   "-" "-1,986 (-60,294, 34,367)"  
+## ICER              "-" "50,525"                    
+## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>
 
