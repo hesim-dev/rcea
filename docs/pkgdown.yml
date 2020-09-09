@@ -2,11 +2,11 @@ pandoc: 2.7.3
 pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
-  cea: cea.html
-  markov-cohort-hesim: markov-cohort-hesim.html
-  markov-cohort-psa: markov-cohort-psa.html
-  markov-cohort: markov-cohort.html
-  mstate: mstate.html
-  psm: psm.html
-last_built: 2020-09-08T00:10Z
+  01-markov-cohort: 01-markov-cohort.html
+  02-markov-cohort-psa: 02-markov-cohort-psa.html
+  03-markov-cohort-hesim: 03-markov-cohort-hesim.html
+  04-mstate: 04-mstate.html
+  05-psm: 05-psm.html
+  06-cea: 06-cea.html
+last_built: 2020-09-09T05:21Z
 
