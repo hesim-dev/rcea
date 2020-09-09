@@ -48,22 +48,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/markov-cohort.html">Simple Markov Cohort Model</a>
+      <a href="../articles/01-markov-cohort.html">Simple Markov Cohort Model</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
+      <a href="../articles/02-markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
+      <a href="../articles/03-markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
     </li>
     <li>
-      <a href="../articles/mstate.html">Semi-Markov Multi-state Model</a>
+      <a href="../articles/04-mstate.html">Semi-Markov Multi-state Model</a>
     </li>
     <li>
-      <a href="../articles/psm.html">Partitioned Survival Model</a>
+      <a href="../articles/05-psm.html">Partitioned Survival Model</a>
     </li>
     <li>
-      <a href="../articles/cea.html">Cost-effectiveness Analysis</a>
+      <a href="../articles/06-cea.html">Cost-effectiveness Analysis</a>
     </li>
     <li class="divider">
   </ul>
@@ -91,10 +91,10 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Partitioned Survival Model</h1>
             
-            <h4 class="date">2020-09-07</h4>
+            <h4 class="date">2020-09-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/psm.Rmd"><code>vignettes/psm.Rmd</code></a></small>
-      <div class="hidden name"><code>psm.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/05-psm.Rmd"><code>vignettes/05-psm.Rmd</code></a></small>
+      <div class="hidden name"><code>05-psm.Rmd</code></div>
 
     </div>
 
@@ -104,7 +104,7 @@
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
 <p>While multi-state models can be used to estimate the parameters of a state transition model (STM) in a very flexible manner, data availability can make it difficult (or infeasible) to fit such a model. This is often the case when an evidence synthesis model based on summary level data is used to parameterize the STM. For example, in oncology, published articles of clinical trials often provide survival curves of progression-free survival (PFS) and overall survival (OS), but do not release information on time to event (and censoring) for each transition. In this setting partitioned survival analysis may consequently be a simpler approach.</p>
-<p>We will use the same packages as in the <a href="mstate.html">“Semi-Markov Multi-state Model”</a> tutorial.</p>
+<p>We will use the same packages as in the <a href="04-mstate.html">“Semi-Markov Multi-state Model”</a> tutorial.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rcea"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)

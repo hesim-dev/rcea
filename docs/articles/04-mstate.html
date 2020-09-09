@@ -48,22 +48,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/markov-cohort.html">Simple Markov Cohort Model</a>
+      <a href="../articles/01-markov-cohort.html">Simple Markov Cohort Model</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
+      <a href="../articles/02-markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
+      <a href="../articles/03-markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
     </li>
     <li>
-      <a href="../articles/mstate.html">Semi-Markov Multi-state Model</a>
+      <a href="../articles/04-mstate.html">Semi-Markov Multi-state Model</a>
     </li>
     <li>
-      <a href="../articles/psm.html">Partitioned Survival Model</a>
+      <a href="../articles/05-psm.html">Partitioned Survival Model</a>
     </li>
     <li>
-      <a href="../articles/cea.html">Cost-effectiveness Analysis</a>
+      <a href="../articles/06-cea.html">Cost-effectiveness Analysis</a>
     </li>
     <li class="divider">
   </ul>
@@ -91,10 +91,10 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Semi-Markov Multi-state Model</h1>
             
-            <h4 class="date">2020-09-07</h4>
+            <h4 class="date">2020-09-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/mstate.Rmd"><code>vignettes/mstate.Rmd</code></a></small>
-      <div class="hidden name"><code>mstate.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/04-mstate.Rmd"><code>vignettes/04-mstate.Rmd</code></a></small>
+      <div class="hidden name"><code>04-mstate.Rmd</code></div>
 
     </div>
 
@@ -346,7 +346,7 @@
 ## 6:      1           1          3      1    2  3     1   5.384254 19.427541</code></pre>
 <p>The IPS can be summarized by computing state occupancy probabilities at different time points. We do that using <code>$sim_stateprobs()</code>.</p>
 <div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_stateprobs</span>(<span class="kw">t</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">30</span> , <span class="fl">1</span>/<span class="fl">12</span>))</pre></body></html></div>
-<p><img src="mstate_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
+<p><img src="04-mstate_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
 </div>
 <div id="qalys-and-costs" class="section level3">
 <h3 class="hasAnchor">

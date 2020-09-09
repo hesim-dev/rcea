@@ -8,12 +8,12 @@ development:
 articles:
 - title: "Applied cost-effectiveness modeling with R"
   contents:
-  - markov-cohort
-  - markov-cohort-psa
-  - markov-cohort-hesim
-  - psm
-  - mstate
-  - cea
+  - 01-markov-cohort
+  - 02-markov-cohort-psa
+  - 03-markov-cohort-hesim
+  - 04-mstate
+  - 05-psm
+  - 06-cea
 
 navbar:
   title: learnCEA
@@ -23,16 +23,16 @@ navbar:
   - text: "Tutorials"
     menu:
       - text: "Simple Markov Cohort Model"
-        href: articles/markov-cohort.html
+        href: articles/01-markov-cohort.html
       - text: "Incorporating Probabilistic Sensitivity Analysis"
-        href: articles/markov-cohort-psa.html 
+        href: articles/02-markov-cohort-psa.html 
       - text: "Markov Cohort Model with hesim"
-        href: articles/markov-cohort-hesim.html
+        href: articles/03-markov-cohort-hesim.html
       - text: "Semi-Markov Multi-state Model"
-        href: articles/mstate.html 
+        href: articles/04-mstate.html 
       - text: "Partitioned Survival Model"
-        href: articles/psm.html
+        href: articles/05-psm.html
       - text: "Cost-effectiveness Analysis"
-        href: articles/cea.html 
+        href: articles/06-cea.html 
       - text: "---" 
       

@@ -17,7 +17,7 @@ vignette: >
 # Overview
 While multi-state models can be used to estimate the parameters of a state transition model (STM) in a very flexible manner, data availability can make it difficult (or infeasible) to fit such a model. This is often the case when an evidence synthesis model based on summary level data is used to parameterize the STM. For example, in oncology, published articles of clinical trials often provide survival curves of progression-free survival (PFS) and overall survival (OS), but do not release information on time to event (and censoring) for each transition. In this setting partitioned survival analysis may consequently be a simpler approach.
 
-We will use the same packages as in the ["Semi-Markov Multi-state Model"](mstate.html) tutorial. 
+We will use the same packages as in the ["Semi-Markov Multi-state Model"](04-mstate.html) tutorial. 
 
 ```{r, warning = FALSE, message = FALSE}
 library("rcea")

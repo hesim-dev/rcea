@@ -15,7 +15,7 @@ vignette: >
 ---
 
 # Overview
-This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](probabilistic-sensitivity-analysis.html) using `hesim`. More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
+This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](02-markov-cohort-psa.html) using `hesim`. More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
 
 Markov cohort models (time-homogeneous and time-homogeneous) are referred to as cohort discrete time state transition models (`cDTSTMs`) in `hesim`. They are most conveniently simulated with a four step process by defining:
 
