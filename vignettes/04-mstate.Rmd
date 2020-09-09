@@ -275,3 +275,7 @@ icea_pw_out <- icea_pw(ce_sim, comparator = 1,
                        k = seq(0, 25000, 500))
 icer_tbl(icea_pw_out, colnames = strategies$strategy_name)
 ```
+
+```{r, echo = FALSE}
+saveRDS(ce_sim, "ce_sim.rds")
+```

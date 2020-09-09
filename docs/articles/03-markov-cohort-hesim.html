@@ -48,22 +48,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/markov-cohort.html">Simple Markov Cohort Model</a>
+      <a href="../articles/01-markov-cohort.html">Simple Markov Cohort Model</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
+      <a href="../articles/02-markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
+      <a href="../articles/03-markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
     </li>
     <li>
-      <a href="../articles/mstate.html">Semi-Markov Multi-state Model</a>
+      <a href="../articles/04-mstate.html">Semi-Markov Multi-state Model</a>
     </li>
     <li>
-      <a href="../articles/psm.html">Partitioned Survival Model</a>
+      <a href="../articles/05-psm.html">Partitioned Survival Model</a>
     </li>
     <li>
-      <a href="../articles/cea.html">Cost-effectiveness Analysis</a>
+      <a href="../articles/06-cea.html">Cost-effectiveness Analysis</a>
     </li>
     <li class="divider">
   </ul>
@@ -91,10 +91,10 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Markov Cohort Model wth hesim</h1>
             
-            <h4 class="date">2020-09-07</h4>
+            <h4 class="date">2020-09-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/markov-cohort-hesim.Rmd"><code>vignettes/markov-cohort-hesim.Rmd</code></a></small>
-      <div class="hidden name"><code>markov-cohort-hesim.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/03-markov-cohort-hesim.Rmd"><code>vignettes/03-markov-cohort-hesim.Rmd</code></a></small>
+      <div class="hidden name"><code>03-markov-cohort-hesim.Rmd</code></div>
 
     </div>
 
@@ -103,7 +103,7 @@
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
-<p>This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the <a href="probabilistic-sensitivity-analysis.html">previous tutorial</a> using <code>hesim</code>. More information about <code>hesim</code> can be found by visiting the <a href="https://hesim-dev.github.io/hesim/">package website</a>. We recommend reading the “Articles”—starting with the <a href="https://hesim-dev.github.io/hesim/articles/intro.html">“Introduction to <code>hesim</code>”</a>—to learn more.</p>
+<p>This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the <a href="02-markov-cohort-psa.html">previous tutorial</a> using <code>hesim</code>. More information about <code>hesim</code> can be found by visiting the <a href="https://hesim-dev.github.io/hesim/">package website</a>. We recommend reading the “Articles”—starting with the <a href="https://hesim-dev.github.io/hesim/articles/intro.html">“Introduction to <code>hesim</code>”</a>—to learn more.</p>
 <p>Markov cohort models (time-homogeneous and time-homogeneous) are referred to as cohort discrete time state transition models (<code>cDTSTMs</code>) in <code>hesim</code>. They are most conveniently simulated with a four step process by defining:</p>
 <ol style="list-style-type: decimal">
 <li>
@@ -249,12 +249,12 @@
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr category      qalys
-## 1:      1           1          1      1        1 0.03    qalys 16.0542039
-## 2:      1           1          1      1        2 0.03    qalys  0.1891460
-## 3:      1           1          1      1        3 0.03    qalys  3.5152411
-## 4:      1           2          1      1        1 0.03    qalys 18.7464974
-## 5:      1           2          1      1        2 0.03    qalys  0.1831402
-## 6:      1           2          1      1        3 0.03    qalys  2.8890316</code></pre>
+## 1:      1           1          1      1        1 0.03    qalys 15.5906734
+## 2:      1           1          1      1        2 0.03    qalys  0.2794163
+## 3:      1           1          1      1        3 0.03    qalys  4.0389875
+## 4:      1           2          1      1        1 0.03    qalys 18.3427816
+## 5:      1           2          1      1        2 0.03    qalys  0.2729247
+## 6:      1           2          1      1        3 0.03    qalys  3.2769767</code></pre>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)</pre></body></html></div>
 </div>
 </div>
@@ -269,10 +269,10 @@
 <p>Although <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw()</a></code> allows users to summarize a PSA we will just create an ICER table using means from the PSA for now. An analysis of PSA output will be covered in a later tutorial.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.11 (0.93, 3.26)"           
-## Incremental costs "-" "267,476 (219,548, 296,382)"  
-## Incremental NMB   "-" "-161,971 (-225,374, -80,034)"
-## ICER              "-" "126,760"                     
+## Incremental QALYs "-" "2.10 (0.99, 3.19)"           
+## Incremental costs "-" "266,507 (213,324, 297,231)"  
+## Incremental NMB   "-" "-161,680 (-222,054, -77,626)"
+## ICER              "-" "127,117"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>

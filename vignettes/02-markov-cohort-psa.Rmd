@@ -10,14 +10,14 @@ pkgdown:
   as_is: true
 vignette: >
   %\VignetteIndexEntry{Incorporating Probabilistic Sensitivity Analysis in a Markov Cohort Model}
-  %\VignetteEngine{fknitr::rmarkdown}
+  %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 # Overview
 Probabilistic sensitivity analysis (PSA) is used to quantify the impact of parameter uncertainty on the uncertainty of model outputs. PSA is typically performed via a simulation approach whereby the model parameters are randomly sampled from suitable probability distributions and the entire model is simulated for each random draw of the parameters. 
 
-In this example, we extend the deterministic [simple Markov cohort model](simple-markov-cohort-model.html) to incorporate PSA. We will continue to rely primarily on Base `R` but will use the `hesim` package to help make the code more readable.
+In this example, we extend the deterministic [simple Markov cohort model](01-markov-cohort.html) to incorporate PSA. We will continue to rely primarily on Base `R` but will use the `hesim` package to help make the code more readable.
 
 ```{r, message = FALSE, warning=FALSE, results='hide'}
 library("rcea")

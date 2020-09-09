@@ -48,22 +48,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/markov-cohort.html">Simple Markov Cohort Model</a>
+      <a href="../articles/01-markov-cohort.html">Simple Markov Cohort Model</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
+      <a href="../articles/02-markov-cohort-psa.html">Incorporating Probabilistic Sensitivity Analysis</a>
     </li>
     <li>
-      <a href="../articles/markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
+      <a href="../articles/03-markov-cohort-hesim.html">Markov Cohort Model with hesim</a>
     </li>
     <li>
-      <a href="../articles/mstate.html">Semi-Markov Multi-state Model</a>
+      <a href="../articles/04-mstate.html">Semi-Markov Multi-state Model</a>
     </li>
     <li>
-      <a href="../articles/psm.html">Partitioned Survival Model</a>
+      <a href="../articles/05-psm.html">Partitioned Survival Model</a>
     </li>
     <li>
-      <a href="../articles/cea.html">Cost-effectiveness Analysis</a>
+      <a href="../articles/06-cea.html">Cost-effectiveness Analysis</a>
     </li>
     <li class="divider">
   </ul>
@@ -91,10 +91,10 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-09-07</h4>
+            <h4 class="date">2020-09-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/markov-cohort-psa.Rmd"><code>vignettes/markov-cohort-psa.Rmd</code></a></small>
-      <div class="hidden name"><code>markov-cohort-psa.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
+      <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
 
     </div>
 
@@ -104,7 +104,7 @@
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
 <p>Probabilistic sensitivity analysis (PSA) is used to quantify the impact of parameter uncertainty on the uncertainty of model outputs. PSA is typically performed via a simulation approach whereby the model parameters are randomly sampled from suitable probability distributions and the entire model is simulated for each random draw of the parameters.</p>
-<p>In this example, we extend the deterministic <a href="simple-markov-cohort-model.html">simple Markov cohort model</a> to incorporate PSA. We will continue to rely primarily on Base <code>R</code> but will use the <code>hesim</code> package to help make the code more readable.</p>
+<p>In this example, we extend the deterministic <a href="01-markov-cohort.html">simple Markov cohort model</a> to incorporate PSA. We will continue to rely primarily on Base <code>R</code> but will use the <code>hesim</code> package to help make the code more readable.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rcea"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
@@ -195,19 +195,19 @@
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">params_rng</span>$<span class="no">p_soc</span>))</pre></body></html></div>
 <pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8522013 0.1456794    0 0.0021192735 0.4805151 0.4097642 0.10053550
-## [2,] 0.8434510 0.1555933    0 0.0009556589 0.4998558 0.3966043 0.09321959
-## [3,] 0.8499578 0.1488869    0 0.0011553266 0.5085813 0.3773311 0.10853910
-## [4,] 0.8668954 0.1311856    0 0.0019190063 0.5064961 0.3857007 0.10482915
-## [5,] 0.8390908 0.1543140    0 0.0065951992 0.4893210 0.4061635 0.10294665
-## [6,] 0.8485444 0.1504237    0 0.0010318365 0.4714944 0.4314385 0.09245489
-##             s1_d s2_h s2_s1     s2_s2        s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.009185205    0     0 0.9792758 0.020724245   0    0    0   1
-## [2,] 0.010320312    0     0 0.9873130 0.012687022   0    0    0   1
-## [3,] 0.005548522    0     0 0.9920048 0.007995161   0    0    0   1
-## [4,] 0.002974015    0     0 0.9878226 0.012177381   0    0    0   1
-## [5,] 0.001568889    0     0 0.9799079 0.020092080   0    0    0   1
-## [6,] 0.004612148    0     0 0.9782588 0.021741152   0    0    0   1</code></pre>
+## [1,] 0.8541659 0.1453609    0 4.731882e-04 0.4970026 0.4036035 0.09626693
+## [2,] 0.8544105 0.1449280    0 6.614554e-04 0.4793615 0.4192799 0.09578156
+## [3,] 0.8466701 0.1498042    0 3.525738e-03 0.4948250 0.4084425 0.09296139
+## [4,] 0.8505701 0.1493316    0 9.827422e-05 0.4933492 0.3854922 0.11353401
+## [5,] 0.8449157 0.1540844    0 9.998312e-04 0.4970552 0.3954100 0.10340344
+## [6,] 0.8394616 0.1578352    0 2.703221e-03 0.4822137 0.4079976 0.10307194
+##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
+## [1,] 0.003126937    0     0 0.9807583 0.01924173   0    0    0   1
+## [2,] 0.005576970    0     0 0.9886675 0.01133255   0    0    0   1
+## [3,] 0.003771079    0     0 0.9890406 0.01095938   0    0    0   1
+## [4,] 0.007624593    0     0 0.9775438 0.02245619   0    0    0   1
+## [5,] 0.004131315    0     0 0.9732479 0.02675215   0    0    0   1
+## [6,] 0.006716741    0     0 0.9750056 0.02499435   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
@@ -321,20 +321,20 @@
 <p>Now that we’ve written the function, lets simulate the model with argument defaults (85 model cycles and 3% discount rates). Recall that each array is a matrix.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">sim_out</span> <span class="kw">&lt;-</span> <span class="fu">sim_model</span>(<span class="no">params_rng</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">data</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">sim_out</span>[, , <span class="fl">1</span>])</pre></body></html></div>
-<pre><code>##              H        S1          S2           D    dqalys dcosts_med
-## [1,] 1.0000000 0.0000000 0.000000000 0.000000000 1.0000000   4924.415
-## [2,] 0.8847423 0.1107393 0.000000000 0.004518340 0.8670367   5053.818
-## [3,] 0.8416858 0.1411186 0.008561078 0.008634576 0.8073807   5009.117
-## [4,] 0.8197545 0.1481860 0.019356218 0.012703333 0.7692191   4915.465
-## [5,] 0.8041110 0.1485107 0.030553333 0.016824963 0.7379116   4808.292
-## [6,] 0.7904433 0.1469049 0.041625783 0.021026028 0.7093009   4697.718
+<pre><code>##              H        S1         S2            D    dqalys dcosts_med
+## [1,] 1.0000000 0.0000000 0.00000000 0.0000000000 1.0000000   6151.703
+## [2,] 0.8786772 0.1209291 0.00000000 0.0003936562 0.8589734   6491.118
+## [3,] 0.8321758 0.1570853 0.00968481 0.0010541343 0.7970043   6655.675
+## [4,] 0.8092857 0.1666587 0.02211022 0.0019453934 0.7597250   6752.559
+## [5,] 0.7939307 0.1679144 0.03510342 0.0030514472 0.7305511   6815.586
+## [6,] 0.7810628 0.1665853 0.04798921 0.0043627135 0.7044132   6856.136
 ##      dcosts_treat
 ## [1,]     12000.00
-## [2,]     11597.84
-## [3,]     11213.48
-## [4,]     10842.20
-## [5,]     10482.46
-## [6,]     10133.66</code></pre>
+## [2,]     11645.90
+## [3,]     11299.23
+## [4,]     10960.34
+## [5,]     10629.31
+## [6,]     10306.15</code></pre>
 <p>Although arrays are computationally efficient objects for storing data, they aren’t often the most useful for summarizing data. We will write to short functions to convert a 3D array to a <code>data.table</code> (with ID columns for the parameter sample and treatment strategy) so that we can summarize outcomes for each parameter sample and treatment strategy very quickly. (Note that other packages such as <code>dplyr</code> could also be used but we prefer <code>data.table</code> for simulations because of its speed).</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co"># rbind an array of matrices into a single matrix</span>
 <span class="no">rbind_array</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>){
@@ -356,20 +356,20 @@
 
 <span class="no">sim_out</span> <span class="kw">&lt;-</span> <span class="fu">array_to_dt</span>(<span class="no">sim_out</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">sim_out</span>)</pre></body></html></div>
-<pre><code>##    cycle strategy sample         H        S1          S2           D    dqalys
-## 1:     0      New      1 1.0000000 0.0000000 0.000000000 0.000000000 1.0000000
-## 2:     1      New      1 0.8847423 0.1107393 0.000000000 0.004518340 0.8670367
-## 3:     2      New      1 0.8416858 0.1411186 0.008561078 0.008634576 0.8073807
-## 4:     3      New      1 0.8197545 0.1481860 0.019356218 0.012703333 0.7692191
-## 5:     4      New      1 0.8041110 0.1485107 0.030553333 0.016824963 0.7379116
-## 6:     5      New      1 0.7904433 0.1469049 0.041625783 0.021026028 0.7093009
+<pre><code>##    cycle strategy sample         H        S1         S2            D    dqalys
+## 1:     0      New      1 1.0000000 0.0000000 0.00000000 0.0000000000 1.0000000
+## 2:     1      New      1 0.8786772 0.1209291 0.00000000 0.0003936562 0.8589734
+## 3:     2      New      1 0.8321758 0.1570853 0.00968481 0.0010541343 0.7970043
+## 4:     3      New      1 0.8092857 0.1666587 0.02211022 0.0019453934 0.7597250
+## 5:     4      New      1 0.7939307 0.1679144 0.03510342 0.0030514472 0.7305511
+## 6:     5      New      1 0.7810628 0.1665853 0.04798921 0.0043627135 0.7044132
 ##    dcosts_med dcosts_treat
-## 1:   4924.415     12000.00
-## 2:   5053.818     11597.84
-## 3:   5009.117     11213.48
-## 4:   4915.465     10842.20
-## 5:   4808.292     10482.46
-## 6:   4697.718     10133.66</code></pre>
+## 1:   6151.703     12000.00
+## 2:   6491.118     11645.90
+## 3:   6655.675     11299.23
+## 4:   6752.559     10960.34
+## 5:   6815.586     10629.31
+## 6:   6856.136     10306.15</code></pre>
 </div>
 </div>
 </div>
@@ -382,38 +382,38 @@
                   <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sample"</span>, <span class="st">"strategy"</span>)]
 <span class="no">ce_out</span></pre></body></html></div>
 <pre><code>##       sample strategy   dqalys   dcosts
-##    1:      1      New 21.85480 503112.4
-##    2:      1      SOC 19.78379 226491.9
-##    3:      2      New 21.76663 528923.4
-##    4:      2      SOC 19.84250 268236.3
-##    5:      3      New 21.62081 392139.1
+##    1:      1      New 22.70794 677401.8
+##    2:      1      SOC 21.02231 404452.3
+##    3:      2      New 22.48677 452057.7
+##    4:      2      SOC 20.92895 153352.4
+##    5:      3      New 21.97994 397728.0
 ##   ---                                  
-## 1996:    998      SOC 20.06519 353956.7
-## 1997:    999      New 21.39959 708223.1
-## 1998:    999      SOC 18.88235 486211.9
-## 1999:   1000      New 20.60790 373977.4
-## 2000:   1000      SOC 19.10147 102626.1</code></pre>
+## 1996:    998      SOC 20.34550 395193.2
+## 1997:    999      New 21.51405 420863.2
+## 1998:    999      SOC 20.22925 158360.2
+## 1999:   1000      New 21.91400 513643.5
+## 2000:   1000      SOC 19.79145 230622.8</code></pre>
 <p>In the two treatment strategy case its simpler to “widen” the data so that we can easily compute incremental QALYs and costs.</p>
 <div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">ce_out_wider</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">dcast</a></span>(<span class="no">ce_out</span>, <span class="no">sample</span> ~ <span class="no">strategy</span>,
                       <span class="kw">value.var</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"dqalys"</span>, <span class="st">"dcosts"</span>))
 <span class="no">ce_out_wider</span></pre></body></html></div>
 <pre><code>##       sample dqalys_New dqalys_SOC dcosts_New dcosts_SOC
-##    1:      1   21.85480   19.78379   503112.4   226491.9
-##    2:      2   21.76663   19.84250   528923.4   268236.3
-##    3:      3   21.62081   20.06156   392139.1   105383.6
-##    4:      4   22.55734   19.95444   453003.5   154141.8
-##    5:      5   23.76355   21.23705   420780.5   133593.9
+##    1:      1   22.70794   21.02231   677401.8   404452.3
+##    2:      2   22.48677   20.92895   452057.7   153352.4
+##    3:      3   21.97994   19.24980   397728.0   119800.5
+##    4:      4   22.53391   19.41174   484614.8   169620.6
+##    5:      5   20.72334   19.18298   598959.2   350896.0
 ##   ---                                                   
-##  996:    996   21.18771   18.86345   479465.6   203341.4
-##  997:    997   21.20303   18.63909   439296.3   174708.9
-##  998:    998   22.06098   20.06519   604098.2   353956.7
-##  999:    999   21.39959   18.88235   708223.1   486211.9
-## 1000:   1000   20.60790   19.10147   373977.4   102626.1</code></pre>
+##  996:    996   20.77479   18.62319   494977.4   257043.7
+##  997:    997   21.80088   19.80767   438805.0   147035.0
+##  998:    998   22.22479   20.34550   643348.5   395193.2
+##  999:    999   21.51405   20.22925   420863.2   158360.2
+## 1000:   1000   21.91400   19.79145   513643.5   230622.8</code></pre>
 <p>The ICER is computed by taking means across all parameter samples. (Note that in a subsequent tutorial will show how to represent decision uncertainty using the PSA output).</p>
 <div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">ce_out_wider</span>[, <span class="fu">.</span>(<span class="kw">icer</span> <span class="kw">=</span> (<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">dcosts_New</span> - <span class="no">dcosts_SOC</span>))/
                          <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">dqalys_New</span> - <span class="no">dqalys_SOC</span>))]</pre></body></html></div>
-<pre><code>##      icer
-## 1: 126483</code></pre>
+<pre><code>##        icer
+## 1: 126665.8</code></pre>
 </div>
 <div id="appendix" class="section level1">
 <h1 class="hasAnchor">

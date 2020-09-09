@@ -1,0 +1,201 @@
+---
+title: Cost-effectiveness Analysis
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 2
+    number_sections: TRUE
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Cost-effectiveness Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Overview
+The prior tutorials have focused on constructing economic models to simulate disease progression, costs, and quality-adjusted life-years (QALYs). While incremental cost-effectiveness ratios (ICERs) have been computed and probabilistic sensitivity analysis (PSA) has been employed, we have not yet formalized cost-effectiveness analysis (CEA) or represented decision uncertainty. 
+
+In this analysis we will perform a CEA given the output of model from the ["Semi-Markov Multi-state Model"](04-mstate.html) tutorial. We will use the CEA functions from `hesim` to summarize decision uncertainty and `ggplot2` for visualization. The CEA will be peformed for a single target population, but you can review the `hesim` tutorial on [individualized CEA](https://hesim-dev.github.io/hesim/articles/icea.html) and the references therein for an example of CEA in the context of multiple subgroups.
+
+```{r}
+library("hesim")
+library("ggplot2")
+theme_set(theme_minimal()) # Set ggplot2 theme
+``` 
+
+# Theory
+CEA is based on estimating the net monetary benefit (NMB). For a given parameter set $\theta$, the NMB with treatment $j$ is computed as the difference between the monetized health gains from an intervention less costs, or,
+
+$$
+\begin{aligned}
+NMB(j,\theta) = e_{j}(\theta)\cdot k- c_{j}(\theta),
+\end{aligned}
+$$
+
+where $e_{j}$ and $c_{j}$ are measures of health outcomes (e.g. QALYs) and costs using treatment $j$ respectively, and $k$ is a decision makers willingness to pay (WTP) per unit of health outcomes. The optimal treatment is the one that maximizes the expected NMB,
+
+$$
+\begin{aligned}
+j^{*} = \text{argmax}_j E_{\theta} \left[NMB(j,\theta)\right].
+\end{aligned}
+$$
+
+For a pairwise comparison, treatment $1$ is preferred to treatment $0$ if the expected incremental net monetary benefit (INMB) is positive; that is, if $E_\theta \left[INMB\right] > 0$ where the INMB is given by
+
+$$
+\begin{aligned}
+INMB(\theta) = NMB(j = 1, \theta) - NMB(j = 0, \theta).
+\end{aligned}
+$$
+Equivalently, treatment $1$ is preferred to treatment $0$ if the ICER is greater than the WTP threshold $k$,
+
+$$
+\begin{aligned}
+k > \frac{E_\theta[c_{1} - c_{0}]}{E_\theta[e_{1} - e_{0}]} = ICER.
+\end{aligned}
+$$
+In practice, the distribution of $\theta$ is simulated from the output of the PSA. Specifically, For each treatment strategy, a PSA produces $m$ random draws from the distribution of health outcomes and costs,
+
+$$
+\begin{aligned}
+e_{j} &= [e_{j}^1, e_{j}^2, \dots, e_{j}^m] \\
+c_{j} &= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
+\end{aligned}
+$$
+
+# Application
+CEA can be performed using the `hesim::icea()` and `hesim::icea_pw()` functions. `icea()` summarizes results by taking into account each treatment strategy in the analysis, while `icea_pw` summarizes "pairwise" results in which each treatment is compared to a comparator. 
+
+We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a `hesim::ce` object). 
+
+```{r}
+ce_sim <- readRDS("ce_sim.rds") # Load cost-effectiveness object
+head(ce_sim)
+
+wtp <- seq(0, 250000, 500) # Willingness to pay per QALY
+icea_pw_out <- icea_pw(ce_sim, comparator = 1, # Comparator is SOC (ID = 1)
+                       dr_qalys = 0.03, dr_costs = 0.03,
+                       wtp)
+icea_out <- icea(ce_sim, 
+                  dr_qalys = 0.03, dr_costs = 0.03,
+                  k = wtp)
+```
+
+Each function returns a number of outputs for summarizing a PSA.
+
+## Cost-effectiveness plane
+The cost-effectiveness plane plots the incremental effectiveness of a treatment strategy (relative to a comparator) against the incremental cost of the treatment strategy. The plot is useful because it demonstrates both the uncertainty and the magnitude of the estimates. Each point on the plot is from a particular random draw from the PSA.  
+
+Data for plotting a cost-effectiveness plane comes from the `delta` output generated from the `icea_pw` function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator. 
+
+```{r}
+head(icea_pw_out$delta)
+```
+
+To make nicer plots, we can write a simple helper function to (i) create labels for the treatment strategies and (ii) format dollar values (which you might also use the `scales` package for). 
+
+```{r}
+strategy_factor <- function (x) { 
+   factor(x, levels = 1:2, labels = c("SOC", "New"))
+}
+
+format_dollar <- function(x) {
+  paste0("$", formatC(x, format = "d", big.mark = ","))
+}
+```
+
+The dotted line in the plot is the WTP line, with slope equal to the desire value of $k$ (in this case \$50,000). For a chosen $k$, points below the line are cost-effective while those above it are not. 
+
+```{r ceplane_plot, warning = FALSE, message = FALSE}
+ylim <- max(icea_pw_out$delta[, ic]) * 1.1
+xlim <- ceiling(max(icea_pw_out$delta[, ie]) * 1.1)
+ggplot(icea_pw_out$delta, 
+       aes(x = ie, y = ic, col = strategy_factor(strategy_id))) + 
+  geom_jitter(size = .5)  + 
+  xlab("Incremental QALYs") + 
+  ylab("Incremental cost") +
+  scale_y_continuous(limits = c(-ylim, ylim),
+                     labels = format_dollar) +
+  scale_x_continuous(limits = c(-xlim, xlim), breaks = seq(-6, 6, 2)) +
+  theme(legend.position = "bottom") + 
+  scale_colour_discrete(name = "Strategy") +
+  geom_abline(slope = 50000, linetype = "dashed") +
+  geom_hline(yintercept = 0) + 
+  geom_vline(xintercept = 0)
+```
+
+
+## Cost-effectiveness acceptability curves (CEAC)  
+### Simultanous comparison
+A useful summary measure for quantifying uncertainty is the probability that each treatment strategy is the most cost effective, which is estimated from simulation output as the proportion of simulation draws that each strategy has the highest NMB. 
+
+```{r mce_plot, warning = FALSE, message = FALSE}
+ggplot(icea_out$mce, 
+       aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
+  geom_line() + 
+  xlab("Willingness to pay") +
+  ylab("Probability most cost-effective") +
+  scale_x_continuous(breaks = seq(0, max(wtp), length.out = 6), 
+                     label = format_dollar) +
+  theme(legend.position = "bottom") + 
+  scale_colour_discrete(name = "Strategy")
+```
+
+The probability that the new treatment is the most cost-effective is increasing in WTP.
+
+### Pairwise comparison
+The difference between this plot and the one above is that it compares each strategy to a single comparator rather than considering all strategies simultaneously. Since there are only two treatment strategies the distinction is not meaningful, but it can be important when there are 3 or more treatment strategies. 
+
+```{r ceac_plot}
+ggplot(icea_pw_out$ceac, 
+       aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
+  geom_line()  + 
+  xlab("Willingness to pay") +
+  ylab("Probability most cost-effective") +
+  scale_x_continuous(breaks =  seq(0, max(wtp), length.out = 6), 
+                     label = format_dollar) +
+  theme(legend.position = "bottom") +
+  scale_colour_discrete(name = "Strategy")
+```
+
+## Cost-effectiveness acceptability frontier (CEAF)
+One drawback of the CEAC is that the probability of being cost-effective cannot be used to determine the optimal treatment option. Instead, if a decision-makers objective is to maximize health gain, then decisions should be based on the expected NMB. The cost-effectiveness acceptability frontier (CEAF), which plots the probability that the optimal treatment strategy (i.e., the strategy with the highest expected NMB) is cost-effective, is appropriate in this context. 
+
+A CEAF curve can be easily created by using the `best` column to subset to the treatment strategy with the highest expected NMB for each WTP value. 
+
+```{r ceaf_plot}
+ggplot(icea_out$mce[best == 1], 
+       aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
+  geom_line() + 
+  xlab("Willingness to pay") +
+  ylab("Probability most cost-effective") +
+  scale_x_continuous(breaks = seq(0, max(wtp), length.out = 6), 
+                                  label = format_dollar) +
+  theme(legend.position = "bottom") + 
+  scale_colour_discrete(name = "Strategy")
+```
+
+
+## Value of perfect information
+A limitation of the prior measures are that they ignore the magnitude of cost or QALY gains. A measure which combines the probability of being most effective with the magnitude of the expected NMB is the expected value of perfect information (EVPI). Intuitively, the EVPI provides an estimate of the amount that a decision maker would be willing to pay to collect additional data and completely eliminate uncertainty. Mathematically, the EVPI is defined as the difference between the maximum expected NMB given perfect information and the maximum expected NMB given current information. In other words, we calculate the NMB for the optimal treatment strategy for each random draw of the parameters and compare that to the NMB for the treatment strategy that is optimal when averaging across all parameters. That is, the EVPI is calculated as,
+
+$$
+\begin{aligned}
+EVPI_g &= E_\theta \left[max_j NMB_g(j, \theta)\right] - max_j E_\theta \left [ NMB_g(j, \theta)\right]. \\
+\end{aligned}
+$$
+
+The `icea()` function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values $k$. A plot by group of the the EVPI for different values of $k$ is shown below. The kink in the plot represents the value of $k$ where the optimal strategy changes.
+
+```{r evpi_plot}
+ggplot(icea_out$evpi, aes(x = k, y = evpi)) +
+  geom_line()  + 
+  xlab("Willingness to pay") +
+  ylab("Expected value of perfect information") +
+  scale_x_continuous(breaks = seq(0, max(wtp), length.out = 6), 
+                                  label = format_dollar) +
+  scale_y_continuous(label = format_dollar) +
+  theme(legend.position = "bottom") 
+```
