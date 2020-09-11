@@ -98,13 +98,13 @@ data <- rcea::sim_mstate3_data(n = 2000)
 data[patient_id %in% c(1, 2)]
 ```
 
-Multi-state models can be fit by estimating a joint survival model with interaction terms for different transition (see the `hesim` [introductory vignette](https://hesim-dev.github.io/hesim/articles/intro.html) for more details) or by fitting separate survival models for each transition. We will take the latter approach and and fit 3 parametric Weibull models. (Note that in an applied example you should compare the performance of multiple distributions.) 
+Multi-state models can be fit by estimating a joint survival model with interaction terms for different transition (see the `hesim` [introductory vignette](https://hesim-dev.github.io/hesim/articles/intro.html) for more details) or by fitting separate survival models for each transition. We will take the latter approach and and fit 3 parametric Weibull models. (Note that in an applied example you should compare the performance of multiple distributions. Type `?params_surv` to view the survival distributions supported by `hesim`.) 
 
 ```{r}
 n_trans <- max(tmat, na.rm = TRUE) # Number of transitions
 wei_fits <- vector(length = n_trans, mode = "list")
 for (i in 1:length(wei_fits)){
-  wei_fits[[i]] <- flexsurv::flexsurvreg(
+  wei_fits[[i]] <- flexsurvreg(
     Surv(time, status) ~ strategy_name + female,
     data = data,
     subset = (transition_id == i) ,
@@ -140,7 +140,7 @@ medcost_tbl <- stateval_tbl(
 print(medcost_tbl)
 ```
 
-Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months and then \$10,000 thereafter. This approximate a common scenario in in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.  
+Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months and then \$10,000 thereafter. This approximate a common scenario in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.  
 
 
 ```{r}
@@ -243,7 +243,9 @@ summarize_stprobs <- function(stateprobs){
 
 # Plot of state probabilities
 stprobs <- summarize_stprobs(econmod$stateprobs_)
-ggplot(stprobs, aes(x = t, y = prob_mean, col = factor(strategy_id))) +
+ggplot(stprobs, 
+       aes(x = t, y = prob_mean, 
+          col = factor(strategy_id, labels = c("SOC", "New")))) +
   geom_line() + facet_wrap(~state_name) +
   xlab("Years") + ylab("Probability in health state") +
   scale_color_discrete(name = "Strategy") +

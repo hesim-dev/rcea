@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Partitioned Survival Model</h1>
             
-            <h4 class="date">2020-09-08</h4>
+            <h4 class="date">2020-09-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/05-psm.Rmd"><code>vignettes/05-psm.Rmd</code></a></small>
       <div class="hidden name"><code>05-psm.Rmd</code></div>
@@ -109,12 +109,14 @@
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"flexsurv"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"flexsurv"</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">101</span>) <span class="co"># Make PSA reproducible</span></pre></body></html></div>
 </div>
 <div id="theory" class="section level1">
 <h1 class="hasAnchor">
 <a href="#theory" class="anchor"></a><span class="header-section-number">2</span> Theory</h1>
-<p>An 3-state partitioned survival model (PSM) simulates the probability that a patient is in each of 3 distinct health states at a given point of time when treated by a particular therapy. State membership is estimated from 2 survival curves (e.g., PFS and OS). Letting <span class="math inline">\(S_{PFS}(t)\)</span> be the PFS survival curve and <span class="math inline">\(S_{OS}(t)\)</span> be the OS curve, the probabilities of being in the Stable, Progression, and Death states at time <span class="math inline">\(t\)</span> are <span class="math inline">\(S_{PFS}(t)\)</span>, <span class="math inline">\(S_{OS}(t) - S_{PFS}(t)\)</span>, and <span class="math inline">\(1 - S_{OS}(t)\)</span>, respectively. For a more general N-state case, refer to the <a href="https://hesim-dev.github.io/hesim/articles/psm.html"><code>hesim</code> vignette on partitioned survival models (PSMs)</a> and the <a href="http://nicedsu.org.uk/technical-support-documents/partitioned-survival-analysis-tsd/">NICE Decision Support report on partitioned survival analysis</a>.</p>
+<p>An 3-state partitioned survival model (PSM) simulates the probability that a patient is in each of 3 distinct health states at a given point of time when treated by a particular therapy. State membership is estimated from 2 survival curves (e.g., PFS and OS) using an “area under the curve” approach. Specifically, letting <span class="math inline">\(S_{PFS}(t)\)</span> be the PFS survival curve and <span class="math inline">\(S_{OS}(t)\)</span> be the OS curve, the probabilities of being in the stable, progression, and death states at time <span class="math inline">\(t\)</span> are <span class="math inline">\(S_{PFS}(t)\)</span>, <span class="math inline">\(S_{OS}(t) - S_{PFS}(t)\)</span>, and <span class="math inline">\(1 - S_{OS}(t)\)</span>, respectively. For a more general N-state case, refer to the <a href="https://hesim-dev.github.io/hesim/articles/psm.html"><code>hesim</code> vignette on partitioned survival models (PSMs)</a> and the <a href="http://nicedsu.org.uk/technical-support-documents/partitioned-survival-analysis-tsd/">NICE Decision Support report on partitioned survival analysis</a>.</p>
 <p>Partitioned survival analysis can also be used to parameterize a time-inhomogeneous cohort discrete time state transition model (cDTSTM). This approach is identical to the PSM, except that discrete model cycles must be used. In a 3-state model, the transition probability matrix at time <span class="math inline">\(t\)</span> is given by,</p>
 <p><span class="math display">\[
 \begin{pmatrix}
@@ -123,6 +125,215 @@ C &amp; p_1 - p_2 &amp; p_2\\
 0 &amp; 0 &amp; 1,
 \end{pmatrix}
 \]</span> where <span class="math inline">\(C\)</span> is refers to complement of the sum of the remaining elements in a row and <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span> are transition probabilities derived from survival curves. In the PFS and OS example with model cycles of length <span class="math inline">\(u\)</span>, <span class="math inline">\(p_1 = 1 - s_{PFS}(t)/s_{PFS}(t-u)\)</span> and <span class="math inline">\(p_2 = 1 - s_{OS}(t)/s_{OS}(t-u)\)</span>. From this matrix, one can immediately see that a PSM—in contrast to a multi-state model—make the implausible assumption that the probability of a transition from stable to death and from progression to death are equal. See the <a href="https://cran.r-project.org/web/packages/heemod/vignettes/j_survival.html"><code>heemod</code> vignette on survival models</a> for an example cDTSTM based on a partitioned survival analysis.</p>
+</div>
+<div id="model-setup" class="section level1">
+<h1 class="hasAnchor">
+<a href="#model-setup" class="anchor"></a><span class="header-section-number">3</span> Model setup</h1>
+<p>We set up the model in the same way as in the multi-state model, except that since PSMs are cohort models, we no longer need to simulate a large number of patients to compute expected values. Instead, we will simulate separate cohorts of representative patients of varying ages and sexes. The overall estimates are (weighted) averages across patients, although in this example we will assume that each representative patient should receive equal weight. Note that we could have also used <code>grp_id</code> option in <code><a href="https://rdrr.io/pkg/hesim/man/hesim_data.html">hesim::hesim_data()</a></code> to assign patients to groups so that we could conduct subgroup analysis.</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">patients</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
+  <span class="kw">patient_id</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">4</span>,
+  <span class="kw">patient_wt</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">4</span>, <span class="fl">4</span>), <span class="co"># Each patient has same weight</span>
+  <span class="kw">age</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">45</span>, <span class="fl">45</span>, <span class="fl">65</span>, <span class="fl">65</span>),
+  <span class="kw">female</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>)
+)
+
+<span class="no">states</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
+  <span class="kw">state_id</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>),
+  <span class="kw">state_name</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Stable"</span>, <span class="st">"Progression"</span>) <span class="co"># Non-death health states</span>
+)
+
+<span class="no">strategies</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
+  <span class="kw">strategy_id</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>,
+  <span class="kw">strategy_name</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>)
+)
+
+<span class="no">hesim_dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/hesim_data.html">hesim_data</a></span>(
+  <span class="kw">patients</span> <span class="kw">=</span> <span class="no">patients</span>,
+  <span class="kw">strategies</span> <span class="kw">=</span> <span class="no">strategies</span>,
+  <span class="kw">states</span> <span class="kw">=</span> <span class="no">states</span>
+)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">hesim_dat</span>)</pre></body></html></div>
+<pre><code>## $strategies
+##   strategy_id strategy_name
+## 1           1           SOC
+## 2           2           New
+## 
+## $patients
+##    patient_id patient_wt age female
+## 1:          1       0.25  45      0
+## 2:          2       0.25  45      1
+## 3:          3       0.25  65      0
+## 4:          4       0.25  65      1
+## 
+## $states
+##    state_id  state_name
+## 1:        1      Stable
+## 2:        2 Progression
+## 
+## attr(,"class")
+## [1] "hesim_data"</code></pre>
+</div>
+<div id="parameter-estimation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#parameter-estimation" class="anchor"></a><span class="header-section-number">4</span> Parameter estimation</h1>
+<div id="survival-models" class="section level2">
+<h2 class="hasAnchor">
+<a href="#survival-models" class="anchor"></a><span class="header-section-number">4.1</span> Survival models</h2>
+<p>Multi-state models estimate the hazards between all transitions in an integrated manner. PSMs are, in contrast, parameterized by estimating separate survival models for different endpoints. The data consists of one row per patient. In the oncology example, the two endpoints are PFS and OS. We created the function <code><a href="../reference/sim_pfs_os_data.html">sim_pfs_os_data()</a></code> to simulate such data.</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">surv_data</span> <span class="kw">&lt;-</span> <span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="fu"><a href="../reference/sim_pfs_os_data.html">sim_pfs_os_data</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">2000</span>)
+<span class="no">surv_data</span>[<span class="no">patient_id</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>)]</pre></body></html></div>
+<pre><code>##    patient_id strategy_id strategy_name female      age pfs_time pfs_status
+## 1:          1           2           New      0 66.40410 9.209143          1
+## 2:          2           2           New      0 57.64656 8.514136          1
+##    os_status   os_time
+## 1:         1  9.209143
+## 2:         1 14.051688</code></pre>
+<p>To maintain consistency with the multi-state model, we will fit Weibull survival models for both PFS and OS and include an indicator for female as a covariate. The PFS and OS fits are stored in a <code><a href="https://rdrr.io/pkg/hesim/man/flexsurvreg_list.html">hesim::flexsurvreg_list</a></code>, which is just a list of models fit using <code><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurv::flexsurvreg()</a></code>.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">fit_pfs_wei</span> <span class="kw">&lt;-</span> <span class="kw pkg">flexsurv</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(
+  <span class="fu">Surv</span>(<span class="no">pfs_time</span>, <span class="no">pfs_status</span>) ~ <span class="no">strategy_name</span> + <span class="no">female</span>,
+  <span class="kw">data</span> <span class="kw">=</span> <span class="no">surv_data</span>,
+  <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"weibull"</span>)
+
+<span class="no">fit_os_wei</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span>(
+  <span class="fu">Surv</span>(<span class="no">os_time</span>, <span class="no">os_status</span>) ~ <span class="no">strategy_name</span> + <span class="no">female</span>,
+  <span class="kw">data</span> <span class="kw">=</span> <span class="no">surv_data</span>,
+  <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"weibull"</span>)
+
+<span class="no">psfit_wei</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/flexsurvreg_list.html">flexsurvreg_list</a></span>(<span class="no">fit_pfs_wei</span>, <span class="no">fit_os_wei</span>)</pre></body></html></div>
+</div>
+<div id="utility-and-costs" class="section level2">
+<h2 class="hasAnchor">
+<a href="#utility-and-costs" class="anchor"></a><span class="header-section-number">4.2</span> Utility and costs</h2>
+<p>Utility and medical costs are setup in the exact same way as in the multi-state model.</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co"># Utility</span>
+<span class="no">utility_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
+  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
+             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">.8</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">.6</span>),
+             <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.02</span>, <span class="fl">.05</span>)
+            ),
+  <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"beta"</span>,
+  <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">utility_tbl</span>)</pre></body></html></div>
+<pre><code>##    state_id mean   se
+## 1:        1  0.8 0.02
+## 2:        2  0.6 0.05</code></pre>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co"># Medical costs</span>
+<span class="no">medcost_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
+  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
+             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">9500</span>),
+             <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">9500</span>)
+             ),
+  <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"gamma"</span>,
+  <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">medcost_tbl</span>)</pre></body></html></div>
+<pre><code>##    state_id mean   se
+## 1:        1 2000 2000
+## 2:        2 9500 9500</code></pre>
+<p>Treatment costs are, on the other hand, treated slightly differently. Since the model is not semi-Markov, they cannot vary as a function of time since entering the progression state. One way to accomodate this is to use the survival models for PFS and OS fits to parameterize a cDTSTM as described above and create a number of tunnel states following progression. For instance, if we constructed a model with monthly cycles, then 4 progression states would be required (progression month 1, progression month 2, progression month 3, and progression month &gt; 3). However, for simplicity, we will assume treatment costs are constant in the progression state and continue to use the area under the curve approach.</p>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">drugcost_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
+  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">strategy_id</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_id</span>,
+             <span class="kw">est</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2000</span>, <span class="fl">12000</span>)),
+  <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"fixed"</span>,
+  <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">drugcost_tbl</span>)</pre></body></html></div>
+<pre><code>##    strategy_id   est
+## 1:           1  2000
+## 2:           2 12000</code></pre>
+</div>
+</div>
+<div id="simulation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#simulation" class="anchor"></a><span class="header-section-number">5</span> Simulation</h1>
+<div id="constructing-the-economic-model" class="section level2">
+<h2 class="hasAnchor">
+<a href="#constructing-the-economic-model" class="anchor"></a><span class="header-section-number">5.1</span> Constructing the economic model</h2>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">n_samples</span> <span class="kw">&lt;-</span> <span class="fl">100</span></pre></body></html></div>
+</div>
+<div id="survival-models-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#survival-models-1" class="anchor"></a><span class="header-section-number">5.2</span> Survival models</h2>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co"># Input data for survival models</span>
+<span class="no">survmods_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/expand.html">expand</a></span>(<span class="no">hesim_dat</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"strategies"</span>, <span class="st">"patients"</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">survmods_data</span>)</pre></body></html></div>
+<pre><code>##    strategy_id patient_id strategy_name patient_wt age female
+## 1:           1          1           SOC       0.25  45      0
+## 2:           1          2           SOC       0.25  45      1
+## 3:           1          3           SOC       0.25  65      0
+## 4:           1          4           SOC       0.25  65      1
+## 5:           2          1           New       0.25  45      0
+## 6:           2          2           New       0.25  45      1
+## 7:           2          3           New       0.25  65      0
+## 8:           2          4           New       0.25  65      1</code></pre>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">survmods</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_PsmCurves.html">create_PsmCurves</a></span>(<span class="no">psfit_wei</span>,
+                             <span class="kw">input_data</span> <span class="kw">=</span> <span class="no">survmods_data</span>,
+                             <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>,
+                             <span class="kw">bootstrap</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">est_data</span> <span class="kw">=</span> <span class="no">surv_data</span>)</pre></body></html></div>
+<div id="utility-and-cost-models" class="section level3">
+<h3 class="hasAnchor">
+<a href="#utility-and-cost-models" class="anchor"></a><span class="header-section-number">5.2.1</span> Utility and cost models</h3>
+<p>The came code from the multi-state model is used to setup the cost and utility models.</p>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="co"># Utility</span>
+<span class="no">utilitymod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">utility_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>)
+
+<span class="co"># Costs</span>
+<span class="no">drugcostmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">drugcost_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>)
+<span class="no">medcostmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">medcost_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>)
+<span class="no">costmods</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">Drug</span> <span class="kw">=</span> <span class="no">drugcostmod</span>,
+                 <span class="kw">Medical</span> <span class="kw">=</span> <span class="no">medcostmod</span>)</pre></body></html></div>
+</div>
+<div id="combining-the-disease-progression-cost-and-utility-models" class="section level3">
+<h3 class="hasAnchor">
+<a href="#combining-the-disease-progression-cost-and-utility-models" class="anchor"></a><span class="header-section-number">5.2.2</span> Combining the disease progression, cost, and utility models</h3>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">econmod</span> <span class="kw">&lt;-</span> <span class="no">Psm</span>$<span class="fu">new</span>(<span class="kw">survival_models</span> <span class="kw">=</span> <span class="no">survmods</span>,
+                   <span class="kw">utility_model</span> <span class="kw">=</span> <span class="no">utilitymod</span>,
+                   <span class="kw">cost_models</span> <span class="kw">=</span> <span class="no">costmods</span>)</pre></body></html></div>
+</div>
+</div>
+<div id="simulating-outcomes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulating-outcomes" class="anchor"></a><span class="header-section-number">5.3</span> Simulating outcomes</h2>
+<div id="survival-curves" class="section level3">
+<h3 class="hasAnchor">
+<a href="#survival-curves" class="anchor"></a><span class="header-section-number">5.3.1</span> Survival curves</h3>
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">times</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">50</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fl">.1</span>)
+<span class="no">econmod</span>$<span class="fu">sim_survival</span>(<span class="kw">t</span> <span class="kw">=</span> <span class="no">times</span>)</pre></body></html></div>
+<p><img src="05-psm_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+</div>
+<div id="health-state-probabilities" class="section level3">
+<h3 class="hasAnchor">
+<a href="#health-state-probabilities" class="anchor"></a><span class="header-section-number">5.3.2</span> Health state probabilities</h3>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_stateprobs</span>()
+<span class="no">econmod</span>$<span class="no">stateprobs_</span>[<span class="no">sample</span> <span class="kw">==</span> <span class="fl">1</span> <span class="kw">&amp;</span> <span class="no">state_id</span> <span class="kw">==</span> <span class="fl">2</span> <span class="kw">&amp;</span> <span class="no">t</span> <span class="kw">==</span> <span class="fl">12</span>]</pre></body></html></div>
+<pre><code>##    sample strategy_id patient_id grp_id state_id  t      prob
+## 1:      1           1          1      1        2 12 0.5012463
+## 2:      1           1          2      1        2 12 0.6320278
+## 3:      1           1          3      1        2 12 0.5012463
+## 4:      1           1          4      1        2 12 0.6320278
+## 5:      1           2          1      1        2 12 0.5986595
+## 6:      1           2          2      1        2 12 0.4101350
+## 7:      1           2          3      1        2 12 0.5986595
+## 8:      1           2          4      1        2 12 0.4101350</code></pre>
+</div>
+<div id="utility-and-costs-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#utility-and-costs-1" class="anchor"></a><span class="header-section-number">5.3.3</span> Utility and costs</h3>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">.03</span>)
+<span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">.03</span>)</pre></body></html></div>
+</div>
+</div>
+<div id="cost-effectiveness-analysis" class="section level2">
+<h2 class="hasAnchor">
+<a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">5.4</span> Cost-effectiveness analysis</h2>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="no">econmod</span>$<span class="fu">summarize</span>()
+<span class="no">icea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
+<pre><code>##                   SOC New                         
+## Incremental QALYs "-" "3.60 (3.07, 4.09)"         
+## Incremental costs "-" "201,896 (178,583, 257,932)"
+## Incremental NMB   "-" "-21,790 (-74,323, 10,440)" 
+## ICER              "-" "56,049"                    
+## Conclusion        "-" "Not cost-effective"</code></pre>
+</div>
 </div>
   </div>
 
