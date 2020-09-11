@@ -220,7 +220,7 @@ econmod$sim_costs(dr = .03)
 econmod$sim_qalys(dr = .03)
 ```
 
-## Cost-effectiveness analysis
+# Cost-effectiveness analysis
 ```{r}
 ce_sim <- econmod$summarize()
 icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03)

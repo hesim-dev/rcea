@@ -321,9 +321,10 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">.03</span>)</pre></body></html></div>
 </div>
 </div>
-<div id="cost-effectiveness-analysis" class="section level2">
-<h2 class="hasAnchor">
-<a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">5.4</span> Cost-effectiveness analysis</h2>
+</div>
+<div id="cost-effectiveness-analysis" class="section level1">
+<h1 class="hasAnchor">
+<a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">6</span> Cost-effectiveness analysis</h1>
 <div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="no">econmod</span>$<span class="fu">summarize</span>()
 <span class="no">icea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>)
 <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
@@ -333,7 +334,6 @@ C &amp; p_1 - p_2 &amp; p_2\\
 ## Incremental NMB   "-" "-21,790 (-74,323, 10,440)" 
 ## ICER              "-" "56,049"                    
 ## Conclusion        "-" "Not cost-effective"</code></pre>
-</div>
 </div>
   </div>
 
