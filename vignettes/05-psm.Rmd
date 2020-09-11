@@ -25,10 +25,12 @@ library("hesim")
 library("data.table")
 library("ggplot2")
 library("flexsurv")
+
+set.seed(101) # Make PSA reproducible
 ```
 
 # Theory
-An 3-state partitioned survival model (PSM) simulates the probability that a patient is in each of 3 distinct health states at a given point of time when treated by a particular therapy. State membership is estimated from 2 survival curves (e.g., PFS and OS). Letting $S_{PFS}(t)$ be the PFS survival curve and $S_{OS}(t)$ be the OS curve, the probabilities of being in the Stable, Progression, and Death states at time $t$ are $S_{PFS}(t)$, $S_{OS}(t) - S_{PFS}(t)$, and $1 - S_{OS}(t)$, respectively. For a more general N-state case, refer to the [`hesim` vignette on partitioned survival models (PSMs)](https://hesim-dev.github.io/hesim/articles/psm.html) and the [NICE Decision Support report on partitioned survival analysis](http://nicedsu.org.uk/technical-support-documents/partitioned-survival-analysis-tsd/).
+An 3-state partitioned survival model (PSM) simulates the probability that a patient is in each of 3 distinct health states at a given point of time when treated by a particular therapy. State membership is estimated from 2 survival curves (e.g., PFS and OS) using an "area under the curve" approach. Specifically, letting $S_{PFS}(t)$ be the PFS survival curve and $S_{OS}(t)$ be the OS curve, the probabilities of being in the stable, progression, and death states at time $t$ are $S_{PFS}(t)$, $S_{OS}(t) - S_{PFS}(t)$, and $1 - S_{OS}(t)$, respectively. For a more general N-state case, refer to the [`hesim` vignette on partitioned survival models (PSMs)](https://hesim-dev.github.io/hesim/articles/psm.html) and the [NICE Decision Support report on partitioned survival analysis](http://nicedsu.org.uk/technical-support-documents/partitioned-survival-analysis-tsd/).
 
 Partitioned survival analysis can also be used to parameterize a time-inhomogeneous cohort discrete time state transition model (cDTSTM). This approach is identical to the PSM, except that discrete model cycles must be used. In a 3-state model, the transition probability matrix at time $t$ is given by, 
 
@@ -41,6 +43,186 @@ C & p_1 - p_2 & p_2\\
 $$
 where $C$ is refers to complement of the sum of the remaining elements in a row and $p_1$ and $p_2$ are transition probabilities derived from survival curves. In the PFS and OS example with model cycles of length $u$, $p_1 =  1 - s_{PFS}(t)/s_{PFS}(t-u)$ and $p_2 = 1 - s_{OS}(t)/s_{OS}(t-u)$. From this matrix, one can immediately see that a PSM---in contrast to a multi-state model---make the implausible assumption that the probability of a transition from stable to death and from progression to death are equal. See the [`heemod` vignette on survival models](https://cran.r-project.org/web/packages/heemod/vignettes/j_survival.html) for an example cDTSTM based on a partitioned survival analysis.   
 
+# Model setup
+We set up the model in the same way as in the multi-state model, except that since PSMs are cohort models, we no longer need to simulate a large number of patients to compute expected values. Instead, we will simulate separate cohorts of representative patients of varying ages and sexes. The overall estimates are (weighted) averages across patients, although in this example we will assume that each representative patient should receive equal weight. Note that we could have also used `grp_id` option in `hesim::hesim_data()` to assign patients to groups so that we could conduct subgroup analysis. 
 
+```{r}
+patients <- data.table( 
+  patient_id = 1:4,
+  patient_wt = rep(1/4, 4), # Each patient has same weight
+  age = c(45, 45, 65, 65),
+  female = c(0, 1, 0, 1)
+)
 
+states <- data.table(
+  state_id = c(1, 2),
+  state_name = c("Stable", "Progression") # Non-death health states
+)
 
+strategies <- data.frame(
+  strategy_id = 1:2,
+  strategy_name = c("SOC", "New")
+)
+
+hesim_dat <- hesim_data(
+  patients = patients,
+  strategies = strategies,
+  states = states
+)
+print(hesim_dat)
+```
+
+# Parameter estimation
+## Survival models
+Multi-state models estimate the hazards between all transitions in an integrated manner. PSMs are, in contrast, parameterized by estimating separate survival models for different endpoints. The data consists of one row per patient. In the oncology example, the two endpoints are PFS and OS. We created the function `sim_pfs_os_data()` to simulate such data. 
+
+```{r}
+surv_data <- rcea::sim_pfs_os_data(n = 2000)
+surv_data[patient_id %in% c(1, 2)]
+```
+
+To maintain consistency with the multi-state model, we will fit Weibull survival models for both PFS and OS and include an indicator for female as a covariate. The PFS and OS fits are stored in a `hesim::flexsurvreg_list`, which is just a list of models fit using `flexsurv::flexsurvreg()`. 
+
+```{r}
+fit_pfs_wei <- flexsurv::flexsurvreg(
+  Surv(pfs_time, pfs_status) ~ strategy_name + female,
+  data = surv_data,
+  dist = "weibull")
+
+fit_os_wei <- flexsurvreg(
+  Surv(os_time, os_status) ~ strategy_name + female,
+  data = surv_data,
+  dist = "weibull")
+
+psfit_wei <- flexsurvreg_list(fit_pfs_wei, fit_os_wei)
+```
+
+## Utility and costs
+Utility and medical costs are setup in the exact same way as in the multi-state model.
+
+```{r}
+# Utility
+utility_tbl <- stateval_tbl(
+  data.table(state_id = states$state_id,
+             mean = c(H = .8, S = .6),
+             se = c(0.02, .05)
+            ),
+  dist = "beta",
+  hesim_data = hesim_dat)
+print(utility_tbl)
+
+# Medical costs
+medcost_tbl <- stateval_tbl(
+  data.table(state_id = states$state_id,
+             mean = c(H = 2000, S = 9500),
+             se = c(H = 2000, S = 9500)
+             ),
+  dist = "gamma",
+  hesim_data = hesim_dat)
+print(medcost_tbl)
+```
+
+Treatment costs are, on the other hand, treated slightly differently. Since the model is not semi-Markov, they cannot vary as a function of time since entering the progression state. One way to accomodate this is to use the survival models for PFS and OS fits to parameterize a cDTSTM as described above and create a number of tunnel states following progression. For instance, if we constructed a model with monthly cycles, then 4 progression states would be required (progression month 1, progression month 2, progression month 3, and progression month > 3). However, for simplicity, we will assume treatment costs are constant in the progression state and continue to use the area under the curve approach. 
+
+```{r}
+drugcost_tbl <- stateval_tbl(
+  data.table(strategy_id = strategies$strategy_id,
+             est = c(2000, 12000)),
+  dist = "fixed",
+  hesim_data = hesim_dat)
+print(drugcost_tbl)
+```
+# Simulation
+## Constructing the economic model
+```{r}
+n_samples <- 100
+```
+
+## Survival models
+```{r}
+# Input data for survival models
+survmods_data <- expand(hesim_dat, by = c("strategies", "patients"))
+print(survmods_data)
+```
+
+```{r, cache = TRUE}
+survmods <- create_PsmCurves(psfit_wei, 
+                             input_data = survmods_data, 
+                             n = n_samples,
+                             bootstrap = TRUE, est_data = surv_data)
+```
+
+### Utility and cost models
+The came code from the multi-state model is used to setup the cost and utility models.
+
+```{r}
+# Utility
+utilitymod <- create_StateVals(utility_tbl, n = n_samples)
+
+# Costs
+drugcostmod <- create_StateVals(drugcost_tbl, n = n_samples)
+medcostmod <- create_StateVals(medcost_tbl, n = n_samples)
+costmods <- list(Drug = drugcostmod,
+                 Medical = medcostmod)
+```
+
+### Combining the disease progression, cost, and utility models
+
+```{r}
+econmod <- Psm$new(survival_models = survmods,
+                   utility_model = utilitymod,
+                   cost_models = costmods)
+```
+
+## Simulating outcomes
+### Survival curves
+
+```{r}
+times <- seq(0, 50, by = .1)
+econmod$sim_survival(t = times)
+```
+
+```{r, echo = FALSE}
+# Survival curve plotting data
+surv_means <- econmod$survival_[, lapply(.SD, weighted.mean, w = patient_wt),
+                                by = c("strategy_id", "curve", "t"),
+                               .SDcols = "survival"]
+surv_mean_min <- surv_means[curve != 2][, curve := curve + 1]
+setnames(surv_mean_min, "survival", "survival_min")
+surv_means <- merge(surv_means, surv_mean_min,
+                    by = c("strategy_id", "curve", "t"),
+                    all.x = TRUE)
+surv_means[, survival_min := ifelse(curve == 1, 0, survival_min)]
+surv_means[, curve := factor(curve, labels = c("PFS", "OS"))]
+surv_means[, strategy_name := factor(strategy_id, labels = c("SOC", "New"))]
+
+# Plot
+ggplot(surv_means, aes(x = t, y = survival, fill = curve)) +
+  geom_line(aes(col = curve)) +
+  facet_wrap(~strategy_name) +
+  geom_ribbon(aes(ymin = survival_min, ymax = survival), alpha = .5) +
+  xlab("Years") + ylab("Proportion surviving") +
+  scale_color_discrete(name = "Survival curve") +
+  guides(fill = FALSE) +
+  theme_bw() +
+  theme(legend.position = "bottom") 
+```
+
+### Health state probabilities
+```{r}
+econmod$sim_stateprobs()
+econmod$stateprobs_[sample == 1 & state_id == 2 & t == 12]
+```
+
+### Utility and costs
+```{r}
+econmod$sim_costs(dr = .03)
+econmod$sim_qalys(dr = .03)
+```
+
+## Cost-effectiveness analysis
+```{r}
+ce_sim <- econmod$summarize()
+icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03)
+icer_tbl(icea_pw_out, colnames = strategies$strategy_name)
+```
