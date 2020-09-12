@@ -257,9 +257,9 @@ make_icer_tbl <- function(costs0, costs1, qalys0, qalys1){
       format_costs(), 
     `QALYs` = c(total_qalys0, total_qalys1) %>%
       format_qalys(),
-    `Inremental costs` = c("--", incr_total_costs %>% 
+    `Incremental costs` = c("--", incr_total_costs %>% 
                              format_costs()),
-    `Inremental QALYs` = c("--", inc_total_qalys %>% 
+    `Incremental QALYs` = c("--", inc_total_qalys %>% 
                              format_qalys()),
     `ICER` = c("--", icer %>% format_costs())
 ) %>%
