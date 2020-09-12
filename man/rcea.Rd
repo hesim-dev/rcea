@@ -5,5 +5,5 @@
 \alias{rcea}
 \title{rcea: Applied cost-effectiveness modeling with R}
 \description{
-Course materials for learning how to perform applied cost-effectiveness analysis with R.
+Course materials for applied cost-effectiveness analysis with R.
 }
