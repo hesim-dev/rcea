@@ -168,3 +168,5 @@ ce_out_wider
 ## @knitr icer
 ce_out_wider[, .(icer = (mean(dcosts_New - dcosts_SOC))/
                    mean(dqalys_New - dqalys_SOC))]
+
+## ---- Exercises --------------------------------------------------------------
