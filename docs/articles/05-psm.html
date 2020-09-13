@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Partitioned Survival Model</h1>
             
-            <h4 class="date">2020-09-11</h4>
+            <h4 class="date">2020-09-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/05-psm.Rmd"><code>vignettes/05-psm.Rmd</code></a></small>
       <div class="hidden name"><code>05-psm.Rmd</code></div>
@@ -210,7 +210,7 @@ C &amp; p_1 - p_2 &amp; p_2\\
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
              <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">.8</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">.6</span>),
              <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.02</span>, <span class="fl">.05</span>)
-            ),
+  ),
   <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"beta"</span>,
   <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">utility_tbl</span>)</pre></body></html></div>
@@ -222,7 +222,7 @@ C &amp; p_1 - p_2 &amp; p_2\\
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
              <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">9500</span>),
              <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">9500</span>)
-             ),
+  ),
   <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"gamma"</span>,
   <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">medcost_tbl</span>)</pre></body></html></div>
@@ -311,7 +311,7 @@ C &amp; p_1 - p_2 &amp; p_2\\
 ## 5:      1           1          1      1       0.25     1 0.4 0.9977234
 ## 6:      1           1          1      1       0.25     1 0.5 0.9962883</code></pre>
 <p>We can, in theory, plot these curves for each treatment strategy and patient. To summarize, however, we will plot the average (across patients) survival curves for each treatment strategy. The probabilities of being in the stable, progression, and death states are the area under the PFS curves, the area between the OS and PFS curves, and the area above the OS curve, respectively.</p>
-<p><img src="05-psm_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<p><img src="05-psm_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
 </div>
 <div id="health-state-probabilities" class="section level3">
 <h3 class="hasAnchor">
