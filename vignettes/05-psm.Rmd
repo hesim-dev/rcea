@@ -14,19 +14,16 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+```{r, include = FALSE, echo = FALSE}
+do.call(knitr::read_chunk, list(path = "05-psm.R"))
+```
+
 # Overview
 While multi-state models can be used to estimate the parameters of a state transition model (STM) in a very flexible manner, data availability can make it difficult (or infeasible) to fit such a model. This is often the case when an evidence synthesis model based on summary level data is used to parameterize the STM. For example, in oncology, published articles of clinical trials often provide survival curves of progression-free survival (PFS) and overall survival (OS), but do not release information on time to event (and censoring) for each transition. In this setting partitioned survival analysis may consequently be a simpler approach.
 
 We will use the same packages as in the ["Semi-Markov Multi-state Model"](04-mstate.html) tutorial. 
 
-```{r, warning = FALSE, message = FALSE}
-library("rcea")
-library("hesim")
-library("data.table")
-library("ggplot2")
-library("flexsurv")
-
-set.seed(101) # Make PSA reproducible
+```{r, R-setup, warning = FALSE, message = FALSE}
 ```
 
 # Theory
@@ -46,148 +43,66 @@ where $C$ is refers to complement of the sum of the remaining elements in a row 
 # Model setup
 We set up the model in the same way as in the multi-state model, except that since PSMs are cohort models, we no longer need to simulate a large number of patients to compute expected values. Instead, we will simulate separate cohorts of representative patients of varying ages and sexes. The overall estimates are (weighted) averages across patients, although in this example we will assume that each representative patient should receive equal weight. Note that we could have also used `grp_id` option in `hesim::hesim_data()` to assign patients to groups so that we could conduct subgroup analysis. 
 
-```{r}
-patients <- data.table( 
-  patient_id = 1:4,
-  patient_wt = rep(1/4, 4), # Each patient has same weight
-  age = c(45, 45, 65, 65),
-  female = c(0, 1, 0, 1)
-)
-
-states <- data.table(
-  state_id = c(1, 2),
-  state_name = c("Stable", "Progression") # Non-death health states
-)
-
-strategies <- data.frame(
-  strategy_id = 1:2,
-  strategy_name = c("SOC", "New")
-)
-
-hesim_dat <- hesim_data(
-  patients = patients,
-  strategies = strategies,
-  states = states
-)
-print(hesim_dat)
+```{r, hesim_data}
 ```
 
 # Parameter estimation
 ## Survival models
 Multi-state models estimate the hazards between all transitions in an integrated manner. PSMs are, in contrast, parameterized by estimating separate survival models for different endpoints. The data consists of one row per patient. In the oncology example, the two endpoints are PFS and OS. We created the function `sim_pfs_os_data()` to simulate such data. 
 
-```{r}
-surv_est_data <- rcea::sim_pfs_os_data(n = 2000)
-surv_est_data[patient_id %in% c(1, 2)]
+```{r, sim_pfs_os_data}
 ```
 
 To maintain consistency with the multi-state model, we will fit Weibull survival models for both PFS and OS and include an indicator for female as a covariate. The PFS and OS fits are stored in a `hesim::flexsurvreg_list`, which is just a list of models fit using `flexsurv::flexsurvreg()`. 
 
-```{r}
-fit_pfs_wei <- flexsurv::flexsurvreg(
-  Surv(pfs_time, pfs_status) ~ strategy_name + female,
-  data = surv_est_data,
-  dist = "weibull")
-
-fit_os_wei <- flexsurvreg(
-  Surv(os_time, os_status) ~ strategy_name + female,
-  data = surv_est_data,
-  dist = "weibull")
-
-psfit_wei <- flexsurvreg_list(fit_pfs_wei, fit_os_wei)
+```{r, fit-survival-models}
 ```
 
 ## Utility and costs
 Utility and medical costs are setup in the exact same way as in the multi-state model.
 
-```{r}
-# Utility
-utility_tbl <- stateval_tbl(
-  data.table(state_id = states$state_id,
-             mean = c(H = .8, S = .6),
-             se = c(0.02, .05)
-            ),
-  dist = "beta",
-  hesim_data = hesim_dat)
-print(utility_tbl)
-
-# Medical costs
-medcost_tbl <- stateval_tbl(
-  data.table(state_id = states$state_id,
-             mean = c(H = 2000, S = 9500),
-             se = c(H = 2000, S = 9500)
-             ),
-  dist = "gamma",
-  hesim_data = hesim_dat)
-print(medcost_tbl)
+```{r, utility-medcost-tables}
 ```
 
 Treatment costs are, on the other hand, treated slightly differently. Since the model is not semi-Markov, they cannot vary as a function of time since entering the progression state. One way to accommodate this is to use the survival models for PFS and OS fits to parameterize a cDTSTM as described above and create a number of tunnel states following progression. For instance, if we constructed a model with monthly cycles, then 4 progression states would be required (progression month 1, progression month 2, progression month 3, and progression month > 3). However, for simplicity, we will assume treatment costs are constant in the progression state and continue to use the area under the curve approach. 
 
-```{r}
-drugcost_tbl <- stateval_tbl(
-  data.table(strategy_id = strategies$strategy_id,
-             est = c(2000, 12000)),
-  dist = "fixed",
-  hesim_data = hesim_dat)
-print(drugcost_tbl)
+```{r, drugcost_tbl}
 ```
 # Simulation
 ## Constructing the economic model
 As in all models that perform probabilistic sensitivity analysis (PSA), we set the number of PSA iterations. Note that we use a smaller number of iterations because will will sample parameters from the survival models using bootstrapping, which takes longer to run than sampling directly from probability distributions like we have done previously. For instance, in the multi-state model, we sampled the parameters from their multivariate normal asymptotic distribution.
-```{r}
-n_samples <- 100
+
+```{r, psa-iterations}
 ```
 
 ## Survival models
 Survival predictions are made as a function of the fitted Weibull models and input data. The latter consists of each treatment strategy and patient combination. 
 
-```{r}
-# Input data for survival models
-survmods_data <- expand(hesim_dat, by = c("strategies", "patients"))
-print(survmods_data)
+```{r, survival-models-data}
 ```
 
 In addition, we must also specify arguments related to the PSA. As mentioned above, we sample the parameters via bootstrapping, whereby the survival models are refit repeatedly to resamples of the estimation dataset. The advantage of this approach is that it preserves the correlation between PFS and OS and ensures that the curves do not cross.
 
-```{r, cache = TRUE}
-survmods <- create_PsmCurves(psfit_wei, 
-                             input_data = survmods_data, 
-                             n = n_samples,
-                             bootstrap = TRUE, est_data = surv_est_data)
+```{r, survival-models, cache = TRUE}
 ```
 
 ### Utility and cost models
 The same code from the multi-state model is used to setup the cost and utility models.
 
-```{r}
-# Utility
-utilitymod <- create_StateVals(utility_tbl, n = n_samples)
-
-# Costs
-drugcostmod <- create_StateVals(drugcost_tbl, n = n_samples)
-medcostmod <- create_StateVals(medcost_tbl, n = n_samples)
-costmods <- list(Drug = drugcostmod,
-                 Medical = medcostmod)
+```{r, utility-cost-models}
 ```
 
 ### Combining the disease progression, cost, and utility models
 As in the multi-state model, we initialize the economic model by combining the disease, utility, and costs models using the `$new()` method.
 
-```{r}
-econmod <- Psm$new(survival_models = survmods,
-                   utility_model = utilitymod,
-                   cost_models = costmods)
+```{r, economic-model}
 ```
 
 ## Simulating outcomes
 ### Survival curves
 Once the PSM has been initialized, the `$sim_survival()` method can be used to generate survival curves for each endpoint. 
 
-```{r}
-times <- seq(0, 50, by = .1)
-econmod$sim_survival(t = times)
-head(econmod$survival_)
+```{r, sim_survival}
 ```
 
 We can, in theory, plot these curves for each treatment strategy and patient. To summarize, however, we will plot the average (across patients) survival curves for each treatment strategy. The probabilities of being in the stable, progression, and death states are the area under the PFS curves, the area between the OS and PFS curves, and the area above the OS curve, respectively. 
@@ -221,24 +136,17 @@ ggplot(surv_means, aes(x = t, y = survival, fill = curve)) +
 ### Health state probabilities
 These health state probabilities are computed using the `$sim_stateprobs()` method. For example, let's look at probabilities in the progression state at year 12 using the first PSA sample. 
 
-```{r}
-econmod$sim_stateprobs()
-econmod$stateprobs_[sample == 1 & state_id == 2 & t == 12]
+```{r, sim_stateprobs}
 ```
 
 ### Utility and costs
 Utility and costs are computed in the same manner as in the other `hesim` models. 
 
-```{r}
-econmod$sim_costs(dr = .03)
-econmod$sim_qalys(dr = .03)
+```{r, sim-costs-qalys}
 ```
 
 # Cost-effectiveness analysis
 Since the cost and QALY output is the same regardless of the model type, the cost-effectiveness analysis (CEA) proceeds in the same way as when using the Markov cohort and multi-state modeling approaches.
 
-```{r}
-ce_sim <- econmod$summarize()
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03)
-icer_tbl(icea_pw_out, colnames = strategies$strategy_name)
+```{r, icer}
 ```
