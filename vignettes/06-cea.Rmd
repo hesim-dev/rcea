@@ -14,15 +14,16 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+```{r, include = FALSE, echo = FALSE}
+do.call(knitr::read_chunk, list(path = "06-cea.R"))
+```
+
 # Overview
 The prior tutorials have focused on constructing economic models to simulate disease progression, costs, and quality-adjusted life-years (QALYs). While incremental cost-effectiveness ratios (ICERs) have been computed and probabilistic sensitivity analysis (PSA) has been employed, we have not yet formalized cost-effectiveness analysis (CEA) or represented decision uncertainty. 
 
 In this analysis we will perform a CEA given the output of model from the ["Semi-Markov Multi-state Model"](04-mstate.html) tutorial. We will use the CEA functions from `hesim` to summarize decision uncertainty and `ggplot2` for visualization. The CEA will be peformed for a single target population, but you can review the `hesim` tutorial on [individualized CEA](https://hesim-dev.github.io/hesim/articles/icea.html) and the references therein for an example of CEA in the context of multiple subgroups.
 
-```{r}
-library("hesim")
-library("ggplot2")
-theme_set(theme_minimal()) # Set ggplot2 theme
+```{r, R-setup}
 ``` 
 
 # Theory
@@ -70,17 +71,7 @@ CEA can be performed using the `hesim::icea()` and `hesim::icea_pw()` functions.
 
 We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a `hesim::ce` object). 
 
-```{r}
-ce_sim <- readRDS("ce_sim.rds") # Load cost-effectiveness object
-head(ce_sim)
-
-wtp <- seq(0, 250000, 500) # Willingness to pay per QALY
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, # Comparator is SOC (ID = 1)
-                       dr_qalys = 0.03, dr_costs = 0.03,
-                       wtp)
-icea_out <- icea(ce_sim, 
-                  dr_qalys = 0.03, dr_costs = 0.03,
-                  k = wtp)
+```{r, conduct-cea}
 ```
 
 Each function returns a number of outputs for summarizing a PSA.
@@ -96,51 +87,19 @@ head(icea_pw_out$delta)
 
 To make nicer plots, we can write a simple helper function to (i) create labels for the treatment strategies and (ii) format dollar values (which you might also use the `scales` package for). 
 
-```{r}
-strategy_factor <- function (x) { 
-   factor(x, levels = 1:2, labels = c("SOC", "New"))
-}
-
-format_dollar <- function(x) {
-  paste0("$", formatC(x, format = "d", big.mark = ","))
-}
+```{r, helper-functions}
 ```
 
 The dotted line in the plot is the WTP line, with slope equal to the desire value of $k$ (in this case \$50,000). For a chosen $k$, points below the line are cost-effective while those above it are not. 
 
-```{r ceplane_plot, warning = FALSE, message = FALSE}
-ylim <- max(icea_pw_out$delta[, ic]) * 1.1
-xlim <- ceiling(max(icea_pw_out$delta[, ie]) * 1.1)
-ggplot(icea_pw_out$delta, 
-       aes(x = ie, y = ic, col = strategy_factor(strategy_id))) + 
-  geom_jitter(size = .5)  + 
-  xlab("Incremental QALYs") + 
-  ylab("Incremental cost") +
-  scale_y_continuous(limits = c(-ylim, ylim),
-                     labels = format_dollar) +
-  scale_x_continuous(limits = c(-xlim, xlim), breaks = seq(-6, 6, 2)) +
-  theme(legend.position = "bottom") + 
-  scale_colour_discrete(name = "Strategy") +
-  geom_abline(slope = 50000, linetype = "dashed") +
-  geom_hline(yintercept = 0) + 
-  geom_vline(xintercept = 0)
+```{r, ceplane-plot}
 ```
-
 
 ## Cost-effectiveness acceptability curves (CEAC)  
 ### Simultanous comparison
 A useful summary measure for quantifying uncertainty is the probability that each treatment strategy is the most cost effective, which is estimated from simulation output as the proportion of simulation draws that each strategy has the highest NMB. 
 
-```{r mce_plot, warning = FALSE, message = FALSE}
-ggplot(icea_out$mce, 
-       aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
-  geom_line() + 
-  xlab("Willingness to pay") +
-  ylab("Probability most cost-effective") +
-  scale_x_continuous(breaks = seq(0, max(wtp), length.out = 6), 
-                     label = format_dollar) +
-  theme(legend.position = "bottom") + 
-  scale_colour_discrete(name = "Strategy")
+```{r, ceac-simultaneous-plot}
 ```
 
 The probability that the new treatment is the most cost-effective is increasing in WTP.
@@ -148,16 +107,7 @@ The probability that the new treatment is the most cost-effective is increasing 
 ### Pairwise comparison
 The difference between this plot and the one above is that it compares each strategy to a single comparator rather than considering all strategies simultaneously. Since there are only two treatment strategies the distinction is not meaningful, but it can be important when there are 3 or more treatment strategies. 
 
-```{r ceac_plot}
-ggplot(icea_pw_out$ceac, 
-       aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
-  geom_line()  + 
-  xlab("Willingness to pay") +
-  ylab("Probability most cost-effective") +
-  scale_x_continuous(breaks =  seq(0, max(wtp), length.out = 6), 
-                     label = format_dollar) +
-  theme(legend.position = "bottom") +
-  scale_colour_discrete(name = "Strategy")
+```{r ceac-pairwise-plot}
 ```
 
 ## Cost-effectiveness acceptability frontier (CEAF)
@@ -165,16 +115,7 @@ One drawback of the CEAC is that the probability of being cost-effective cannot 
 
 A CEAF curve can be easily created by using the `best` column to subset to the treatment strategy with the highest expected NMB for each WTP value. 
 
-```{r ceaf_plot}
-ggplot(icea_out$mce[best == 1], 
-       aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
-  geom_line() + 
-  xlab("Willingness to pay") +
-  ylab("Probability most cost-effective") +
-  scale_x_continuous(breaks = seq(0, max(wtp), length.out = 6), 
-                                  label = format_dollar) +
-  theme(legend.position = "bottom") + 
-  scale_colour_discrete(name = "Strategy")
+```{r, ceaf-plot}
 ```
 
 
@@ -189,13 +130,5 @@ $$
 
 The `icea()` function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values $k$. A plot by group of the the EVPI for different values of $k$ is shown below. The kink in the plot represents the value of $k$ where the optimal strategy changes.
 
-```{r evpi_plot}
-ggplot(icea_out$evpi, aes(x = k, y = evpi)) +
-  geom_line()  + 
-  xlab("Willingness to pay") +
-  ylab("Expected value of perfect information") +
-  scale_x_continuous(breaks = seq(0, max(wtp), length.out = 6), 
-                                  label = format_dollar) +
-  scale_y_continuous(label = format_dollar) +
-  theme(legend.position = "bottom") 
+```{r, evpi-plot}
 ```
