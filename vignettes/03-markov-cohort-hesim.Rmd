@@ -14,6 +14,10 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+```{r, include = FALSE, echo = FALSE}
+do.call(knitr::read_chunk, list(path = "03-markov-cohort-hesim.R"))
+```
+
 # Overview
 This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](02-markov-cohort-psa.html) using `hesim`. More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
 
@@ -26,83 +30,34 @@ Markov cohort models (time-homogeneous and time-homogeneous) are referred to as 
 
 This analysis can be performed using the `hesim` package alone. 
 
-```{r, message = FALSE, warning=FALSE, results='hide'}
-library("hesim")
+```{r, R-packages, message = FALSE, warning = FALSE}
 ```
-
 
 # Define the model
 ## Data
 Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We continue to run an analysis for two treatment strategies ("SOC" and the "New" treatment) and one representative 25-year old patient.
 
-```{r, warning = FALSE, message = FALSE}
-strategies <- data.frame(
-  strategy_id = 1:2,
-  strategy_name = c("SOC", "New")
-)
-patients <- data.frame(
-  patient_id = 1,
-  age = 25
-)
-hesim_dat <- hesim_data(
-  strategies = strategies,
-  patients = patients
-)
-print(hesim_dat)
+```{r, hesim-data, warning = FALSE, message = FALSE}
 ```
 
 The model will be simulated for each treatment strategy and representative patient combination. Such data containing treatment strategy and patient characteristics can be generated using `expand()`. 
 
-```{r}
-data <- hesim::expand(hesim_dat, by = c("strategies", "patients"))
-head(data)
+```{r, expanded-data}
 ```
 
 ## Parameters
 We will use the same list of parameters as in the previous tutorial.
 
-```{r, include = FALSE, results = "hide"}
-transitions_soc <- matrix(
-  c(848, 150, 0,   2,
-    450, 355, 95,  5,
-    0,   0,   784, 16,
-    0,   0,   0,   23),
-  nrow = 4, byrow = TRUE)
-state_names <- c("H", "S1", "S2", "D")
-colnames(transitions_soc) <- rownames(transitions_soc) <- tolower(state_names)
+```{r, tpmatrix, include = FALSE, results = "hide"}
 ```
 
-
-```{r}
-params <- list(
-  alpha_soc = transitions_soc,
-  lrr_mean = log(.8),
-  lrr_lower = log(.71),
-  lrr_upper = log(.9),
-  c_medical = c(H = 2000, S1 = 4000, S2 = 15000),
-  c_soc = 2000,
-  c_new = 12000,
-  u_mean = c(H = 1, S1 = .075, S2 = 0.5),
-  u_se = c(H = 0, S1 = 0.03, S2 = 0.05)
-)
+```{r, all-parameters}
 ```
 
 ## Random number generation
 The random number generation process for the PSA is once again defined using `define_rng()`. 
 
-```{r}
-rng_def <- define_rng({
-  lrr_se <- (lrr_upper - lrr_lower)/(2 * qnorm(.975)) # Local object 
-                                                      # not returned
-  list( # Parameters to return
-    p_soc = dirichlet_rng(alpha_soc),
-    rr_new = lognormal_rng(lrr_mean, lrr_se),
-    c_medical = gamma_rng(mean = c_medical, sd = c_medical),
-    c_soc = c_soc,
-    c_new = c_new,
-    u = beta_rng(mean = u_mean, sd = u_se)
-  )
-}, n = 1000)
+```{r, define_rng}
 ```
 
 ## Transformed parameters
@@ -114,76 +69,44 @@ A `define_tparams()` block must return a named list with the following possible 
 * **utility**: The utility values to attach to states and used to simulate quality-adjusted life-years in the economic model. Either a vector (in which case utility is the same in each health state) or a matrix with a column for each (non-death) health state.
 * **costs**: A named list of costs for each category used to simulate costs in the economic model. Each element of the list must be in the same format as utility.
 
-```{r}
-tparams_def <- define_tparams({
-  ## The treatment effect (relative risk) is transformed so that it varies by 
-  ## strategies (SOC is the reference strategy)
-  rr <- ifelse(strategy_name == "SOC", 1, rr_new)
-  
-  list(
-    tpmatrix = tpmatrix(
-      C,          p_soc$h_s1 * rr, p_soc$h_s2 * rr,  p_soc$h_d * rr,
-      p_soc$s1_h, C,               p_soc$s1_s2 * rr, p_soc$s1_d * rr,
-      p_soc$s2_h, p_soc$s2_s1,     C,                p_soc$s2_d * rr,
-      0,          0,               0,                1
-    ),
-    utility = u,
-    costs = list(
-      treatment = ifelse(strategy_name == "SOC", c_soc, c_new),
-      medical = c_medical
-    )
-  )
-})
+```{r, define_tparams}
 ```
 
 ## The model
 The model is defined using `define_model()` function. The names of transition probability matrix, utility, and cost objects are specified.
 
-```{r}
-mod_def <- define_model(tparams_def = tparams_def, 
-                        rng_def = rng_def, 
-                        params = params)
+```{r, define_model}
 ```
 
 # Simulation
 A economic model (of class `CohortDtstm`) can be created from a defined model (of class `model_def`) and data using the generic function `create_CohortDtstm()`. The economic model is an `R6` object consisting of a transition model (`trans_model`) for simulating transition probabilities with `sim_stateprobs()`, a utility model for simulating quality-adjusted life-years with `sim_qalys()`, and a set of cost models (for each cost category) for simulating costs with `sim_costs()`. 
 
-```{r econmod}
-econmod <- create_CohortDtstm(mod_def, data)
+```{r, initialize-model}
 ```
 
 ## Health state probabilities
 State occupancy probabilities are generated by simulating the discrete time Markov chain. 
 
-```{r simStateprobs, warning = FALSE, message = FALSE}
-econmod$sim_stateprobs(n_cycles = 85)
+```{r, sim_stateprobs, warning = FALSE, message = FALSE}
 ```
 
 ## Costs and QALYs
 Costs and quality-adjusted life-years (QALYs) are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum.
 
-```{r simQALYs}
-econmod$sim_qalys(dr = 0.03, integrate_method = "riemann_left")
-head(econmod$qalys_)
+```{r, sim_qalys}
 ```
 
-```{r simCosts}
-econmod$sim_costs(dr = 0.03, integrate_method = "riemann_left")
+```{r sim_costs}
 ```
 
 # Cost-effectiveness analysis
 Cost-effectiveness analyses can be performed directly from the simulation output with `hesim` as described in more detail [here](icea.html). Other R packages such as [BCEA](https://sites.google.com/a/statistica.it/gianluca/bcea) could also be considered. Here, we will consider a pairwise comparison between the new treatment and SOC with the `hesim::icea_pw()` function.
 
-```{r icea}
-ce_sim <- econmod$summarize()
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, 
-                       dr_qalys = 0.03, dr_costs = 0.03,
-                       k = seq(0, 25000, 500))
+```{r, icea}
 ```
 
 Although `icea_pw()` allows users to summarize a PSA we will just create an ICER table using means from the PSA for now. An analysis of PSA output will be covered in a later tutorial.  
 
-```{r icer}
-icer_tbl(icea_pw_out, colnames = strategies$strategy_name) 
+```{r, icer}
 ```
 
