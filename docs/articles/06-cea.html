@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-09-08</h4>
+            <h4 class="date">2020-09-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -181,8 +181,8 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
                        <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
                        <span class="no">wtp</span>)
 <span class="no">icea_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea</a></span>(<span class="no">ce_sim</span>,
-                  <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
-                  <span class="kw">k</span> <span class="kw">=</span> <span class="no">wtp</span>)</pre></body></html></div>
+                 <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
+                 <span class="kw">k</span> <span class="kw">=</span> <span class="no">wtp</span>)</pre></body></html></div>
 <p>Each function returns a number of outputs for summarizing a PSA.</p>
 <div id="cost-effectiveness-plane" class="section level2">
 <h2 class="hasAnchor">
@@ -199,7 +199,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 ## 6:      6           2      1 3.247835 164619.4</code></pre>
 <p>To make nicer plots, we can write a simple helper function to (i) create labels for the treatment strategies and (ii) format dollar values (which you might also use the <code>scales</code> package for).</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">strategy_factor</span> <span class="kw">&lt;-</span> <span class="kw">function</span> (<span class="no">x</span>) {
-   <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">x</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>, <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>))
+  <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">x</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>, <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>))
 }
 
 <span class="no">format_dollar</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) {
@@ -221,7 +221,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span>(<span class="kw">slope</span> <span class="kw">=</span> <span class="fl">50000</span>, <span class="kw">linetype</span> <span class="kw">=</span> <span class="st">"dashed"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span>(<span class="kw">yintercept</span> <span class="kw">=</span> <span class="fl">0</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="kw">xintercept</span> <span class="kw">=</span> <span class="fl">0</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceplane_plot-1.png" width="672"></p>
+<p><img src="06-cea_files/figure-html/ceplane-plot-1.png" width="672"></p>
 </div>
 <div id="cost-effectiveness-acceptability-curves-ceac" class="section level2">
 <h2 class="hasAnchor">
@@ -239,7 +239,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
                      <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/mce_plot-1.png" width="672"></p>
+<p><img src="06-cea_files/figure-html/ceac-simultaneous-plot-1.png" width="672"></p>
 <p>The probability that the new treatment is the most cost-effective is increasing in WTP.</p>
 </div>
 <div id="pairwise-comparison" class="section level3">
@@ -255,7 +255,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
                      <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceac_plot-1.png" width="672"></p>
+<p><img src="06-cea_files/figure-html/ceac-pairwise-plot-1.png" width="672"></p>
 </div>
 </div>
 <div id="cost-effectiveness-acceptability-frontier-ceaf" class="section level2">
@@ -269,10 +269,10 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Probability most cost-effective"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
-                                  <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
+                     <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceaf_plot-1.png" width="672"></p>
+<p><img src="06-cea_files/figure-html/ceaf-plot-1.png" width="672"></p>
 </div>
 <div id="value-of-perfect-information" class="section level2">
 <h2 class="hasAnchor">
@@ -289,10 +289,10 @@ EVPI_g &amp;= E_\theta \left[max_j NMB_g(j, \theta)\right] - max_j E_\theta \lef
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Expected value of perfect information"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
-                                  <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
+                     <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/evpi_plot-1.png" width="672"></p>
+<p><img src="06-cea_files/figure-html/evpi-plot-1.png" width="672"></p>
 </div>
 </div>
   </div>
