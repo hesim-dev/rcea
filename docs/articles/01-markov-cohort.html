@@ -207,7 +207,7 @@ NPV = \sum_{t} PV_t
 <h2 class="hasAnchor">
 <a href="#utility-and-costs" class="anchor"></a><span class="header-section-number">3.2</span> Utility and costs</h2>
 <p>Utility and (annualized) costs are defined below. We consider two types of costs: medical and treatment. Both utility and costs are 0 in the death state. Treatment costs are assumed equal in each health state.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">utility</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">.075</span>, <span class="fl">0.5</span>, <span class="fl">0</span>)
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">utility</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">.75</span>, <span class="fl">0.5</span>, <span class="fl">0</span>)
 <span class="no">costs_medical</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2000</span>, <span class="fl">4000</span>, <span class="fl">15000</span>, <span class="fl">0</span>)
 <span class="no">costs_treat_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">2000</span>, <span class="fl">3</span>), <span class="fl">0</span>)
 <span class="no">costs_treat_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">12000</span>, <span class="fl">3</span>), <span class="fl">0</span>)</pre></body></html></div>
@@ -243,7 +243,7 @@ NPV = \sum_{t} PV_t
 ##   }
 ##   return(x)
 ## }
-## &lt;bytecode: 0x7fba56d6f688&gt;
+## &lt;bytecode: 0x7fddd926fc50&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -274,7 +274,7 @@ NPV = \sum_{t} PV_t
 <pre><code>## function(z, dr, t) {
 ##   z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7fba55625788&gt;
+## &lt;bytecode: 0x7fdddaa0f188&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -286,7 +286,7 @@ NPV = \sum_{t} PV_t
 <div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, <span class="fl">1</span>:<span class="fl">3</span>])) <span class="co"># Expected life-years after 1st cycle</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, ] * <span class="no">utility</span>)) <span class="co"># Expected utility after 1st cycle</span>
 <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="fu"><a href="../reference/pv.html">pv</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, ] * <span class="no">utility</span>, <span class="fl">.03</span>, <span class="fl">1</span>)) <span class="co"># Expected discounted utility after 1st cycle</span></pre></body></html></div>
-<pre><code>## [1] 0.8342233</code></pre>
+<pre><code>## [1] 0.9325243</code></pre>
 <p>Now let’s compute expected (discounted) QALYs for each cycle.</p>
 <div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">compute_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">utility</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
   <span class="no">n_cycles</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">x</span>) - <span class="fl">1</span>
@@ -300,27 +300,27 @@ NPV = \sum_{t} PV_t
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">qalys_soc</span>)</pre></body></html></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
-## 1 0.8592500
-## 2 0.8159627
-## 3 0.7985886
-## 4 0.7880911
-## 5 0.7794080</code></pre>
+## 1 0.9605000
+## 2 0.9418165
+## 3 0.9287038
+## 4 0.9171074
+## 5 0.9059505</code></pre>
 <div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_soc</span>)</pre></body></html></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
-## 1 0.8342233
-## 2 0.7691232
-## 3 0.7308217
-## 4 0.7002087
-## 5 0.6723242</code></pre>
+## 1 0.9325243
+## 2 0.8877524
+## 3 0.8498956
+## 4 0.8148380
+## 5 0.7814809</code></pre>
 <div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_new</span>)</pre></body></html></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
-## 1 0.8631068
-## 2 0.8022064
-## 3 0.7646000
-## 4 0.7345821
-## 5 0.7074583</code></pre>
+## 1 0.9417476
+## 2 0.9007899
+## 3 0.8658080
+## 4 0.8334058
+## 5 0.8025464</code></pre>
 </div>
 <div id="costs" class="section level3">
 <h3 class="hasAnchor">
@@ -363,7 +363,7 @@ NPV = \sum_{t} PV_t
 <a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">5</span> Cost-effectiveness analysis</h1>
 <p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles.</p>
 <div class="sourceCode" id="cb35"><html><body><pre class="r">(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>))/(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>))</pre></body></html></div>
-<pre><code>## [1] 115106.8</code></pre>
+<pre><code>## [1] 117822</code></pre>
 <p>For the sake of presentation, we might want to do a some extra work and create a nice looking table.</p>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">format_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>)
 <span class="no">format_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"f"</span>, <span class="kw">digits</span> <span class="kw">=</span> <span class="fl">2</span>)
@@ -383,9 +383,9 @@ NPV = \sum_{t} PV_t
       <span class="fu">format_costs</span>(),
     <span class="kw">`QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_qalys0</span>, <span class="no">total_qalys1</span>) <span class="kw">%&gt;%</span>
       <span class="fu">format_qalys</span>(),
-    <span class="kw">`Inremental costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">incr_total_costs</span> <span class="kw">%&gt;%</span>
+    <span class="kw">`Incremental costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">incr_total_costs</span> <span class="kw">%&gt;%</span>
                              <span class="fu">format_costs</span>()),
-    <span class="kw">`Inremental QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">inc_total_qalys</span> <span class="kw">%&gt;%</span>
+    <span class="kw">`Incremental QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">inc_total_qalys</span> <span class="kw">%&gt;%</span>
                              <span class="fu">format_qalys</span>()),
     <span class="kw">`ICER`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">icer</span> <span class="kw">%&gt;%</span> <span class="fu">format_costs</span>())
   ) <span class="kw">%&gt;%</span>
@@ -405,10 +405,10 @@ Costs
 QALYs
 </th>
 <th style="text-align:left;">
-Inremental costs
+Incremental costs
 </th>
 <th style="text-align:left;">
-Inremental QALYs
+Incremental QALYs
 </th>
 <th style="text-align:left;">
 ICER
@@ -420,7 +420,7 @@ ICER
 212,706
 </td>
 <td style="text-align:left;">
-19.95
+22.49
 </td>
 <td style="text-align:left;">
 –
@@ -437,16 +437,16 @@ ICER
 491,167
 </td>
 <td style="text-align:left;">
-22.37
+24.86
 </td>
 <td style="text-align:left;">
 278,460
 </td>
 <td style="text-align:left;">
-2.42
+2.36
 </td>
 <td style="text-align:left;">
-115,106
+117,822
 </td>
 </tr>
 </tbody>
