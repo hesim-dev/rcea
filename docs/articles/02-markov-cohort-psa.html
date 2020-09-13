@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-09-12</h4>
+            <h4 class="date">2020-09-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
@@ -194,20 +194,20 @@
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">params_rng</span>)</pre></body></html></div>
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">params_rng</span>$<span class="no">p_soc</span>))</pre></body></html></div>
-<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8533180 0.1450427    0 0.0016393738 0.4971170 0.3895232 0.10755409
-## [2,] 0.8552896 0.1425110    0 0.0021993395 0.4944048 0.4006269 0.09846083
-## [3,] 0.8374851 0.1620546    0 0.0004602681 0.4909899 0.3852607 0.11681859
-## [4,] 0.8336455 0.1645522    0 0.0018022845 0.4814801 0.4031365 0.11159125
-## [5,] 0.8603914 0.1373614    0 0.0022471951 0.4856800 0.3869948 0.12181190
-## [6,] 0.8299364 0.1689747    0 0.0010889720 0.4973090 0.3843372 0.11320830
+<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1     s1_s2
+## [1,] 0.8210296 0.1780541    0 0.0009162150 0.4928789 0.3877898 0.1105502
+## [2,] 0.8523547 0.1425955    0 0.0050497767 0.5085705 0.3841575 0.1018307
+## [3,] 0.8420149 0.1544250    0 0.0035601096 0.4991720 0.4026420 0.0958511
+## [4,] 0.8638694 0.1327537    0 0.0033768761 0.4982410 0.3920377 0.1028522
+## [5,] 0.8473807 0.1522182    0 0.0004010629 0.4929181 0.3942041 0.1072996
+## [6,] 0.8549519 0.1439013    0 0.0011468501 0.5098674 0.3744274 0.1076537
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.005805657    0     0 0.9809586 0.01904137   0    0    0   1
-## [2,] 0.006507522    0     0 0.9798241 0.02017595   0    0    0   1
-## [3,] 0.006930743    0     0 0.9852210 0.01477898   0    0    0   1
-## [4,] 0.003792102    0     0 0.9758235 0.02417651   0    0    0   1
-## [5,] 0.005513317    0     0 0.9684804 0.03151958   0    0    0   1
-## [6,] 0.005145423    0     0 0.9833076 0.01669242   0    0    0   1</code></pre>
+## [1,] 0.008781076    0     0 0.9753251 0.02467487   0    0    0   1
+## [2,] 0.005441367    0     0 0.9813732 0.01862684   0    0    0   1
+## [3,] 0.002334868    0     0 0.9762655 0.02373446   0    0    0   1
+## [4,] 0.006869121    0     0 0.9871171 0.01288289   0    0    0   1
+## [5,] 0.005578253    0     0 0.9871168 0.01288320   0    0    0   1
+## [6,] 0.008051519    0     0 0.9801637 0.01983629   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
