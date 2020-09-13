@@ -15,7 +15,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE, echo = FALSE}
-do.call(knitr::read_chunk, list(path = "01-markov-cohort.R"))
+do.call(knitr::read_chunk, list(path = "../inst/vignettes-R/01-markov-cohort.R"))
 ```
 
 # Overview
@@ -88,7 +88,6 @@ In evidence synthesis and cost-effectiveness modeling, treatment effects are typ
 The relative risk can then be used to create the transition matrix for the new treatment. We will use assume the relative risk is $0.8$. 
 
 ```{r, apply_rr, message = FALSE}
-
 ```
 
 ## Utility and costs

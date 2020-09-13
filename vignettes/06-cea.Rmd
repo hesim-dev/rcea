@@ -15,7 +15,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE, echo = FALSE}
-do.call(knitr::read_chunk, list(path = "06-cea.R"))
+do.call(knitr::read_chunk, list(path = "../inst/vignettes-R/06-cea.R"))
 ```
 
 # Overview

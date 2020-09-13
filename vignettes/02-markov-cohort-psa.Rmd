@@ -15,7 +15,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE, echo = FALSE}
-do.call(knitr::read_chunk, list(path = "02-markov-cohort-psa.R"))
+do.call(knitr::read_chunk, list(path = "../inst/vignettes-R/02-markov-cohort-psa.R"))
 ```
 
 # Overview
