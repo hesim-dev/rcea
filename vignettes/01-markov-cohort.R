@@ -52,7 +52,7 @@ apply_rr <- function(p, rr = .8){
 p_new <- apply_rr(p_soc, rr = .8)
 
 ## @knitr utility-costs
-utility <- c(1, .075, 0.5, 0)
+utility <- c(1, .75, 0.5, 0)
 costs_medical <- c(2000, 4000, 15000, 0)
 costs_treat_soc <- c(rep(2000, 3), 0)
 costs_treat_new <- c(rep(12000, 3), 0)
