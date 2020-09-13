@@ -14,32 +14,23 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+```{r, include = FALSE, echo = FALSE}
+do.call(knitr::read_chunk, list(path = "02-markov-cohort-psa.R"))
+```
+
 # Overview
 Probabilistic sensitivity analysis (PSA) is used to quantify the impact of parameter uncertainty on the uncertainty of model outputs. PSA is typically performed via a simulation approach whereby the model parameters are randomly sampled from suitable probability distributions and the entire model is simulated for each random draw of the parameters. 
 
 In this example, we extend the deterministic [simple Markov cohort model](01-markov-cohort.html) to incorporate PSA. We will continue to rely primarily on Base `R` but will use the `hesim` package to help make the code more readable.
 
-```{r, message = FALSE, warning=FALSE, results='hide'}
-library("rcea")
-library("hesim")
-library("data.table")
-library("magrittr")
-library("ggplot2")
+```{r, R-packages, message = FALSE, warning = FALSE, results = 'hide'}
 ```
 
 # Model parameters
 ## Transition probabilities for SOC
 The probability distribution used for transition probabilities will depend on the underlying data. In this case, we assume that summary level data is available on transitions from the Healthy state (n = 900), Sick state (n = 900), and Sicker state (n = 800). The transitions from each state to the other 4 states can be modeled using a Dirichlet distribution (see Appendix).
 
-```{r, message=FALSE}
-transitions_soc <- matrix(
-  c(848, 150, 0,   2,
-    450, 355, 95,  5,
-    0,   0,   784, 16,
-    0,   0,   0,   23),
-  nrow = 4, byrow = TRUE)
-state_names <- c("H", "S1", "S2", "D")
-colnames(transitions_soc) <- rownames(transitions_soc) <- tolower(state_names)
+```{r, tpmatrix, message=FALSE}
 ```
 
 ## Relative risk
@@ -60,18 +51,7 @@ The utility associated with each state is assumed to follow a beta distribution,
 ## Combining the parameters
 All model parameters (transition probabilities, relative risk, costs, and utility) can be stored in a list for use in the simulation.
 
-```{r}
-params <- list(
-  alpha_soc = transitions_soc,
-  lrr_mean = log(.8),
-  lrr_lower = log(.71),
-  lrr_upper = log(.9),
-  c_medical = c(H = 2000, S1 = 4000, S2 = 15000, D = 0),
-  c_soc = 2000,
-  c_new = 12000,
-  u_mean = c(H = 1, S1 = .075, S2 = 0.5, D = 0),
-  u_se = c(H = 0, S1 = 0.03, S2 = 0.05, D = 0.0)
-)
+```{r, all-parameters}
 ```
 
 # Simulation
@@ -80,23 +60,7 @@ The simulation proceeds by (i) randomly sampling the parameters from the probabi
 ## Sampling the parameters
 While Base R can certainly be used to draw samples of the parameters, the functions `hesim::define_rng()` and `hesim::eval_rng()` simplify this process and make the code more readable. Any random number generation function can be used inside the `define_rng()` block; the only rule is that returned parameter draws must be returned as a list. However, `hesim` comes with a number of helpful probability distribution functions (type `?rng_distributions` for details) to make your life easier. 
 
-```{r}
-rng_def <- define_rng({
-  lrr_se <- (lrr_upper - lrr_lower)/(2 * qnorm(.975)) # Local object 
-                                                      # not returned
-  list( # Parameters to return
-    p_soc = dirichlet_rng(alpha_soc),
-    rr_new = lognormal_rng(lrr_mean, lrr_se),
-    c_medical = gamma_rng(mean = c_medical, sd = c_medical),
-    c_soc = c_soc,
-    c_new = c_new,
-    u = beta_rng(mean = u_mean, sd = u_se)
-  )
-}, n = 1000)
-params_rng <- eval_rng(rng_def, params = params)
-attr(params_rng, "n") <- rng_def$n
-names(params_rng)
-head(as.matrix(params_rng$p_soc))
+```{r, sample-parameters}
 ```
 
 ## Simulating the Markov model
@@ -105,11 +69,7 @@ Once samples of the parameters have been drawn, the Markov model can be simulate
 ### Input data
 One way that a Markov simulation can be generalized is to store "input data" in an object such as a data frame. This `input data` might consist of different treatment strategies, patients and/or subgroups, or even information about the health states themselves. For instance, if we were simulating different subgroups we might store the age and sex associated with the subgroup which could, in turn, be used as covariates in a statistical model. In this simple example the data will just consist of the names of the two treatment strategies.
 
-```{r}
-data <- data.frame(
-  strategy = c("New", "SOC")
-)
-head(data)
+```{r, input-data}
 ```
 
 ### Running the simulation
@@ -124,46 +84,17 @@ The `sim_stateprobs()` function will simulate health state probabilities for eac
 
 To make the code more readable, we will use the function `hesim::tpmatrix()` which makes it easy to define a transition probability matrix. The symbol `C` denotes that a given element is the complement of all other elements in that row, ensuring that the probabilities sum to 1. 
 
-```{r}
-sim_stateprobs <- function(p0, rr, strategy, n_cycles){
-  rr <- ifelse(strategy == "New", rr, 1)
-  p <- tpmatrix(
-    C,       p0$h_s1 * rr,  p0$h_s2 * rr,  p0$h_d * rr,
-    p0$s1_h, C,             p0$s1_s2 * rr, p0$s1_d * rr,
-    p0$s2_h, p0$s2_s1,      C,             p0$s2_d * rr,
-    0,       0,             0,             1
-  )
-  x <- sim_markov_chain(x0 = c(1, 0, 0, 0),
-                        p = matrix(as.matrix(p), ncol = 4, byrow = TRUE),
-                        n_cycles = n_cycles)
-  return(x)
-}
+```{r, sim_stateprobs-fun}
 ```
 
 To compute (discounted) QALYs for a given Markov trace, we will use a very simple function that is identical to the `compute_qalys` function used in the deterministic example.
 
-```{r}
-# QALYs
-compute_qalys <- function(x, utility, dr = .03){
-  n_cycles <- nrow(x) - 1
-  pv(x %*% utility, dr, 0:n_cycles)
-}
+```{r, compute_qalys-fun}
 ```
 
 Similarly, our cost function is nearly identical to the `compute_costs()` function from the deterministic example.
 
-```{r}
-# Costs
-compute_costs <- function(x, costs_medical, costs_treat, dr = .03){
-  n_cycles <- nrow(x) - 1
-  costs_treat <- c(rep(costs_treat, 3), 0)
-  costs <- cbind(
-    pv(x %*% costs_medical, dr, 0:n_cycles),
-    pv(x %*% costs_treat, dr, 0:n_cycles)
-  )
-  colnames(costs) <- c("dcost_med", "dcost_treat")
-  return(costs)
-}
+```{r, compute_costs-fun}
 ```
 
 Now that we have created the building blocks for the simulation, we can create our main function to simulate the entire model. 3%  discount rates are set by default for costs and QALYs. Most of the function arguments should be self explanatory, but two are worth explaining:
@@ -175,102 +106,33 @@ The first part of the function creates an array to store the output. The array i
 
 The second part of the function simulates state probabilities (with `sim_stateprobs()`), QALYs (with `compute_qalys()`), and costs (with `compute_costs()`) for each parameter sample and treatment strategy. The number of parameter samples and the names of the treatment strategies are saved as attributes (i.e., metadata) to the array which will be used below to convert the array to a data frame. 
 
-```{r}
-sim_model <- function(params_rng, data, n_cycles = 85, 
-                      dr_qalys = .03, dr_costs = .03){
-  # Initialize array of matrices
-  n_samples <- attr(params_rng, "n")
-  n_strategies <- nrow(data)
-  out <- array(NA, dim = c(n_cycles + 1, 7, n_samples * n_strategies))
-  dimnames(out) <- list(NULL, 
-                        c("H", "S1", "S2", "D",
-                          "dqalys", "dcosts_med", "dcosts_treat"), 
-                        NULL)
-  
-  # Run the simulation
-  i <- 1
-  for (s in 1:n_samples){ # Start PSA loop
-    for (k in 1:n_strategies) { # Start treatment strategy loop
-      x <- sim_stateprobs(p0 = params_rng$p_soc[s, ],
-                          rr = params_rng$rr_new[s],
-                          strategy = data$strategy[k],
-                          n_cycles = n_cycles)
-     dqalys <- compute_qalys(x, utility = unlist(params_rng$u[s]), 
-                             dr = dr_qalys)
-     dcosts <- compute_costs(x, 
-                             costs_medical = unlist(params_rng$c_medical[s]), 
-                             costs_treat = ifelse(data$strategy[k] == "SOC", 
-                                                  params_rng$c_soc,
-                                                  params_rng$c_new),
-                             dr = dr_costs)
-      out[, , i] <- cbind(x, dqalys, dcosts)
-      i <- i + 1
-    } # End treatment strategy loop
-  } # End PSA loop
-  
-  # Store metadata and return
-  attr(out, "n_samples") <- n_samples
-  attr(out, "strategies") <- data$strategy
-  return(out)
-}
+```{r, sim_model-fun}
 ```
 
 Now that we've written the function, lets simulate the model with argument defaults (85 model cycles and 3% discount rates). Recall that each array is a matrix. 
 
-```{r, cache = TRUE}
-sim_out <- sim_model(params_rng, data = data)
-head(sim_out[, , 1])
+```{r, run_sim, cache = TRUE}
 ```
 
 Although arrays are computationally efficient objects for storing data, they aren't often the most useful for summarizing data. We will write to short functions to convert a 3D array to a `data.table` (with ID columns for the parameter sample and treatment strategy) so that we can summarize outcomes for each parameter sample and treatment strategy very quickly. (Note that other packages such as `dplyr` could also be used but we prefer `data.table` for simulations because of its speed).
 
-```{r}
-# rbind an array of matrices into a single matrix
-rbind_array <- function(x){
-  n_rows <- dim(x)[3] * dim(x)[1]
-  x_mat <- matrix(c(aperm(x, perm = c(2, 1, 3))),
-                  nrow = n_rows, byrow = TRUE)
-  colnames(x_mat) <- dimnames(x)[[2]]
-  return(x_mat)
-}
-
-# Convert the array into a long dataframe with ID columns
-array_to_dt <- function(x){
-  id_df <- expand.grid(cycle = 0:(dim(x)[1] - 1),
-                       strategy = attr(x, "strategies"),
-                       sample = 1:attr(x, "n_samples"))
-  x_mat <- rbind_array(x)
-  return(as.data.table(cbind(id_df, x_mat)))
-}
-
-sim_out <- array_to_dt(sim_out)
-head(sim_out)
+```{r, array-to-data-table}
 ```
 
 # Cost-effectiveness analysis
 A cost-effectiveness analysis can be performed using the simulation output. The PSA is typically used to represent decision uncertainty using the distribution of (discounted) QALYs and (discounted) total costs. As such, will compute mean discounted QALYs and discounted costs by parameter sample and treatment strategy.
 
-```{r}
-ce_out <- sim_out[, .(dqalys = sum(dqalys),
-                      dcosts = sum(dcosts_med) + sum(dcosts_treat)), 
-                  by = c("sample", "strategy")]
-ce_out
+```{r, ce_output}
 ```
 
 In the two treatment strategy case its simpler to "widen" the data so that we can easily compute incremental QALYs and costs.
 
-```{r}
-ce_out_wider <- dcast(ce_out, sample ~ strategy, 
-                      value.var = c("dqalys", "dcosts"))
-ce_out_wider
+```{r, ce_output_wider}
 ```
-
 
 The ICER is computed by taking means across all parameter samples. (Note that in a subsequent tutorial will show how to represent decision uncertainty using the PSA output).  
 
-```{r}
-ce_out_wider[, .(icer = (mean(dcosts_New - dcosts_SOC))/
-                         mean(dqalys_New - dqalys_SOC))]
+```{r, icer}
 ```
 
 # Appendix

@@ -13,15 +13,15 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
+
+```{r, include = FALSE, echo = FALSE}
+do.call(knitr::read_chunk, list(path = "01-markov-cohort.R"))
+```
+
 # Overview
 The most commonly used model for cost-effectiveness analysis (CEA) is the cohort discrete time state transition model (cDTSTM), commonly referred to as a Markov cohort model. In this tutorial we demonstrate implementation with `R` of the simplest of cDSTMs, a time-homogeneous model with transition probabilities that are constant over time. The entire analysis can be run using [Base R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html) (i.e., without installing any packages). However, we will use the following packages to create a nice looking cost-effectiveness table. 
 
-```{r}
-library("rcea")
-library("knitr")
-library("kableExtra")
-library("magrittr")
-library("tibble")
+```{r, R-packages}
 ```
 
 As an example, we will consider the 4-state sick-sicker model that has been described in more detail by [Alarid-Escudero et al](https://arxiv.org/abs/2001.07824). The model will be used to compare two treatment strategies, a "New" treatment and the existing "standard of care (SOC)". The model consists 4 health states. Ordered from worst to best to worst, they are: Healthy (*H*), Sick (*S1*), Sicker (*S2*), and Death (*D*). Possible transitions from each state are displayed in the figure below.
@@ -69,37 +69,17 @@ It is important to note that in mathematical terms this a discrete approximation
 ### Standard of care
 The annual transition probabilities for SOC among our cohort of interest, say 25-year old patients, are defined as follows.
 
-```{r}
-p_hd <- 0.002 # constant probability of dying when Healthy (all-cause mortality)
-p_hs1 <- 0.15 # probability of becoming Sick when Healthy
-p_s1h <- 0.5 # probability of becoming Healthy when Sick
-p_s1s2 <- 0.105 # probability of becoming Sicker when Sick
-p_s1d <- .006 # constant probability of dying when Sick
-p_s2d <- .02 # constant probability of dying when Sicker
+```{r, transition-probabilities}
 ```
 
 These can be used to derive the probabilities of remaining in the same state during a model cycle.
 
-```{r, message = FALSE}
-p_hh <- 1  - p_hs1 - p_hd
-p_s1s1 <- 1 - p_s1h - p_s1s2 
-p_s2s2 <- 1 - p_s2d
+```{r, transition-probability-complements, message = FALSE}
 ```
 
 Using these probabilities, the transition probability matrix can then be defined.
 
-```{r}
-p_soc <- matrix(
-  c(p_hh,  p_hs1,  0,      p_hd,
-    p_s1h, p_s1s1, p_s1s2, p_s1d,
-    0,     0,      p_s2s2, p_s2d,
-    0,     0,      0,      1),
-  byrow = TRUE,
-  nrow = 4, ncol = 4
-)
-state_names <- c("H", "S1", "S2", "D")
-colnames(p_soc) <- rownames(p_soc) <- state_names
-print(p_soc)
+```{r, tpmatrix}
 ```
 
 ### New treatment
@@ -107,42 +87,21 @@ In evidence synthesis and cost-effectiveness modeling, treatment effects are typ
 
 The relative risk can then be used to create the transition matrix for the new treatment. We will use assume the relative risk is $0.8$. 
 
-```{r, message = FALSE}
-apply_rr <- function(p, rr = .8){
-  p["H", "S1"] <- p["H", "S1"] * rr
-  p["H", "S2"] <- p["H", "S2"] * rr
-  p["H", "D"] <- p["H", "S2"] * rr
-  p["H", "H"] <- 1 - sum(p["H", -1])
-  
-  p["S1", "S2"] <- p["S1", "S2"] * rr
-  p["S1", "D"] <- p["S1", "D"] * rr
-  p["S1", "S1"] <- 1 - sum(p["S1", -2])
-  
-  p["S2", "D"] <- p["S2", "D"] * rr
-  p["S2", "S2"] <- 1 - sum(p["S2", -3])
-  
-  return(p)
-}
+```{r, apply_rr, message = FALSE}
 
-p_new <- apply_rr(p_soc, rr = .8)
 ```
 
 ## Utility and costs
 Utility and (annualized) costs are defined below. We consider two types of costs: medical and treatment. Both utility and costs are 0 in the death state. Treatment costs are assumed equal in each health state. 
 
-```{r, message = FALSE}
-utility <- c(1, .75, 0.5, 0)
-costs_medical <- c(2000, 4000, 15000, 0)
-costs_treat_soc <- c(rep(2000, 3), 0)
-costs_treat_new <- c(rep(12000, 3), 0)
+```{r utility-costs, message = FALSE}
 ```
 
 # Simulation
 ## Health state probabilities
 To simulate health state probabilities, we must specify a state vector at time 0. Each patient will start in the Healthy state. 
 
-```{r, message = FALSE}
-x_init <- c(1, 0, 0, 0)
+```{r, x_init, message = FALSE}
 ```
 
 The state vector during cycle $1$ for SOC is computed using simple matrix multiplication.
@@ -158,7 +117,7 @@ x_init %*%
   p_soc 
 ```
 
-A for loop can be used to compute the state vector at each model cycle. Let's create a function to do this. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.
+A for loop can be used to compute the state vector at each model cycle. We created a function in the `rcea` package to do this so that we can reuse it. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.
 
 ```{r}
 rcea::sim_markov_chain
@@ -166,12 +125,7 @@ rcea::sim_markov_chain
 
 We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.
 
-```{r, message = FALSE}
-x_soc <- sim_markov_chain(x_init, p_soc)
-x_new <- sim_markov_chain(x_init, p_new)
-
-head(x_soc)
-head(x_new)
+```{r, sim-markov-chain, message = FALSE}
 ```
 
 ## Expected costs and quality-adjusted life-years 
@@ -193,82 +147,22 @@ sum(pv(x_soc[2, ] * utility, .03, 1)) # Expected discounted utility after 1st cy
 
 Now let's compute expected (discounted) QALYs for each cycle.
 
-```{r}
-compute_qalys <- function(x, utility, dr = .03){
-  n_cycles <- nrow(x) - 1
-  pv(x %*% utility, dr, 0:n_cycles)
-}
-
-qalys_soc <- x_soc %*% utility 
-dqalys_soc <- compute_qalys(x_soc, utility = utility)
-dqalys_new <- compute_qalys(x_new, utility = utility)
-
-head(qalys_soc)
-head(dqalys_soc)
-head(dqalys_new)
+```{r, compute_qalys}
 ```
 
 ### Costs
 We can do the same for costs. The first column is medical costs and the second column is treatment costs.
 
-```{r}
-compute_costs <- function(x, costs_medical, costs_treat, dr = .03){
-  n_cycles <- nrow(x) - 1
-  costs <- cbind(
-    pv(x %*% costs_medical, dr, 0:n_cycles),
-    pv(x %*% costs_treat, dr, 0:n_cycles)
-  )
-  colnames(costs) <- c("medical", "treatment")
-  return(costs)
-}
-
-dcosts_soc <- compute_costs(x_soc, costs_medical, costs_treat_soc)
-dcosts_new <- compute_costs(x_new, costs_medical, costs_treat_new)
-
-head(dcosts_soc)
-head(dcosts_new)
+```{r, compute_costs}
 ```
 
 # Cost-effectiveness analysis
 We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles.
 
-```{r, message=FALSE}
-(sum(dcosts_new) - sum(dcosts_soc))/(sum(dqalys_new) - sum(dqalys_soc))
+```{r, icer}
 ```
 
 For the sake of presentation, we might want to do a some extra work and create a nice looking table.
 
-```{r}
-format_costs <- function(x) formatC(x, format = "d", big.mark = ",")
-format_qalys <- function(x) formatC(x, format = "f", digits = 2)
-make_icer_tbl <- function(costs0, costs1, qalys0, qalys1){
-  # Computations
-  total_costs0 <- sum(costs0)
-  total_costs1 <- sum(costs1)
-  total_qalys0 <- sum(qalys0)
-  total_qalys1 <- sum(qalys1)
-  incr_total_costs <- total_costs1 - total_costs0
-  inc_total_qalys <- total_qalys1 - total_qalys0
-  icer <- incr_total_costs/inc_total_qalys
-  
-  # Make table
-  tibble(
-    `Costs` = c(total_costs0, total_costs1) %>%
-      format_costs(), 
-    `QALYs` = c(total_qalys0, total_qalys1) %>%
-      format_qalys(),
-    `Incremental costs` = c("--", incr_total_costs %>% 
-                             format_costs()),
-    `Incremental QALYs` = c("--", inc_total_qalys %>% 
-                             format_qalys()),
-    `ICER` = c("--", icer %>% format_costs())
-) %>%
-  kable() %>%
-  kable_styling() %>%
-  footnote(general = "Costs and QALYs are discounted at 3% per annum.",
-           footnote_as_chunk = TRUE)
-}
-make_icer_tbl(costs0 = dcosts_soc, costs1 = dcosts_new,
-              qalys0 = dqalys_soc, qalys1 = dqalys_new)
-
+```{r, icer_tbl}
 ```
