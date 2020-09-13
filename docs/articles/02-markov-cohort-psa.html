@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-09-08</h4>
+            <h4 class="date">2020-09-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
@@ -164,7 +164,7 @@
   <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">4000</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">15000</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0</span>),
   <span class="kw">c_soc</span> <span class="kw">=</span> <span class="fl">2000</span>,
   <span class="kw">c_new</span> <span class="kw">=</span> <span class="fl">12000</span>,
-  <span class="kw">u_mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">.075</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">0.5</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0</span>),
+  <span class="kw">u_mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">.75</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">0.5</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0</span>),
   <span class="kw">u_se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">S1</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">S2</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="kw">D</span> <span class="kw">=</span> <span class="fl">0.0</span>)
 )</pre></body></html></div>
 </div>
@@ -179,7 +179,7 @@
 <p>While Base R can certainly be used to draw samples of the parameters, the functions <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">hesim::define_rng()</a></code> and <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">hesim::eval_rng()</a></code> simplify this process and make the code more readable. Any random number generation function can be used inside the <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng()</a></code> block; the only rule is that returned parameter draws must be returned as a list. However, <code>hesim</code> comes with a number of helpful probability distribution functions (type <code><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">?rng_distributions</a></code> for details) to make your life easier.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">rng_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng</a></span>({
   <span class="no">lrr_se</span> <span class="kw">&lt;-</span> (<span class="no">lrr_upper</span> - <span class="no">lrr_lower</span>)/(<span class="fl">2</span> * <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">qnorm</a></span>(<span class="fl">.975</span>)) <span class="co"># Local object </span>
-                                                      <span class="co"># not returned</span>
+  <span class="co"># not returned</span>
   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>( <span class="co"># Parameters to return</span>
     <span class="kw">p_soc</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">dirichlet_rng</a></span>(<span class="no">alpha_soc</span>),
     <span class="kw">rr_new</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">lognormal_rng</a></span>(<span class="no">lrr_mean</span>, <span class="no">lrr_se</span>),
@@ -194,20 +194,20 @@
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">params_rng</span>)</pre></body></html></div>
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">params_rng</span>$<span class="no">p_soc</span>))</pre></body></html></div>
-<pre><code>##            h_h      h_s1 h_s2         h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8527970 0.1421280    0 0.005075006 0.5095752 0.3827954 0.10349597
-## [2,] 0.8600157 0.1371916    0 0.002792714 0.5161679 0.3669655 0.11544157
-## [3,] 0.8638232 0.1308719    0 0.005304944 0.5108669 0.3719607 0.10797122
-## [4,] 0.8510200 0.1451866    0 0.003793343 0.5056549 0.3682217 0.12142757
-## [5,] 0.8482439 0.1498127    0 0.001943386 0.4986538 0.3869750 0.10320509
-## [6,] 0.8410768 0.1573764    0 0.001546767 0.4797025 0.4188783 0.09618291
+<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
+## [1,] 0.8533180 0.1450427    0 0.0016393738 0.4971170 0.3895232 0.10755409
+## [2,] 0.8552896 0.1425110    0 0.0021993395 0.4944048 0.4006269 0.09846083
+## [3,] 0.8374851 0.1620546    0 0.0004602681 0.4909899 0.3852607 0.11681859
+## [4,] 0.8336455 0.1645522    0 0.0018022845 0.4814801 0.4031365 0.11159125
+## [5,] 0.8603914 0.1373614    0 0.0022471951 0.4856800 0.3869948 0.12181190
+## [6,] 0.8299364 0.1689747    0 0.0010889720 0.4973090 0.3843372 0.11320830
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.004133418    0     0 0.9851562 0.01484378   0    0    0   1
-## [2,] 0.001425025    0     0 0.9770765 0.02292346   0    0    0   1
-## [3,] 0.009201144    0     0 0.9875676 0.01243236   0    0    0   1
-## [4,] 0.004695802    0     0 0.9777072 0.02229275   0    0    0   1
-## [5,] 0.011166116    0     0 0.9833957 0.01660428   0    0    0   1
-## [6,] 0.005236296    0     0 0.9849330 0.01506698   0    0    0   1</code></pre>
+## [1,] 0.005805657    0     0 0.9809586 0.01904137   0    0    0   1
+## [2,] 0.006507522    0     0 0.9798241 0.02017595   0    0    0   1
+## [3,] 0.006930743    0     0 0.9852210 0.01477898   0    0    0   1
+## [4,] 0.003792102    0     0 0.9758235 0.02417651   0    0    0   1
+## [5,] 0.005513317    0     0 0.9684804 0.03151958   0    0    0   1
+## [6,] 0.005145423    0     0 0.9833076 0.01669242   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
@@ -255,14 +255,12 @@
   <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">x</span>)
 }</pre></body></html></div>
 <p>To compute (discounted) QALYs for a given Markov trace, we will use a very simple function that is identical to the <code>compute_qalys</code> function used in the deterministic example.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="co"># QALYs</span>
-<span class="no">compute_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">utility</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">compute_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">utility</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
   <span class="no">n_cycles</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">x</span>) - <span class="fl">1</span>
   <span class="fu"><a href="../reference/pv.html">pv</a></span>(<span class="no">x</span> <span class="kw">%*%</span> <span class="no">utility</span>, <span class="no">dr</span>, <span class="fl">0</span>:<span class="no">n_cycles</span>)
 }</pre></body></html></div>
 <p>Similarly, our cost function is nearly identical to the <code>compute_costs()</code> function from the deterministic example.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="co"># Costs</span>
-<span class="no">compute_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">costs_medical</span>, <span class="no">costs_treat</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">compute_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">costs_medical</span>, <span class="no">costs_treat</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
   <span class="no">n_cycles</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">x</span>) - <span class="fl">1</span>
   <span class="no">costs_treat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="no">costs_treat</span>, <span class="fl">3</span>), <span class="fl">0</span>)
   <span class="no">costs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(
@@ -300,14 +298,14 @@
                           <span class="kw">rr</span> <span class="kw">=</span> <span class="no">params_rng</span>$<span class="no">rr_new</span>[<span class="no">s</span>],
                           <span class="kw">strategy</span> <span class="kw">=</span> <span class="no">data</span>$<span class="no">strategy</span>[<span class="no">k</span>],
                           <span class="kw">n_cycles</span> <span class="kw">=</span> <span class="no">n_cycles</span>)
-     <span class="no">dqalys</span> <span class="kw">&lt;-</span> <span class="fu">compute_qalys</span>(<span class="no">x</span>, <span class="kw">utility</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">params_rng</span>$<span class="no">u</span>[<span class="no">s</span>]),
-                             <span class="kw">dr</span> <span class="kw">=</span> <span class="no">dr_qalys</span>)
-     <span class="no">dcosts</span> <span class="kw">&lt;-</span> <span class="fu">compute_costs</span>(<span class="no">x</span>,
-                             <span class="kw">costs_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">params_rng</span>$<span class="no">c_medical</span>[<span class="no">s</span>]),
-                             <span class="kw">costs_treat</span> <span class="kw">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fifelse.html">ifelse</a></span>(<span class="no">data</span>$<span class="no">strategy</span>[<span class="no">k</span>] <span class="kw">==</span> <span class="st">"SOC"</span>,
-                                                  <span class="no">params_rng</span>$<span class="no">c_soc</span>,
-                                                  <span class="no">params_rng</span>$<span class="no">c_new</span>),
-                             <span class="kw">dr</span> <span class="kw">=</span> <span class="no">dr_costs</span>)
+      <span class="no">dqalys</span> <span class="kw">&lt;-</span> <span class="fu">compute_qalys</span>(<span class="no">x</span>, <span class="kw">utility</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">params_rng</span>$<span class="no">u</span>[<span class="no">s</span>]),
+                              <span class="kw">dr</span> <span class="kw">=</span> <span class="no">dr_qalys</span>)
+      <span class="no">dcosts</span> <span class="kw">&lt;-</span> <span class="fu">compute_costs</span>(<span class="no">x</span>,
+                              <span class="kw">costs_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">params_rng</span>$<span class="no">c_medical</span>[<span class="no">s</span>]),
+                              <span class="kw">costs_treat</span> <span class="kw">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fifelse.html">ifelse</a></span>(<span class="no">data</span>$<span class="no">strategy</span>[<span class="no">k</span>] <span class="kw">==</span> <span class="st">"SOC"</span>,
+                                                   <span class="no">params_rng</span>$<span class="no">c_soc</span>,
+                                                   <span class="no">params_rng</span>$<span class="no">c_new</span>),
+                              <span class="kw">dr</span> <span class="kw">=</span> <span class="no">dr_costs</span>)
       <span class="no">out</span>[, , <span class="no">i</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">x</span>, <span class="no">dqalys</span>, <span class="no">dcosts</span>)
       <span class="no">i</span> <span class="kw">&lt;-</span> <span class="no">i</span> + <span class="fl">1</span>
     } <span class="co"># End treatment strategy loop</span>
@@ -321,20 +319,20 @@
 <p>Now that we’ve written the function, lets simulate the model with argument defaults (85 model cycles and 3% discount rates). Recall that each array is a matrix.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">sim_out</span> <span class="kw">&lt;-</span> <span class="fu">sim_model</span>(<span class="no">params_rng</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">data</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">sim_out</span>[, , <span class="fl">1</span>])</pre></body></html></div>
-<pre><code>##              H        S1         S2            D    dqalys dcosts_med
-## [1,] 1.0000000 0.0000000 0.00000000 0.0000000000 1.0000000   6151.703
-## [2,] 0.8786772 0.1209291 0.00000000 0.0003936562 0.8589734   6491.118
-## [3,] 0.8321758 0.1570853 0.00968481 0.0010541343 0.7970043   6655.675
-## [4,] 0.8092857 0.1666587 0.02211022 0.0019453934 0.7597250   6752.559
-## [5,] 0.7939307 0.1679144 0.03510342 0.0030514472 0.7305511   6815.586
-## [6,] 0.7810628 0.1665853 0.04798921 0.0043627135 0.7044132   6856.136
+<pre><code>##              H        S1          S2            D    dqalys dcosts_med
+## [1,] 1.0000000 0.0000000 0.000000000 0.0000000000 1.0000000   391.6504
+## [2,] 0.8928653 0.1061637 0.000000000 0.0009710098 0.9442218   383.5689
+## [3,] 0.8494038 0.1392268 0.009226654 0.0021427131 0.9032621  1092.4616
+## [4,] 0.8268541 0.1484520 0.021134635 0.0035592950 0.8678124  1961.8321
+## [5,] 0.8112558 0.1499194 0.033596348 0.0052284873 0.8348972  2819.9926
+## [6,] 0.7980500 0.1488777 0.045926034 0.0071463062 0.8035486  3616.9170
 ##      dcosts_treat
 ## [1,]     12000.00
-## [2,]     11645.90
-## [3,]     11299.23
-## [4,]     10960.34
-## [5,]     10629.31
-## [6,]     10306.15</code></pre>
+## [2,]     11639.17
+## [3,]     11286.91
+## [4,]     10942.61
+## [5,]     10606.10
+## [6,]     10277.33</code></pre>
 <p>Although arrays are computationally efficient objects for storing data, they aren’t often the most useful for summarizing data. We will write to short functions to convert a 3D array to a <code>data.table</code> (with ID columns for the parameter sample and treatment strategy) so that we can summarize outcomes for each parameter sample and treatment strategy very quickly. (Note that other packages such as <code>dplyr</code> could also be used but we prefer <code>data.table</code> for simulations because of its speed).</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co"># rbind an array of matrices into a single matrix</span>
 <span class="no">rbind_array</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>){
@@ -356,20 +354,20 @@
 
 <span class="no">sim_out</span> <span class="kw">&lt;-</span> <span class="fu">array_to_dt</span>(<span class="no">sim_out</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">sim_out</span>)</pre></body></html></div>
-<pre><code>##    cycle strategy sample         H        S1         S2            D    dqalys
-## 1:     0      New      1 1.0000000 0.0000000 0.00000000 0.0000000000 1.0000000
-## 2:     1      New      1 0.8786772 0.1209291 0.00000000 0.0003936562 0.8589734
-## 3:     2      New      1 0.8321758 0.1570853 0.00968481 0.0010541343 0.7970043
-## 4:     3      New      1 0.8092857 0.1666587 0.02211022 0.0019453934 0.7597250
-## 5:     4      New      1 0.7939307 0.1679144 0.03510342 0.0030514472 0.7305511
-## 6:     5      New      1 0.7810628 0.1665853 0.04798921 0.0043627135 0.7044132
+<pre><code>##    cycle strategy sample         H        S1          S2            D    dqalys
+## 1:     0      New      1 1.0000000 0.0000000 0.000000000 0.0000000000 1.0000000
+## 2:     1      New      1 0.8928653 0.1061637 0.000000000 0.0009710098 0.9442218
+## 3:     2      New      1 0.8494038 0.1392268 0.009226654 0.0021427131 0.9032621
+## 4:     3      New      1 0.8268541 0.1484520 0.021134635 0.0035592950 0.8678124
+## 5:     4      New      1 0.8112558 0.1499194 0.033596348 0.0052284873 0.8348972
+## 6:     5      New      1 0.7980500 0.1488777 0.045926034 0.0071463062 0.8035486
 ##    dcosts_med dcosts_treat
-## 1:   6151.703     12000.00
-## 2:   6491.118     11645.90
-## 3:   6655.675     11299.23
-## 4:   6752.559     10960.34
-## 5:   6815.586     10629.31
-## 6:   6856.136     10306.15</code></pre>
+## 1:   391.6504     12000.00
+## 2:   383.5689     11639.17
+## 3:  1092.4616     11286.91
+## 4:  1961.8321     10942.61
+## 5:  2819.9926     10606.10
+## 6:  3616.9170     10277.33</code></pre>
 </div>
 </div>
 </div>
@@ -381,39 +379,39 @@
                       <span class="kw">dcosts</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_med</span>) + <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_treat</span>)),
                   <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sample"</span>, <span class="st">"strategy"</span>)]
 <span class="no">ce_out</span></pre></body></html></div>
-<pre><code>##       sample strategy   dqalys   dcosts
-##    1:      1      New 22.70794 677401.8
-##    2:      1      SOC 21.02231 404452.3
-##    3:      2      New 22.48677 452057.7
-##    4:      2      SOC 20.92895 153352.4
-##    5:      3      New 21.97994 397728.0
-##   ---                                  
-## 1996:    998      SOC 20.34550 395193.2
-## 1997:    999      New 21.51405 420863.2
-## 1998:    999      SOC 20.22925 158360.2
-## 1999:   1000      New 21.91400 513643.5
-## 2000:   1000      SOC 19.79145 230622.8</code></pre>
+<pre><code>##       sample strategy   dqalys    dcosts
+##    1:      1      New 24.54358 792937.36
+##    2:      1      SOC 22.58874 588798.22
+##    3:      2      New 25.58334 373840.46
+##    4:      2      SOC 23.81190  80466.13
+##    5:      3      New 24.29041 402926.01
+##   ---                                   
+## 1996:    998      SOC 23.54556 322360.83
+## 1997:    999      New 23.84384 407143.21
+## 1998:    999      SOC 21.50050 127798.21
+## 1999:   1000      New 24.35950 410993.90
+## 2000:   1000      SOC 22.54831 145359.67</code></pre>
 <p>In the two treatment strategy case its simpler to “widen” the data so that we can easily compute incremental QALYs and costs.</p>
 <div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">ce_out_wider</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">dcast</a></span>(<span class="no">ce_out</span>, <span class="no">sample</span> ~ <span class="no">strategy</span>,
                       <span class="kw">value.var</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"dqalys"</span>, <span class="st">"dcosts"</span>))
 <span class="no">ce_out_wider</span></pre></body></html></div>
 <pre><code>##       sample dqalys_New dqalys_SOC dcosts_New dcosts_SOC
-##    1:      1   22.70794   21.02231   677401.8   404452.3
-##    2:      2   22.48677   20.92895   452057.7   153352.4
-##    3:      3   21.97994   19.24980   397728.0   119800.5
-##    4:      4   22.53391   19.41174   484614.8   169620.6
-##    5:      5   20.72334   19.18298   598959.2   350896.0
+##    1:      1   24.54358   22.58874   792937.4  588798.22
+##    2:      2   25.58334   23.81190   373840.5   80466.13
+##    3:      3   24.29041   22.65966   402926.0  104673.24
+##    4:      4   23.12511   21.33337   389220.4  123157.10
+##    5:      5   24.93308   23.08824   761615.6  549790.21
 ##   ---                                                   
-##  996:    996   20.77479   18.62319   494977.4   257043.7
-##  997:    997   21.80088   19.80767   438805.0   147035.0
-##  998:    998   22.22479   20.34550   643348.5   395193.2
-##  999:    999   21.51405   20.22925   420863.2   158360.2
-## 1000:   1000   21.91400   19.79145   513643.5   230622.8</code></pre>
+##  996:    996   22.85343   21.27057   398659.6  125772.00
+##  997:    997   23.75428   22.27465   481371.6  212820.14
+##  998:    998   26.22319   23.54556   562593.8  322360.83
+##  999:    999   23.84384   21.50050   407143.2  127798.21
+## 1000:   1000   24.35950   22.54831   410993.9  145359.67</code></pre>
 <p>The ICER is computed by taking means across all parameter samples. (Note that in a subsequent tutorial will show how to represent decision uncertainty using the PSA output).</p>
 <div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">ce_out_wider</span>[, <span class="fu">.</span>(<span class="kw">icer</span> <span class="kw">=</span> (<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">dcosts_New</span> - <span class="no">dcosts_SOC</span>))/
-                         <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">dqalys_New</span> - <span class="no">dqalys_SOC</span>))]</pre></body></html></div>
+                   <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">dqalys_New</span> - <span class="no">dqalys_SOC</span>))]</pre></body></html></div>
 <pre><code>##        icer
-## 1: 126665.8</code></pre>
+## 1: 130355.9</code></pre>
 </div>
 <div id="appendix" class="section level1">
 <h1 class="hasAnchor">
