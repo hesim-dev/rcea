@@ -136,4 +136,4 @@ make_icer_tbl <- function(costs0, costs1, qalys0, qalys1){
 make_icer_tbl(costs0 = dcosts_soc, costs1 = dcosts_new,
               qalys0 = dqalys_soc, qalys1 = dqalys_new)
 
-## ---- Exercises --------------------------------------------
+## ---- Exercises --------------------------------------------------------------
