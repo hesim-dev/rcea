@@ -14,8 +14,6 @@ LazyData: true
 Depends:
     R (>= 3.5.0)
 Imports:
-    stats
-Suggests:
   data.table,
   flexsurv,
   ggplot2,
@@ -24,7 +22,9 @@ Suggests:
   knitr,
   magrittr,
   scales,
-  tibble
+  stats,
+  tibble,
+  usethis
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
