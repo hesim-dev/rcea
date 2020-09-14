@@ -3,21 +3,6 @@ This is the repository for the `rcea` package, which accompanies a short course 
 
 The course materials are available at https://hesim-dev.github.io/rcea.
 
-## Tutorials
-The course contains six tutorials:
-
-1. **Markov Cohort Model**: A simple time-homogeneous Markov cohort model with fixed parameter values.
-
-2. **Incorporating Probabilistic Sensitivity Analysis (PSA)**: The Markov cohort model is re-analyzed using suitable probability distributions for the parameters. 
-
-3. **Markov Cohort Model with hesim**: The second tutorial---programmed primarily using base `R`--- is repeated using the `R` package `hesim`. 
-
-4. **Semi-Markov Multi-state state Model**: A semi-Markov multi-state model is fit to patient-level data and outcomes are simulated using an individual patient simulation. 
-
-5. **Partitioned Survival Model**: The data from the fourth tutorial is refit using partitioned survival analysis and state probabilities are computed using the "area under the curve" technique.
-
-6. **Cost-effectiveness Analysis (CEA)**: CEA is performed using the cost and QALY output of the PSA from the fourth tutorial. A number of methods are used to represent decision uncertainty (e.g. cost-effectiveness planes, cost-effectiveness acceptability curves, and cost-effectiveness acceptability frontiers), and value of information analysis is conducted. 
-
 ## Installation and setup
 All required `R` packages and course materials can be installed with the following steps.
 
@@ -42,3 +27,18 @@ All required `R` packages and course materials can be installed with the followi
     ```r
     use_rcea("~/Projects/rcea-course")
     ```
+
+## Tutorials
+The course contains six tutorials:
+
+1. **Markov Cohort Model**: A simple time-homogeneous Markov cohort model with fixed parameter values.
+
+2. **Incorporating Probabilistic Sensitivity Analysis (PSA)**: The Markov cohort model is re-analyzed using suitable probability distributions for the parameters. 
+
+3. **Markov Cohort Model with hesim**: The second tutorial---programmed primarily using base `R`--- is repeated using the `R` package `hesim`. 
+
+4. **Semi-Markov Multi-state state Model**: A semi-Markov multi-state model is fit to patient-level data and outcomes are simulated using an individual patient simulation. 
+
+5. **Partitioned Survival Model**: The data from the fourth tutorial is refit using partitioned survival analysis and state probabilities are computed using the "area under the curve" technique.
+
+6. **Cost-effectiveness Analysis (CEA)**: CEA is performed using the cost and QALY output of the PSA from the fourth tutorial. A number of methods are used to represent decision uncertainty (e.g. cost-effectiveness planes, cost-effectiveness acceptability curves, and cost-effectiveness acceptability frontiers), and value of information analysis is conducted. 
