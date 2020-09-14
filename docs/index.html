@@ -93,19 +93,6 @@
 <a href="#rcea" class="anchor"></a>rcea</h1></div>
 <p>This is the repository for the <code>rcea</code> package, which accompanies a short course on model-based cost-effectiveness analysis (CEA) with <code>R</code>. A range of models are covered including time-homogeneous and time-inhomogeneous Markov cohort models, partitioned survival models, and semi-Markov individual patient simulations. In addition, the course shows how simulated costs and QALYs from a probabilistic sensitivity analysis can be used for decision-analysis within a cost-effectiveness framework. Analyses are conducted using both base <code>R</code> and the <code>R</code> package <a href="https://hesim-dev.github.io/hesim/">hesim</a>.</p>
 <p>The course materials are available at <a href="https://hesim-dev.github.io/rcea" class="uri">https://hesim-dev.github.io/rcea</a>.</p>
-<div id="tutorials" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tutorials" class="anchor"></a>Tutorials</h2>
-<p>The course contains six tutorials:</p>
-<ol>
-<li><p><strong>Markov Cohort Model</strong>: A simple time-homogeneous Markov cohort model with fixed parameter values.</p></li>
-<li><p><strong>Incorporating Probabilistic Sensitivity Analysis (PSA)</strong>: The Markov cohort model is re-analyzed using suitable probability distributions for the parameters.</p></li>
-<li><p><strong>Markov Cohort Model with hesim</strong>: The second tutorial—programmed primarily using base <code>R</code>— is repeated using the <code>R</code> package <code>hesim</code>.</p></li>
-<li><p><strong>Semi-Markov Multi-state state Model</strong>: A semi-Markov multi-state model is fit to patient-level data and outcomes are simulated using an individual patient simulation.</p></li>
-<li><p><strong>Partitioned Survival Model</strong>: The data from the fourth tutorial is refit using partitioned survival analysis and state probabilities are computed using the “area under the curve” technique.</p></li>
-<li><p><strong>Cost-effectiveness Analysis (CEA)</strong>: CEA is performed using the cost and QALY output of the PSA from the fourth tutorial. A number of methods are used to represent decision uncertainty (e.g. cost-effectiveness planes, cost-effectiveness acceptability curves, and cost-effectiveness acceptability frontiers), and value of information analysis is conducted.</p></li>
-</ol>
-</div>
 <div id="installation-and-setup" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation-and-setup" class="anchor"></a>Installation and setup</h2>
@@ -126,6 +113,19 @@
 <p>Add the course materials (<code>R</code> scripts for the tutorials) to your new project.</p>
 <div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="reference/use_rcea.html">use_rcea</a></span>(<span class="st">"~/Projects/rcea-course"</span>)</pre></div>
 </li>
+</ol>
+</div>
+<div id="tutorials" class="section level2">
+<h2 class="hasAnchor">
+<a href="#tutorials" class="anchor"></a>Tutorials</h2>
+<p>The course contains six tutorials:</p>
+<ol>
+<li><p><strong>Markov Cohort Model</strong>: A simple time-homogeneous Markov cohort model with fixed parameter values.</p></li>
+<li><p><strong>Incorporating Probabilistic Sensitivity Analysis (PSA)</strong>: The Markov cohort model is re-analyzed using suitable probability distributions for the parameters.</p></li>
+<li><p><strong>Markov Cohort Model with hesim</strong>: The second tutorial—programmed primarily using base <code>R</code>— is repeated using the <code>R</code> package <code>hesim</code>.</p></li>
+<li><p><strong>Semi-Markov Multi-state state Model</strong>: A semi-Markov multi-state model is fit to patient-level data and outcomes are simulated using an individual patient simulation.</p></li>
+<li><p><strong>Partitioned Survival Model</strong>: The data from the fourth tutorial is refit using partitioned survival analysis and state probabilities are computed using the “area under the curve” technique.</p></li>
+<li><p><strong>Cost-effectiveness Analysis (CEA)</strong>: CEA is performed using the cost and QALY output of the PSA from the fourth tutorial. A number of methods are used to represent decision uncertainty (e.g. cost-effectiveness planes, cost-effectiveness acceptability curves, and cost-effectiveness acceptability frontiers), and value of information analysis is conducted.</p></li>
 </ol>
 </div>
 </div>
