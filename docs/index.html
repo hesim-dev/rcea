@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Cost-effectiveness Modeling with R">
-<meta property="og:description" content='A companion package for the Professional Society for Health Economics and Outcomes Research (ISPOR) short course "Applied cost-effectiveness modeling with R".'>
+<meta property="og:description" content="Course materials for applied cost-effectiveness analysis with R.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -91,7 +91,43 @@
 <div id="rcea" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#rcea" class="anchor"></a>rcea</h1></div>
-<p>This repository contains course materials for learning how to perform applied cost-effectiveness analysis with R.</p>
+<p>This is the repository for the <code>rcea</code> package, which accompanies a short course on model-based cost-effectiveness analysis (CEA) with <code>R</code>. A range of models are covered including time-homogeneous and time-inhomogeneous Markov cohort models, partitioned survival models, and semi-Markov individual patient simulations. In addition, the course shows how simulated costs and QALYs from a probabilistic sensitivity analysis can be used for decision-analysis within a cost-effectiveness framework. Analyses are conducted using both base <code>R</code> and the <code>R</code> package <a href="https://hesim-dev.github.io/hesim/">hesim</a>.</p>
+<p>The course materials are available at <a href="https://hesim-dev.github.io/rcea" class="uri">https://hesim-dev.github.io/rcea</a>.</p>
+<div id="installation-and-setup" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation-and-setup" class="anchor"></a>Installation and setup</h2>
+<p>All required <code>R</code> packages and course materials can be installed with the following steps.</p>
+<ol>
+<li><p>Open an R session. We recommend using <a href="https://rstudio.com/">RStudio</a>.</p></li>
+<li>
+<p>Install the <code>rcea</code> package from GitHub, which will also install all other required packages.</p>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools") # You must install the "devtools" R package first.</span>
+<span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"hesim-dev/rcea"</span>)</pre></div>
+</li>
+<li>
+<p>Create a new project in your desired directory.</p>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="co"># Create a project named "rcea-course" within a directory named "Projects"</span>
+<span class="kw pkg">usethis</span><span class="kw ns">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_package.html">create_project</a></span>(<span class="st">"~/Projects/rcea-course"</span>)</pre></div>
+</li>
+<li>
+<p>Add the course materials (<code>R</code> scripts for the tutorials) to your new project.</p>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="reference/use_rcea.html">use_rcea</a></span>(<span class="st">"~/Projects/rcea-course"</span>)</pre></div>
+</li>
+</ol>
+</div>
+<div id="tutorials" class="section level2">
+<h2 class="hasAnchor">
+<a href="#tutorials" class="anchor"></a>Tutorials</h2>
+<p>The course contains six tutorials:</p>
+<ol>
+<li><p><strong>Markov Cohort Model</strong>: A simple time-homogeneous Markov cohort model with fixed parameter values.</p></li>
+<li><p><strong>Incorporating Probabilistic Sensitivity Analysis (PSA)</strong>: The Markov cohort model is re-analyzed using suitable probability distributions for the parameters.</p></li>
+<li><p><strong>Markov Cohort Model with hesim</strong>: The second tutorial—programmed primarily using base <code>R</code>— is repeated using the <code>R</code> package <code>hesim</code>.</p></li>
+<li><p><strong>Semi-Markov Multi-state state Model</strong>: A semi-Markov multi-state model is fit to patient-level data and outcomes are simulated using an individual patient simulation.</p></li>
+<li><p><strong>Partitioned Survival Model</strong>: The data from the fourth tutorial is refit using partitioned survival analysis and state probabilities are computed using the “area under the curve” technique.</p></li>
+<li><p><strong>Cost-effectiveness Analysis (CEA)</strong>: CEA is performed using the cost and QALY output of the PSA from the fourth tutorial. A number of methods are used to represent decision uncertainty (e.g. cost-effectiveness planes, cost-effectiveness acceptability curves, and cost-effectiveness acceptability frontiers), and value of information analysis is conducted.</p></li>
+</ol>
+</div>
 </div>
   </div>
 
