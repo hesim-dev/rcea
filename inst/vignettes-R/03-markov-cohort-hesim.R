@@ -2,7 +2,7 @@
 ## @knitr R-packages
 library("hesim")
 
-## ---- Define the model -------------------------------------------------------
+## ---- Model setup ------------------------------------------------------------
 ## @knitr hesim-data
 strategies <- data.frame(
   strategy_id = 1:2,
@@ -18,11 +18,8 @@ hesim_dat <- hesim_data(
 )
 print(hesim_dat)
 
-## @knitr expanded-data
-data <- hesim::expand(hesim_dat, by = c("strategies", "patients"))
-head(data)
-
-## @knitr tpmatrix
+## ---- Model parameters -------------------------------------------------------
+## @knitr transitions
 transitions_soc <- matrix(
   c(848, 150, 0,   2,
     450, 355, 95,  5,
@@ -59,6 +56,10 @@ rng_def <- define_rng({
   )
 }, n = 1000)
 
+## @knitr expanded-data
+input_data <- hesim::expand(hesim_dat, by = c("strategies", "patients"))
+head(input_data)
+
 ## @knitr define_tparams
 tparams_def <- define_tparams({
   ## The treatment effect (relative risk) is transformed so that it varies by 
@@ -80,15 +81,17 @@ tparams_def <- define_tparams({
   )
 })
 
+## ---- Simulation -------------------------------------------------------------
+## ---- Construct model --- ##
 ## @knitr define_model
 mod_def <- define_model(tparams_def = tparams_def, 
                         rng_def = rng_def, 
                         params = params)
 
-## ---- Simulation -------------------------------------------------------------
 ## @knitr initialize-model
-econmod <- create_CohortDtstm(mod_def, data)
+econmod <- create_CohortDtstm(mod_def, input_data)
 
+## ---- Simulate outcomes --- ##
 ## @knitr sim_stateprobs
 econmod$sim_stateprobs(n_cycles = 85)
 
