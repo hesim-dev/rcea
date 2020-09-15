@@ -19,36 +19,31 @@ do.call(knitr::read_chunk, list(path = "../inst/vignettes-R/03-markov-cohort-hes
 ```
 
 # Overview
-This tutorial repeats the probabilistic sensitivity analysis (PSA) of Markov cohort model simulation performed in the [previous tutorial](02-markov-cohort-psa.html) using `hesim`. More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. 
+This tutorial repeats the probabilistic sensitivity analysis (PSA) of the Markov cohort model simulation performed in the [previous tutorial](02-markov-cohort-psa.html) using `hesim`. We utilize the cohort discrete time state transition model (`cDTSTM`) class, which is another name for a (time-homogeneous or time-inhomogeneous) Markov cohort model. 
 
-Markov cohort models (time-homogeneous and time-homogeneous) are referred to as cohort discrete time state transition models (`cDTSTMs`) in `hesim`. They are most conveniently simulated with a four step process by defining:
+More information about `hesim` can be found by visiting the [package website](https://hesim-dev.github.io/hesim/). We recommend reading the "Articles"---starting with the ["Introduction to `hesim`"](https://hesim-dev.github.io/hesim/articles/intro.html)---to learn more. Economic models can, in general, be simulated with the following steps:
 
-1. *Data* consisting of the treatment strategies and patient population
-2. *Parameter* objects storing the values of all parameters used in the model
-3. *Random number generation* expressions that randomly generate probability distributions for the parameters for probabilistic sensitivity analysis (PSA)
-4. *Transformed parameter* expressions that transform the parameter estimates into values used for simulation
+1. **Model setup:** Specify the treatment strategies, target population(s), and model structure.
+2. **Parameters:** Estimate or define the parameters of the economic model.
+3. **Simulation:**
+    a. **Construction of model:** Create an economic model---consisting of separate statistical models for disease progression, costs, and utilities---that simulate outcomes as a function of *input data* (derived from Step 1) and *parameters* (from Step 2). 
+    b. **Simulation of outcomes:** Simulate outcomes (disease progression, costs, and quality-adjusted life-years (QALYs)) using the model constructed in Step 3.
 
 This analysis can be performed using the `hesim` package alone. 
 
 ```{r, R-packages, message = FALSE, warning = FALSE}
 ```
 
-# Define the model
-## Data
+# Model setup
 Before beginning an analysis, it is necessary to define the treatment strategies of interest and the the target population of interest. We continue to run an analysis for two treatment strategies ("SOC" and the "New" treatment) and one representative 25-year old patient.
 
 ```{r, hesim-data, warning = FALSE, message = FALSE}
 ```
 
-The model will be simulated for each treatment strategy and representative patient combination. Such data containing treatment strategy and patient characteristics can be generated using `expand()`. 
-
-```{r, expanded-data}
-```
-
-## Parameters
+# Model parameters
 We will use the same list of parameters as in the previous tutorial.
 
-```{r, tpmatrix, include = FALSE, results = "hide"}
+```{r, transitions, include = FALSE, results = "hide"}
 ```
 
 ```{r, all-parameters}
@@ -61,37 +56,46 @@ The random number generation process for the PSA is once again defined using `de
 ```
 
 ## Transformed parameters
-The next step in `hesim` is to "transform" the parameters for use in the economic model using `define_tparams()`. This typically involves modeling them as a function of the treatment strategies and patient (i.e.,  the `data`). To maximize computational efficiency, all operations are vectorized across the rows in the data. Parameters not include in a transformed parameter function are assumed constant across patients and treatment strategies.
+Economic models in `hesim` consist of separate statistical models used to simulate disease progression, costs, and utility. Like any prediction model, each statistical model simulates outcomes as a function of input data and model parameters. In most statistical models, the underlying parameters (see `hesim::params`) are transformed (see `hesim::tparams`) into more relevant parameters for prediction (e.g., the coefficients and covariates from a Weibull regression are used to predict shape and scale parameters). 
 
-A `define_tparams()` block must return a named list with the following possible elements:
+There are multiple ways to "transform" parameters in `hesim`. In this example, we will use mathematical expressions via `hesim::define_tparams()` (designed for Markov cohort models), whereas the next tutorial on multi-state modeling will estimate parameters (see `hesim::params_surv`) by fitting parametric survival models.
+
+Transformed parameters are modeled here as function of treatment strategies and patients, which can be generated using `hesim::expand()`. 
+
+```{r, expanded-data}
+```
+
+Operations in a `define_tparams()` block are performed using the columns from the input data. To maximize computational efficiency, all operations are vectorized across the rows in the data and PSA samples. Parameters not included in a transformed parameter function are assumed constant across patients and treatment strategies. A list must be returned with the following possible elements:
 
 * **tpmatrix**: The transition probability matrix used to simulate transition probabilities in the economic model. 
-* **utility**: The utility values to attach to states and used to simulate quality-adjusted life-years in the economic model. Either a vector (in which case utility is the same in each health state) or a matrix with a column for each (non-death) health state.
+* **utility**: The utility values to attach to states and used to simulate QALYs in the economic model. Either a vector (in which case utility is the same in each health state) or a matrix with a column for each (non-death) health state.
 * **costs**: A named list of costs for each category used to simulate costs in the economic model. Each element of the list must be in the same format as utility.
 
 ```{r, define_tparams}
 ```
 
-## The model
-The model is defined using `define_model()` function. The names of transition probability matrix, utility, and cost objects are specified.
+# Simulation
+## Construct the model
+The economic model is defined by using `define_model()` to combine the underlying parameters with the expressions for random number generation and parameter transformation. 
 
 ```{r, define_model}
 ```
 
-# Simulation
-A economic model (of class `CohortDtstm`) can be created from a defined model (of class `model_def`) and data using the generic function `create_CohortDtstm()`. The economic model is an `R6` object consisting of a transition model (`trans_model`) for simulating transition probabilities with `sim_stateprobs()`, a utility model for simulating quality-adjusted life-years with `sim_qalys()`, and a set of cost models (for each cost category) for simulating costs with `sim_costs()`. 
+An economic model (of class `CohortDtstm`) can then be created from the defined model and input data using the generic function `create_CohortDtstm()`. The economic model is an `R6` object consisting of a transition model for simulating transition probabilities with `sim_stateprobs()`, a utility model for simulating QALYs with `sim_qalys()`, and a set of cost models (for each cost category) for simulating costs with `sim_costs()`. 
 
 ```{r, initialize-model}
 ```
 
-## Health state probabilities
+## Simulating outcomes
+
+### Health state probabilities
 State occupancy probabilities are generated by simulating the discrete time Markov chain. 
 
 ```{r, sim_stateprobs, warning = FALSE, message = FALSE}
 ```
 
-## Costs and QALYs
-Costs and quality-adjusted life-years (QALYs) are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum.
+### Costs and QALYs
+Costs and QALYs are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum.
 
 ```{r, sim_qalys}
 ```
