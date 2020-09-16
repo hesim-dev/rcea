@@ -120,20 +120,27 @@ Although arrays are computationally efficient objects for storing data, they are
 ```
 
 # Cost-effectiveness analysis
-A cost-effectiveness analysis can be performed using the simulation output. The PSA is typically used to represent decision uncertainty using the distribution of (discounted) QALYs and (discounted) total costs. As such, will compute mean discounted QALYs and discounted costs by parameter sample and treatment strategy.
+A cost-effectiveness analysis (CEA) can be performed using the simulation output. A PSA is typically used to represent decision uncertainty using the distribution of (discounted) QALYs and (discounted) total costs. As such, will compute mean discounted QALYs and discounted costs by parameter sample and treatment strategy.
 
 ```{r, ce_output}
 ```
 
-In the two treatment strategy case its simpler to "widen" the data so that we can easily compute incremental QALYs and costs.
+In the two treatment strategy case its simpler to "widen" the data so that we can easily compute incremental QALYs and incremental costs.
 
 ```{r, ce_output_wider}
 ```
 
-The ICER is computed by taking means across all parameter samples. (Note that in a subsequent tutorial will show how to represent decision uncertainty using the PSA output).  
+The ICER is computed by taking means across all parameter samples. 
 
 ```{r, icer}
 ```
+
+We can also use a cost-effectiveness plane to visually represent uncertainty in incremental QALYs and incremental costs. The dotted line represents willingness to pay for a QALY (in this example, \$100,000) and points below the line are cost-effective while points above the line are not. 
+
+```{r, ceplane, echo = FALSE}
+```
+
+A more formal and thorough treatment of CEA and decision uncertainty is given in the [CEA tutorial](06-cea.html).
 
 # Appendix
 ## Dirichlet distribution
