@@ -77,7 +77,7 @@ Similarly, we continue to assume that medical costs vary by health state and fol
 ```{r, medcost_tbl}
 ```
 
-Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months and then \$10,000 thereafter. This approximate a common scenario in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.  
+Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are \$12,000 for the first 3 months in the progression state and then \$10,000 thereafter. This approximate a common scenario in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.  
 
 
 ```{r, drugcost_tbl}
@@ -104,7 +104,9 @@ In addition to the input data and model, we must also specify the viable transit
 ```
 
 ### Utility and cost models
-Since the utility and cost models are based on predicted means (see `hesim::tparams_mean()`), they do not include covariates and therefore do not require input data. The cost and utility models can therefore be constructed directly from the utility and cost tables.
+The utility and cost models are based on predicted means (see `hesim::tparams_mean()`), so they do not include covariates and therefore do not require input data. The cost and utility models can therefore be constructed directly from the utility and cost tables.
+
+Since drug costs depend on time in each state, we must use the `time_reset = TRUE` option so that time resets when a patient enters a new state (e.g., when entering the progression state); otherwise the time intervals specified would depend on time since the start of the model. The distinction is analogous to the distinction between clock reset and clock forward multi-state models of disease progression. 
 
 ```{r, utility-cost-models}
 ```

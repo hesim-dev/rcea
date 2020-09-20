@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Semi-Markov Multi-state Model</h1>
             
-            <h4 class="date">2020-09-13</h4>
+            <h4 class="date">2020-09-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/04-mstate.Rmd"><code>vignettes/04-mstate.Rmd</code></a></small>
       <div class="hidden name"><code>04-mstate.Rmd</code></div>
@@ -252,7 +252,7 @@
 <pre><code>##    state_id mean   se
 ## 1:        1 2000 2000
 ## 2:        2 9500 9500</code></pre>
-<p>Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are $12,000 for the first 3 months and then $10,000 thereafter. This approximate a common scenario in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.</p>
+<p>Treatment costs remain fixed as in the cohort model, but we now allow costs to vary over time in the progression state. Specifically, we assume that costs for the new treatment are $12,000 for the first 3 months in the progression state and then $10,000 thereafter. This approximate a common scenario in oncology where the new treatment is given in combination with chemotherapy but the chemotherapy is only given for a fixed number of cycles. This would not be possible in a cohort model without creating a tunnel state approximating the 3 months of chemotherapy in the progression state.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">n_times</span> <span class="kw">&lt;-</span> <span class="fl">2</span>
 <span class="no">drugcost_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/stateval_tbl.html">stateval_tbl</a></span>(
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
@@ -309,11 +309,13 @@
 <div id="utility-and-cost-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#utility-and-cost-models" class="anchor"></a><span class="header-section-number">5.1.2</span> Utility and cost models</h3>
-<p>Since the utility and cost models are based on predicted means (see <code><a href="https://rdrr.io/pkg/hesim/man/tparams_mean.html">hesim::tparams_mean()</a></code>), they do not include covariates and therefore do not require input data. The cost and utility models can therefore be constructed directly from the utility and cost tables.</p>
+<p>The utility and cost models are based on predicted means (see <code><a href="https://rdrr.io/pkg/hesim/man/tparams_mean.html">hesim::tparams_mean()</a></code>), so they do not include covariates and therefore do not require input data. The cost and utility models can therefore be constructed directly from the utility and cost tables.</p>
+<p>Since drug costs depend on time in each state, we must use the <code>time_reset = TRUE</code> option so that time resets when a patient enters a new state (e.g., when entering the progression state); otherwise the time intervals specified would depend on time since the start of the model. The distinction is analogous to the distinction between clock reset and clock forward multi-state models of disease progression.</p>
 <div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="co"># Utility</span>
 <span class="no">utilitymod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">utility_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>)
 <span class="co"># Costs</span>
-<span class="no">drugcostmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">drugcost_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>)
+<span class="no">drugcostmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">drugcost_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>,
+                                <span class="kw">time_reset</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 <span class="no">medcostmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_StateVals.html">create_StateVals</a></span>(<span class="no">medcost_tbl</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="no">n_samples</span>)
 <span class="no">costmods</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">Drug</span> <span class="kw">=</span> <span class="no">drugcostmod</span>,
                  <span class="kw">Medical</span> <span class="kw">=</span> <span class="no">medcostmod</span>)</pre></body></html></div>
@@ -367,7 +369,7 @@
 ## 1:      1           1      1        1 0.03     Drug  11968.06
 ## 2:      1           1      1        2 0.03     Drug  11710.68
 ## 3:      1           2      1        1 0.03     Drug 110002.04
-## 4:      1           2      1        2 0.03     Drug  78208.25
+## 4:      1           2      1        2 0.03     Drug  78500.50
 ## 5:      2           1      1        1 0.03     Drug  11998.25
 ## 6:      2           1      1        2 0.03     Drug  11226.46</code></pre>
 </div>
@@ -378,15 +380,15 @@
 <a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">6</span> Cost-effectiveness analysis</h1>
 <p>As in the cohort model, cost-effectiveness analyses can be performed seamlessly from the simulation output.</p>
 <div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="no">econmod</span>$<span class="fu">summarize</span>()
-<span class="no">icea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>,
+<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>,
                        <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>,
                        <span class="kw">k</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">25000</span>, <span class="fl">500</span>))
-<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                         
 ## Incremental QALYs "-" "3.79 (3.26, 4.38)"         
-## Incremental costs "-" "191,245 (164,182, 251,532)"
-## Incremental NMB   "-" "-1,986 (-60,294, 34,367)"  
-## ICER              "-" "50,525"                    
+## Incremental costs "-" "191,540 (164,466, 251,826)"
+## Incremental NMB   "-" "-2,280 (-60,588, 34,068)"  
+## ICER              "-" "50,602"                    
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>
