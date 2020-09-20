@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Partitioned Survival Model</h1>
             
-            <h4 class="date">2020-09-13</h4>
+            <h4 class="date">2020-09-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/05-psm.Rmd"><code>vignettes/05-psm.Rmd</code></a></small>
       <div class="hidden name"><code>05-psm.Rmd</code></div>
@@ -343,8 +343,8 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">6</span> Cost-effectiveness analysis</h1>
 <p>Since the cost and QALY output is the same regardless of the model type, the cost-effectiveness analysis (CEA) proceeds in the same way as when using the Markov cohort and multi-state modeling approaches.</p>
 <div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="no">econmod</span>$<span class="fu">summarize</span>()
-<span class="no">icea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">icea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
+<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                         
 ## Incremental QALYs "-" "3.60 (3.07, 4.09)"         
 ## Incremental costs "-" "201,896 (178,583, 257,932)"
