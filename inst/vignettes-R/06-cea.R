@@ -10,12 +10,12 @@ ce_sim <- readRDS("ce_sim.rds") # Load cost-effectiveness object
 head(ce_sim)
 
 wtp <- seq(0, 250000, 500) # Willingness to pay per QALY
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, # Comparator is SOC (ID = 1)
-                       dr_qalys = 0.03, dr_costs = 0.03,
-                       wtp)
-icea_out <- icea(ce_sim, 
-                 dr_qalys = 0.03, dr_costs = 0.03,
-                 k = wtp)
+cea_pw_out <- cea_pw(ce_sim, comparator = 1, # Comparator is SOC (ID = 1)
+                     dr_qalys = 0.03, dr_costs = 0.03,
+                     wtp)
+cea_out <- cea(ce_sim, 
+               dr_qalys = 0.03, dr_costs = 0.03,
+               k = wtp)
 
 ## ---- Cost-effectiveness plane -----------------------------------------------
 ## @knitr helper-functions
@@ -28,9 +28,9 @@ format_dollar <- function(x) {
 }
 
 ## @knitr ceplane-plot
-ylim <- max(icea_pw_out$delta[, ic]) * 1.1
-xlim <- ceiling(max(icea_pw_out$delta[, ie]) * 1.1)
-ggplot(icea_pw_out$delta, 
+ylim <- max(cea_pw_out$delta[, ic]) * 1.1
+xlim <- ceiling(max(cea_pw_out$delta[, ie]) * 1.1)
+ggplot(cea_pw_out$delta, 
        aes(x = ie, y = ic, col = strategy_factor(strategy_id))) + 
   geom_jitter(size = .5)  + 
   xlab("Incremental QALYs") + 
@@ -46,7 +46,7 @@ ggplot(icea_pw_out$delta,
 
 ## ---- Cost-effectiveness acceptability curves --------------------------------
 ## @knitr ceac-simultaneous-plot
-ggplot(icea_out$mce, 
+ggplot(cea_out$mce, 
        aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
   geom_line() + 
   xlab("Willingness to pay") +
@@ -57,7 +57,7 @@ ggplot(icea_out$mce,
   scale_colour_discrete(name = "Strategy")
 
 ## @knitr ceac-pairwise-plot
-ggplot(icea_pw_out$ceac, 
+ggplot(cea_pw_out$ceac, 
        aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
   geom_line()  + 
   xlab("Willingness to pay") +
@@ -69,7 +69,7 @@ ggplot(icea_pw_out$ceac,
 
 ## ---- Cost-effectiveness acceptability frontier ------------------------------
 ## @knitr ceaf-plot
-ggplot(icea_out$mce[best == 1], 
+ggplot(cea_out$mce[best == 1], 
        aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
   geom_line() + 
   xlab("Willingness to pay") +
@@ -81,7 +81,7 @@ ggplot(icea_out$mce[best == 1],
 
 ## ---- Value of perfect information -------------------------------------------
 ## @knitr evpi-plot
-ggplot(icea_out$evpi, aes(x = k, y = evpi)) +
+ggplot(cea_out$evpi, aes(x = k, y = evpi)) +
   geom_line()  + 
   xlab("Willingness to pay") +
   ylab("Expected value of perfect information") +

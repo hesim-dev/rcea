@@ -117,7 +117,8 @@ transmod <- create_IndivCtstmTrans(wei_fits, transmod_data,
 # Utility
 utilitymod <- create_StateVals(utility_tbl, n = n_samples)
 # Costs
-drugcostmod <- create_StateVals(drugcost_tbl, n = n_samples)
+drugcostmod <- create_StateVals(drugcost_tbl, n = n_samples,
+                                time_reset = TRUE)
 medcostmod <- create_StateVals(medcost_tbl, n = n_samples)
 costmods <- list(Drug = drugcostmod,
                  Medical = medcostmod)
@@ -146,9 +147,9 @@ head(econmod$costs_)
 ## ---- Cost-effectiveness analysis --------------------------------------------
 ## @knitr icer
 ce_sim <- econmod$summarize()
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, 
+cea_pw_out <- cea_pw(ce_sim, comparator = 1, 
                        dr_qalys = .03, dr_costs = .03,
                        k = seq(0, 25000, 500))
-icer_tbl(icea_pw_out, colnames = strategies$strategy_name)
+icer_tbl(cea_pw_out, colnames = strategies$strategy_name)
 
 ## ---- Exercises --------------------------------------------------------------

@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-09-13</h4>
+            <h4 class="date">2020-09-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -104,7 +104,7 @@
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
 <p>The prior tutorials have focused on constructing economic models to simulate disease progression, costs, and quality-adjusted life-years (QALYs). While incremental cost-effectiveness ratios (ICERs) have been computed and probabilistic sensitivity analysis (PSA) has been employed, we have not yet formalized cost-effectiveness analysis (CEA) or represented decision uncertainty.</p>
-<p>In this analysis we will perform a CEA given the output of model from the <a href="04-mstate.html">“Semi-Markov Multi-state Model”</a> tutorial. We will use the CEA functions from <code>hesim</code> to summarize decision uncertainty and <code>ggplot2</code> for visualization. The CEA will be peformed for a single target population, but you can review the <code>hesim</code> tutorial on <a href="https://hesim-dev.github.io/hesim/articles/icea.html">individualized CEA</a> and the references therein for an example of CEA in the context of multiple subgroups.</p>
+<p>In this analysis we will perform a CEA given the output of model from the <a href="04-mstate.html">“Semi-Markov Multi-state Model”</a> tutorial. We will use the CEA functions from <code>hesim</code> to summarize decision uncertainty and <code>ggplot2</code> for visualization. The CEA will be peformed for a single target population, but you can review the <code>hesim</code> tutorial on <a href="https://hesim-dev.github.io/hesim/articles/cea.html">CEA</a> and the references therein for an example of CEA in the context of multiple subgroups.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span>()) <span class="co"># Set ggplot2 theme</span></pre></body></html></div>
@@ -145,23 +145,23 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <div id="application" class="section level1">
 <h1 class="hasAnchor">
 <a href="#application" class="anchor"></a><span class="header-section-number">3</span> Application</h1>
-<p>CEA can be performed using the <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">hesim::icea()</a></code> and <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">hesim::icea_pw()</a></code> functions. <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea()</a></code> summarizes results by taking into account each treatment strategy in the analysis, while <code>icea_pw</code> summarizes “pairwise” results in which each treatment is compared to a comparator.</p>
+<p>CEA can be performed using the <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">hesim::cea()</a></code> and <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">hesim::cea_pw()</a></code> functions. <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea()</a></code> summarizes results by taking into account each treatment strategy in the analysis, while <code>cea_pw</code> summarizes “pairwise” results in which each treatment is compared to a comparator.</p>
 <p>We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a <code><a href="https://rdrr.io/pkg/hesim/man/ce.html">hesim::ce</a></code> object).</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"ce_sim.rds"</span>) <span class="co"># Load cost-effectiveness object</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">ce_sim</span>)</pre></body></html></div>
 <pre><code>## $costs
 ##       category   dr sample strategy_id     costs grp_id
 ##    1:     Drug 0.03      1           1  23678.74      1
-##    2:     Drug 0.03      1           2 188210.29      1
+##    2:     Drug 0.03      1           2 188502.54      1
 ##    3:     Drug 0.03      2           1  23224.71      1
-##    4:     Drug 0.03      2           2 184594.47      1
+##    4:     Drug 0.03      2           2 184885.23      1
 ##    5:     Drug 0.03      3           1  23011.36      1
 ##   ---                                                  
-## 2996:    total 0.03    498           2 249897.28      1
+## 2996:    total 0.03    498           2 250188.10      1
 ## 2997:    total 0.03    499           1  63343.39      1
-## 2998:    total 0.03    499           2 238964.38      1
+## 2998:    total 0.03    499           2 239276.32      1
 ## 2999:    total 0.03    500           1  50651.70      1
-## 3000:    total 0.03    500           2 233472.15      1
+## 3000:    total 0.03    500           2 233785.48      1
 ## 
 ## $qalys
 ##         dr sample strategy_id     qalys grp_id
@@ -177,26 +177,26 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 ## 1999: 0.03    500           1  8.063408      1
 ## 2000: 0.03    500           2 12.152292      1</code></pre>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">wtp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">250000</span>, <span class="fl">500</span>) <span class="co"># Willingness to pay per QALY</span>
-<span class="no">icea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="co"># Comparator is SOC (ID = 1)</span>
-                       <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
-                       <span class="no">wtp</span>)
-<span class="no">icea_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea</a></span>(<span class="no">ce_sim</span>,
-                 <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
-                 <span class="kw">k</span> <span class="kw">=</span> <span class="no">wtp</span>)</pre></body></html></div>
+<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="co"># Comparator is SOC (ID = 1)</span>
+                     <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
+                     <span class="no">wtp</span>)
+<span class="no">cea_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea</a></span>(<span class="no">ce_sim</span>,
+               <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
+               <span class="kw">k</span> <span class="kw">=</span> <span class="no">wtp</span>)</pre></body></html></div>
 <p>Each function returns a number of outputs for summarizing a PSA.</p>
 <div id="cost-effectiveness-plane" class="section level2">
 <h2 class="hasAnchor">
 <a href="#cost-effectiveness-plane" class="anchor"></a><span class="header-section-number">3.1</span> Cost-effectiveness plane</h2>
 <p>The cost-effectiveness plane plots the incremental effectiveness of a treatment strategy (relative to a comparator) against the incremental cost of the treatment strategy. The plot is useful because it demonstrates both the uncertainty and the magnitude of the estimates. Each point on the plot is from a particular random draw from the PSA.</p>
-<p>Data for plotting a cost-effectiveness plane comes from the <code>delta</code> output generated from the <code>icea_pw</code> function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">icea_pw_out</span>$<span class="no">delta</span>)</pre></body></html></div>
+<p>Data for plotting a cost-effectiveness plane comes from the <code>delta</code> output generated from the <code>cea_pw</code> function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id grp_id       ie       ic
-## 1:      1           2      1 3.900703 173459.8
-## 2:      2           2      1 3.700907 279860.3
-## 3:      3           2      1 4.140923 207452.3
-## 4:      4           2      1 3.765042 202056.4
-## 5:      5           2      1 4.003303 187869.4
-## 6:      6           2      1 3.247835 164619.4</code></pre>
+## 1:      1           2      1 3.900703 173752.1
+## 2:      2           2      1 3.700907 280151.1
+## 3:      3           2      1 4.140923 207748.0
+## 4:      4           2      1 3.765042 202362.6
+## 5:      5           2      1 4.003303 188159.4
+## 6:      6           2      1 3.247835 164909.4</code></pre>
 <p>To make nicer plots, we can write a simple helper function to (i) create labels for the treatment strategies and (ii) format dollar values (which you might also use the <code>scales</code> package for).</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">strategy_factor</span> <span class="kw">&lt;-</span> <span class="kw">function</span> (<span class="no">x</span>) {
   <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">x</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>, <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>))
@@ -206,9 +206,9 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
   <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>))
 }</pre></body></html></div>
 <p>The dotted line in the plot is the WTP line, with slope equal to the desire value of <span class="math inline">\(k\)</span> (in this case $50,000). For a chosen <span class="math inline">\(k\)</span>, points below the line are cost-effective while those above it are not.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ylim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">icea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ic</span>]) * <span class="fl">1.1</span>
-<span class="no">xlim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">icea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ie</span>]) * <span class="fl">1.1</span>)
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">icea_pw_out</span>$<span class="no">delta</span>,
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ylim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ic</span>]) * <span class="fl">1.1</span>
+<span class="no">xlim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ie</span>]) * <span class="fl">1.1</span>)
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>,
        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">ie</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">ic</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html">geom_jitter</a></span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">.5</span>)  +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Incremental QALYs"</span>) +
@@ -230,7 +230,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <h3 class="hasAnchor">
 <a href="#simultanous-comparison" class="anchor"></a><span class="header-section-number">3.2.1</span> Simultanous comparison</h3>
 <p>A useful summary measure for quantifying uncertainty is the probability that each treatment strategy is the most cost effective, which is estimated from simulation output as the proportion of simulation draws that each strategy has the highest NMB.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">icea_out</span>$<span class="no">mce</span>,
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">mce</span>,
        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">prob</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
@@ -246,7 +246,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <h3 class="hasAnchor">
 <a href="#pairwise-comparison" class="anchor"></a><span class="header-section-number">3.2.2</span> Pairwise comparison</h3>
 <p>The difference between this plot and the one above is that it compares each strategy to a single comparator rather than considering all strategies simultaneously. Since there are only two treatment strategies the distinction is not meaningful, but it can be important when there are 3 or more treatment strategies.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">icea_pw_out</span>$<span class="no">ceac</span>,
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_pw_out</span>$<span class="no">ceac</span>,
        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">prob</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>()  +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
@@ -263,7 +263,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <a href="#cost-effectiveness-acceptability-frontier-ceaf" class="anchor"></a><span class="header-section-number">3.3</span> Cost-effectiveness acceptability frontier (CEAF)</h2>
 <p>One drawback of the CEAC is that the probability of being cost-effective cannot be used to determine the optimal treatment option. Instead, if a decision-makers objective is to maximize health gain, then decisions should be based on the expected NMB. The cost-effectiveness acceptability frontier (CEAF), which plots the probability that the optimal treatment strategy (i.e., the strategy with the highest expected NMB) is cost-effective, is appropriate in this context.</p>
 <p>A CEAF curve can be easily created by using the <code>best</code> column to subset to the treatment strategy with the highest expected NMB for each WTP value.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">icea_out</span>$<span class="no">mce</span>[<span class="no">best</span> <span class="kw">==</span> <span class="fl">1</span>],
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">mce</span>[<span class="no">best</span> <span class="kw">==</span> <span class="fl">1</span>],
        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">prob</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
@@ -283,8 +283,8 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 EVPI_g &amp;= E_\theta \left[max_j NMB_g(j, \theta)\right] - max_j E_\theta \left [ NMB_g(j, \theta)\right]. \\
 \end{aligned}
 \]</span></p>
-<p>The <code><a href="https://rdrr.io/pkg/hesim/man/icea.html">icea()</a></code> function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values <span class="math inline">\(k\)</span>. A plot by group of the the EVPI for different values of <span class="math inline">\(k\)</span> is shown below. The kink in the plot represents the value of <span class="math inline">\(k\)</span> where the optimal strategy changes.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">icea_out</span>$<span class="no">evpi</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">evpi</span>)) +
+<p>The <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea()</a></code> function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values <span class="math inline">\(k\)</span>. A plot by group of the the EVPI for different values of <span class="math inline">\(k\)</span> is shown below. The kink in the plot represents the value of <span class="math inline">\(k\)</span> where the optimal strategy changes.</p>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">evpi</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">evpi</span>)) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>()  +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Expected value of perfect information"</span>) +
