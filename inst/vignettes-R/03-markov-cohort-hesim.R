@@ -103,13 +103,13 @@ head(econmod$qalys_)
 econmod$sim_costs(dr = 0.03, integrate_method = "riemann_left")
 
 ## ---- Cost-effectiveness analysis --------------------------------------------
-## @knitr icea
+## @knitr cea
 ce_sim <- econmod$summarize()
-icea_pw_out <- icea_pw(ce_sim, comparator = 1, 
-                       dr_qalys = 0.03, dr_costs = 0.03,
-                       k = seq(0, 25000, 500))
+cea_pw_out <- cea_pw(ce_sim, comparator = 1, 
+                     dr_qalys = 0.03, dr_costs = 0.03,
+                     k = seq(0, 25000, 500))
 
 ## @knitr icer
-icer_tbl(icea_pw_out, colnames = strategies$strategy_name) 
+icer_tbl(cea_pw_out, colnames = strategies$strategy_name) 
 
 ## ---- Exercises --------------------------------------------------------------
