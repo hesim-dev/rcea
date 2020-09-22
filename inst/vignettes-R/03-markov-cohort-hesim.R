@@ -38,7 +38,7 @@ params <- list(
   c_medical = c(H = 2000, S1 = 4000, S2 = 15000),
   c_soc = 2000,
   c_new = 12000,
-  u_mean = c(H = 1, S1 = .075, S2 = 0.5),
+  u_mean = c(H = 1, S1 = .75, S2 = 0.5),
   u_se = c(H = 0, S1 = 0.03, S2 = 0.05)
 )
 
@@ -94,13 +94,15 @@ econmod <- create_CohortDtstm(mod_def, input_data)
 ## ---- Simulate outcomes --- ##
 ## @knitr sim_stateprobs
 econmod$sim_stateprobs(n_cycles = 85)
+head(econmod$stateprobs_)
 
 ## @knitr sim_qalys
-econmod$sim_qalys(dr = 0.03, integrate_method = "riemann_left")
+econmod$sim_qalys(dr = 0.03, lys = TRUE, integrate_method = "riemann_left")
 head(econmod$qalys_)
 
 ## @knitr sim_costs
 econmod$sim_costs(dr = 0.03, integrate_method = "riemann_left")
+head(econmod$costs_)
 
 ## ---- Cost-effectiveness analysis --------------------------------------------
 ## @knitr cea
