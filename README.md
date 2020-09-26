@@ -25,7 +25,7 @@ All required `R` packages and course materials can be installed with the followi
 4. Add the course materials (`R` scripts for the tutorials) to your new project.
 
     ```r
-    use_rcea("~/Projects/rcea-course")
+    rcea::use_rcea("~/Projects/rcea-course")
     ```
 
 ## Tutorials

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • rcea</title>
+<title>Use the <code>rcea</code> course materials — use_rcea • rcea</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Use the <code>rcea</code> course materials — use_rcea" />
+<meta property="og:description" content="Add the R scripts that contain the code for the tutorials in the
+rcea package to the R directory from a project created using
+usethis::create_project()." />
 
 
 
@@ -58,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -127,72 +130,37 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Use the <code>rcea</code> course materials</h1>
+    <small class="dont-index">Source: <a href='https://github.com/hesim-dev/ispor-short-course/blob/master/R/use_rcea.R'><code>R/use_rcea.R</code></a></small>
+    <div class="hidden name"><code>use_rcea.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Add the <code>R</code> scripts that contain the code for the tutorials in the
+<code>rcea</code> package to the <code>R</code> directory from a project created using
+<code><a href='https://usethis.r-lib.org/reference/create_package.html'>usethis::create_project()</a></code>.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>use_rcea</span>(<span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"."</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="pv.html">pv()</a></code> </p>
-        </td>
-        <td><p>Present value</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rcea.html">rcea</a></code> </p>
-        </td>
-        <td><p>rcea: Applied cost-effectiveness modeling with R</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sim_markov_chain.html">sim_markov_chain()</a></code> </p>
-        </td>
-        <td><p>Simulate a Markov chain</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sim_mstate3_data.html">sim_mstate3_data()</a></code> </p>
-        </td>
-        <td><p>Simulate example 3-state data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sim_pfs_os_data.html">sim_pfs_os_data()</a></code> </p>
-        </td>
-        <td><p>Simulate progression-free and overall survival</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="use_rcea.html">use_rcea()</a></code> </p>
-        </td>
-        <td><p>Use the <code>rcea</code> course materials</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>path</th>
+      <td><p>The path of the project to put the course materials in.</p></td>
+    </tr>
     </table>
-  </div>
 
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw pkg'>usethis</span><span class='kw ns'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/create_package.html'>create_project</a></span>(<span class='st'>"~/Projects/rcea-exercises"</span>)
+<span class='fu'>add_rcea</span>(<span class='st'>"~/Projects/rcea-exercises"</span>)
+}</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
