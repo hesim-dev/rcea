@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-09-19</h4>
+            <h4 class="date">2020-09-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -129,12 +129,14 @@ j^{*} = \text{argmax}_j E_{\theta} \left[NMB(j,\theta)\right].
 \begin{aligned}
 INMB(\theta) = NMB(j = 1, \theta) - NMB(j = 0, \theta).
 \end{aligned}
-\]</span> Equivalently, treatment <span class="math inline">\(1\)</span> is preferred to treatment <span class="math inline">\(0\)</span> if the ICER is greater than the WTP threshold <span class="math inline">\(k\)</span>,</p>
+\]</span></p>
+<p>Treatments can be compared in an equivalent manner using the incremental cost-effectiveness ratio (ICER). The most common case occurs when a new treatment is more effective and more costly so that treatment <span class="math inline">\(1\)</span> is preferred to treatment <span class="math inline">\(0\)</span> if the ICER is greater than the willingness to pay threshold <span class="math inline">\(k\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
 k &gt; \frac{E_\theta[c_{1} - c_{0}]}{E_\theta[e_{1} - e_{0}]} = ICER.
 \end{aligned}
-\]</span> In practice, the distribution of <span class="math inline">\(\theta\)</span> is simulated from the output of the PSA. Specifically, For each treatment strategy, a PSA produces <span class="math inline">\(m\)</span> random draws from the distribution of health outcomes and costs,</p>
+\]</span> There are three additional cases. Treatment <span class="math inline">\(1\)</span> is considered to <em>dominate</em> treatment <em>0</em> if it is more effective and less costly. Treatment <span class="math inline">\(1\)</span> is <em>dominated</em> by treatment <span class="math inline">\(0\)</span> if it is less effective and more costly. Finally, treatment <span class="math inline">\(1\)</span> is preferred to treatment <span class="math inline">\(0\)</span> if it is less effective and less costly when <span class="math inline">\(k &lt; ICER\)</span>.</p>
+<p>In practice, the distribution of <span class="math inline">\(\theta\)</span> is simulated from the output of the PSA. Specifically, For each treatment strategy, a PSA produces <span class="math inline">\(m\)</span> random draws from the distribution of health outcomes and costs,</p>
 <p><span class="math display">\[
 \begin{aligned}
 e_{j} &amp;= [e_{j}^1, e_{j}^2, \dots, e_{j}^m] \\

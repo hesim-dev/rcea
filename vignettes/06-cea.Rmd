@@ -50,13 +50,16 @@ $$
 INMB(\theta) = NMB(j = 1, \theta) - NMB(j = 0, \theta).
 \end{aligned}
 $$
-Equivalently, treatment $1$ is preferred to treatment $0$ if the ICER is greater than the WTP threshold $k$,
+
+Treatments can be compared in an equivalent manner using the incremental cost-effectiveness ratio (ICER). The most common case occurs when a new treatment is more effective and more costly so that treatment $1$ is preferred to treatment $0$ if the ICER is greater than the willingness to pay threshold $k$,
 
 $$
 \begin{aligned}
 k > \frac{E_\theta[c_{1} - c_{0}]}{E_\theta[e_{1} - e_{0}]} = ICER.
 \end{aligned}
 $$
+There are three additional cases. Treatment $1$ is considered to *dominate* treatment *0* if it is more effective and less costly. Treatment $1$ is *dominated* by treatment $0$ if it is less effective and more costly. Finally, treatment $1$ is preferred to treatment $0$ if it is less effective and less costly when $k < ICER$. 
+
 In practice, the distribution of $\theta$ is simulated from the output of the PSA. Specifically, For each treatment strategy, a PSA produces $m$ random draws from the distribution of health outcomes and costs,
 
 $$
