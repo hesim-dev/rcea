@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Markov Cohort Model wth hesim</h1>
             
-            <h4 class="date">2020-09-21</h4>
+            <h4 class="date">2020-09-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/03-markov-cohort-hesim.Rmd"><code>vignettes/03-markov-cohort-hesim.Rmd</code></a></small>
       <div class="hidden name"><code>03-markov-cohort-hesim.Rmd</code></div>
@@ -135,7 +135,7 @@
   <span class="kw">patient_id</span> <span class="kw">=</span> <span class="fl">1</span>,
   <span class="kw">age</span> <span class="kw">=</span> <span class="fl">25</span>
 )
-<span class="no">hesim_dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/hesim_data.html">hesim_data</a></span>(
+<span class="no">hesim_dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/hesim_data.html">hesim_data</a></span>(
   <span class="kw">strategies</span> <span class="kw">=</span> <span class="no">strategies</span>,
   <span class="kw">patients</span> <span class="kw">=</span> <span class="no">patients</span>
 )
@@ -170,32 +170,32 @@
 <div id="random-number-generation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#random-number-generation" class="anchor"></a><span class="header-section-number">3.1</span> Random number generation</h2>
-<p>The random number generation process for the PSA is once again defined using <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng()</a></code>.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">rng_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng</a></span>({
+<p>The random number generation process for the PSA is once again defined using <code><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">define_rng()</a></code>.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">rng_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">define_rng</a></span>({
   <span class="no">lrr_se</span> <span class="kw">&lt;-</span> (<span class="no">lrr_upper</span> - <span class="no">lrr_lower</span>)/(<span class="fl">2</span> * <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">qnorm</a></span>(<span class="fl">.975</span>)) <span class="co"># Local object </span>
   <span class="co"># not returned</span>
   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>( <span class="co"># Parameters to return</span>
-    <span class="kw">p_soc</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">dirichlet_rng</a></span>(<span class="no">alpha_soc</span>),
-    <span class="kw">rr_new</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">lognormal_rng</a></span>(<span class="no">lrr_mean</span>, <span class="no">lrr_se</span>),
-    <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">gamma_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">c_medical</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">c_medical</span>),
+    <span class="kw">p_soc</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">dirichlet_rng</a></span>(<span class="no">alpha_soc</span>),
+    <span class="kw">rr_new</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">lognormal_rng</a></span>(<span class="no">lrr_mean</span>, <span class="no">lrr_se</span>),
+    <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">gamma_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">c_medical</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">c_medical</span>),
     <span class="kw">c_soc</span> <span class="kw">=</span> <span class="no">c_soc</span>,
     <span class="kw">c_new</span> <span class="kw">=</span> <span class="no">c_new</span>,
-    <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">beta_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">u_mean</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">u_se</span>)
+    <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">beta_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">u_mean</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">u_se</span>)
   )
 }, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">1000</span>)</pre></body></html></div>
 </div>
 <div id="transformed-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#transformed-parameters" class="anchor"></a><span class="header-section-number">3.2</span> Transformed parameters</h2>
-<p>Economic models in <code>hesim</code> consist of separate statistical models used to simulate disease progression, costs, and utility. Like any prediction model, each statistical model simulates outcomes as a function of input data and model parameters. In most statistical models, the underlying parameters (see <code><a href="https://rdrr.io/pkg/hesim/man/params.html">hesim::params</a></code>) are transformed (see <code><a href="https://rdrr.io/pkg/hesim/man/tparams.html">hesim::tparams</a></code>) into more relevant parameters for prediction (e.g., the coefficients and covariates from a Weibull regression are used to predict shape and scale parameters).</p>
-<p>There are multiple ways to “transform” parameters in <code>hesim</code>. In this example, we will use mathematical expressions via <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">hesim::define_tparams()</a></code> (designed for Markov cohort models), whereas the next tutorial on multi-state modeling will estimate parameters (see <code><a href="https://rdrr.io/pkg/hesim/man/params_surv.html">hesim::params_surv</a></code>) by fitting parametric survival models.</p>
-<p>Transformed parameters are modeled here as function of treatment strategies and patients, which can be generated using <code><a href="https://rdrr.io/pkg/hesim/man/expand.html">hesim::expand()</a></code>.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">input_data</span> <span class="kw">&lt;-</span> <span class="kw pkg">hesim</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/hesim/man/expand.html">expand</a></span>(<span class="no">hesim_dat</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"strategies"</span>, <span class="st">"patients"</span>))
+<p>Economic models in <code>hesim</code> consist of separate statistical models used to simulate disease progression, costs, and utility. Like any prediction model, each statistical model simulates outcomes as a function of input data and model parameters. In most statistical models, the underlying parameters (see <code><a href="https://hesim-dev.github.io/hesim/reference/params.html">hesim::params</a></code>) are transformed (see <code><a href="https://hesim-dev.github.io/hesim/reference/tparams.html">hesim::tparams</a></code>) into more relevant parameters for prediction (e.g., the coefficients and covariates from a Weibull regression are used to predict shape and scale parameters).</p>
+<p>There are multiple ways to “transform” parameters in <code>hesim</code>. In this example, we will use mathematical expressions via <code><a href="https://hesim-dev.github.io/hesim/reference/define_tparams.html">hesim::define_tparams()</a></code> (designed for Markov cohort models), whereas the next tutorial on multi-state modeling will estimate parameters (see <code><a href="https://hesim-dev.github.io/hesim/reference/params_surv.html">hesim::params_surv</a></code>) by fitting parametric survival models.</p>
+<p>Transformed parameters are modeled here as function of treatment strategies and patients, which can be generated using <code><a href="https://hesim-dev.github.io/hesim/reference/expand.html">hesim::expand()</a></code>.</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">input_data</span> <span class="kw">&lt;-</span> <span class="kw pkg">hesim</span><span class="kw ns">::</span><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/expand.html">expand</a></span>(<span class="no">hesim_dat</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"strategies"</span>, <span class="st">"patients"</span>))
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">input_data</span>)</pre></body></html></div>
 <pre><code>##    strategy_id patient_id strategy_name age
 ## 1:           1          1           SOC  25
 ## 2:           2          1           New  25</code></pre>
-<p>Operations in a <code><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">define_tparams()</a></code> block are performed using the columns from the input data. To maximize computational efficiency, all operations are vectorized across the rows in the data and PSA samples. Parameters not included in a transformed parameter function are assumed constant across patients and treatment strategies. A list must be returned with the following possible elements:</p>
+<p>Operations in a <code><a href="https://hesim-dev.github.io/hesim/reference/define_tparams.html">define_tparams()</a></code> block are performed using the columns from the input data. To maximize computational efficiency, all operations are vectorized across the rows in the data and PSA samples. Parameters not included in a transformed parameter function are assumed constant across patients and treatment strategies. A list must be returned with the following possible elements:</p>
 <ul>
 <li>
 <strong>tpmatrix</strong>: The transition probability matrix used to simulate transition probabilities in the economic model.</li>
@@ -204,13 +204,13 @@
 <li>
 <strong>costs</strong>: A named list of costs for each category used to simulate costs in the economic model. Each element of the list must be in the same format as utility.</li>
 </ul>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">tparams_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_tparams.html">define_tparams</a></span>({
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">tparams_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/define_tparams.html">define_tparams</a></span>({
   <span class="co">## The treatment effect (relative risk) is transformed so that it varies by </span>
   <span class="co">## strategies (SOC is the reference strategy)</span>
   <span class="no">rr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="no">strategy_name</span> <span class="kw">==</span> <span class="st">"SOC"</span>, <span class="fl">1</span>, <span class="no">rr_new</span>)
 
   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-    <span class="kw">tpmatrix</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/tpmatrix.html">tpmatrix</a></span>(
+    <span class="kw">tpmatrix</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/tpmatrix.html">tpmatrix</a></span>(
       <span class="no">C</span>,          <span class="no">p_soc</span>$<span class="no">h_s1</span> * <span class="no">rr</span>, <span class="no">p_soc</span>$<span class="no">h_s2</span> * <span class="no">rr</span>,  <span class="no">p_soc</span>$<span class="no">h_d</span> * <span class="no">rr</span>,
       <span class="no">p_soc</span>$<span class="no">s1_h</span>, <span class="no">C</span>,               <span class="no">p_soc</span>$<span class="no">s1_s2</span> * <span class="no">rr</span>, <span class="no">p_soc</span>$<span class="no">s1_d</span> * <span class="no">rr</span>,
       <span class="no">p_soc</span>$<span class="no">s2_h</span>, <span class="no">p_soc</span>$<span class="no">s2_s1</span>,     <span class="no">C</span>,                <span class="no">p_soc</span>$<span class="no">s2_d</span> * <span class="no">rr</span>,
@@ -231,12 +231,12 @@
 <div id="construct-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#construct-the-model" class="anchor"></a><span class="header-section-number">4.1</span> Construct the model</h2>
-<p>The economic model is defined by using <code><a href="https://rdrr.io/pkg/hesim/man/define_model.html">define_model()</a></code> to combine the underlying parameters with the expressions for random number generation and parameter transformation.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">mod_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_model.html">define_model</a></span>(<span class="kw">tparams_def</span> <span class="kw">=</span> <span class="no">tparams_def</span>,
+<p>The economic model is defined by using <code><a href="https://hesim-dev.github.io/hesim/reference/define_model.html">define_model()</a></code> to combine the underlying parameters with the expressions for random number generation and parameter transformation.</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">mod_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/define_model.html">define_model</a></span>(<span class="kw">tparams_def</span> <span class="kw">=</span> <span class="no">tparams_def</span>,
                         <span class="kw">rng_def</span> <span class="kw">=</span> <span class="no">rng_def</span>,
                         <span class="kw">params</span> <span class="kw">=</span> <span class="no">params</span>)</pre></body></html></div>
-<p>An economic model (of class <code>CohortDtstm</code>) can then be created from the defined model and input data using the generic function <code><a href="https://rdrr.io/pkg/hesim/man/create_CohortDtstm.html">create_CohortDtstm()</a></code>. The economic model is an <code>R6</code> object consisting of a transition model for simulating transition probabilities with <code>sim_stateprobs()</code>, a utility model for simulating QALYs with <code><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys()</a></code>, and a set of cost models (for each cost category) for simulating costs with <code><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs()</a></code>.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">econmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/create_CohortDtstm.html">create_CohortDtstm</a></span>(<span class="no">mod_def</span>, <span class="no">input_data</span>)</pre></body></html></div>
+<p>An economic model (of class <code>CohortDtstm</code>) can then be created from the defined model and input data using the generic function <code><a href="https://hesim-dev.github.io/hesim/reference/create_CohortDtstm.html">create_CohortDtstm()</a></code>. The economic model is an <code>R6</code> object consisting of a transition model for simulating transition probabilities with <code>sim_stateprobs()</code>, a utility model for simulating QALYs with <code><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys()</a></code>, and a set of cost models (for each cost category) for simulating costs with <code><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs()</a></code>.</p>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">econmod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/create_CohortDtstm.html">create_CohortDtstm</a></span>(<span class="no">mod_def</span>, <span class="no">input_data</span>)</pre></body></html></div>
 </div>
 <div id="simulating-outcomes" class="section level2">
 <h2 class="hasAnchor">
@@ -249,52 +249,52 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">stateprobs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id t      prob
 ## 1:      1           1          1      1        1 0 1.0000000
-## 2:      1           1          1      1        1 1 0.8482772
-## 3:      1           1          1      1        1 2 0.7895736
-## 4:      1           1          1      1        1 3 0.7588382
-## 5:      1           1          1      1        1 4 0.7367394
-## 6:      1           1          1      1        1 5 0.7175269</code></pre>
+## 2:      1           1          1      1        1 1 0.8476865
+## 3:      1           1          1      1        1 2 0.7922210
+## 4:      1           1          1      1        1 3 0.7629948
+## 5:      1           1          1      1        1 4 0.7411427
+## 6:      1           1          1      1        1 5 0.7216176</code></pre>
 </div>
 <div id="costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
 <a href="#costs-and-qalys" class="anchor"></a><span class="header-section-number">4.2.2</span> Costs and QALYs</h3>
 <p>Costs and QALYs are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum. We use the option <code>lys = TRUE</code> so that life-years are simulated in addition to QALYs.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr     qalys       lys
-## 1:      1           1          1      1        1 0.03 15.297182 15.297182
-## 2:      1           1          1      1        2 0.03  2.596880  3.730105
-## 3:      1           1          1      1        3 0.03  3.019711  6.572524
-## 4:      1           2          1      1        1 0.03 18.145988 18.145988
-## 5:      1           2          1      1        2 0.03  2.522591  3.623397
-## 6:      1           2          1      1        3 0.03  2.462280  5.359252</code></pre>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://rdrr.io/pkg/hesim/man/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
+## 1:      1           1          1      1        1 0.03 15.231545 15.231545
+## 2:      1           1          1      1        2 0.03  2.577873  3.606229
+## 3:      1           1          1      1        3 0.03  3.733350  7.517580
+## 4:      1           2          1      1        1 0.03 19.425161 19.425161
+## 5:      1           2          1      1        2 0.03  2.468044  3.452587
+## 6:      1           2          1      1        3 0.03  2.749344  5.536157</code></pre>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr  category      costs
-## 1:      1           1          1      1        1 0.03 treatment  30594.365
-## 2:      1           1          1      1        2 0.03 treatment   7460.209
-## 3:      1           1          1      1        3 0.03 treatment  13145.048
-## 4:      1           2          1      1        1 0.03 treatment 217751.858
-## 5:      1           2          1      1        2 0.03 treatment  43480.769
-## 6:      1           2          1      1        3 0.03 treatment  64311.026</code></pre>
+## 1:      1           1          1      1        1 0.03 treatment  30463.090
+## 2:      1           1          1      1        2 0.03 treatment   7212.458
+## 3:      1           1          1      1        3 0.03 treatment  15035.159
+## 4:      1           2          1      1        1 0.03 treatment 233101.933
+## 5:      1           2          1      1        2 0.03 treatment  41431.045
+## 6:      1           2          1      1        3 0.03 treatment  66433.880</code></pre>
 </div>
 </div>
 </div>
 <div id="cost-effectiveness-analysis" class="section level1">
 <h1 class="hasAnchor">
 <a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">5</span> Cost-effectiveness analysis</h1>
-<p>Cost-effectiveness analyses (CEAs) can be performed directly from the simulation output with <code>hesim</code>. Other R packages such as <a href="https://sites.google.com/a/statistica.it/gianluca/bcea">BCEA</a> could also be considered. Here, we will consider a pairwise comparison between the new treatment and SOC with the <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">hesim::cea_pw()</a></code> function.</p>
+<p>Cost-effectiveness analyses (CEAs) can be performed directly from the simulation output with <code>hesim</code>. Other R packages such as <a href="https://sites.google.com/a/statistica.it/gianluca/bcea">BCEA</a> could also be considered. Here, we will consider a pairwise comparison between the new treatment and SOC with the <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea_pw()</a></code> function.</p>
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="no">econmod</span>$<span class="fu">summarize</span>()
-<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>,
+<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>,
                      <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
                      <span class="kw">k</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">25000</span>, <span class="fl">500</span>))</pre></body></html></div>
-<p>Although <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea_pw()</a></code> allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the <a href="06-cea.html">CEA tutorial</a>.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/hesim/man/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
+<p>Although <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the <a href="06-cea.html">CEA tutorial</a>.</p>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.04 (0.95, 3.05)"           
-## Incremental costs "-" "268,133 (214,197, 299,721)"  
-## Incremental NMB   "-" "-166,175 (-226,175, -89,337)"
-## ICER              "-" "131,492"                     
+## Incremental QALYs "-" "2.01 (1.03, 2.97)"           
+## Incremental costs "-" "266,641 (211,837, 296,961)"  
+## Incremental NMB   "-" "-165,985 (-220,751, -83,692)"
+## ICER              "-" "132,452"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>

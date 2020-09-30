@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-09-27</h4>
+            <h4 class="date">2020-09-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -147,8 +147,8 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <div id="application" class="section level1">
 <h1 class="hasAnchor">
 <a href="#application" class="anchor"></a><span class="header-section-number">3</span> Application</h1>
-<p>CEA can be performed using the <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">hesim::cea()</a></code> and <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">hesim::cea_pw()</a></code> functions. <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea()</a></code> summarizes results by taking into account each treatment strategy in the analysis, while <code>cea_pw</code> summarizes “pairwise” results in which each treatment is compared to a comparator.</p>
-<p>We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a <code><a href="https://rdrr.io/pkg/hesim/man/ce.html">hesim::ce</a></code> object).</p>
+<p>CEA can be performed using the <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea()</a></code> and <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea_pw()</a></code> functions. <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea()</a></code> summarizes results by taking into account each treatment strategy in the analysis, while <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> summarizes “pairwise” results in which each treatment is compared to a comparator.</p>
+<p>We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a <code><a href="https://hesim-dev.github.io/hesim/reference/ce.html">hesim::ce</a></code> object).</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"ce_sim.rds"</span>) <span class="co"># Load cost-effectiveness object</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">ce_sim</span>)</pre></body></html></div>
 <pre><code>## $costs
@@ -179,10 +179,10 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 ## 1999: 0.03    500           1  8.063408      1
 ## 2000: 0.03    500           2 12.152292      1</code></pre>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">wtp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">250000</span>, <span class="fl">500</span>) <span class="co"># Willingness to pay per QALY</span>
-<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="co"># Comparator is SOC (ID = 1)</span>
+<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="co"># Comparator is SOC (ID = 1)</span>
                      <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
                      <span class="no">wtp</span>)
-<span class="no">cea_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea</a></span>(<span class="no">ce_sim</span>,
+<span class="no">cea_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea</a></span>(<span class="no">ce_sim</span>,
                <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
                <span class="kw">k</span> <span class="kw">=</span> <span class="no">wtp</span>)</pre></body></html></div>
 <p>Each function returns a number of outputs for summarizing a PSA.</p>
@@ -190,7 +190,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <h2 class="hasAnchor">
 <a href="#cost-effectiveness-plane" class="anchor"></a><span class="header-section-number">3.1</span> Cost-effectiveness plane</h2>
 <p>The cost-effectiveness plane plots the incremental effectiveness of a treatment strategy (relative to a comparator) against the incremental cost of the treatment strategy. The plot is useful because it demonstrates both the uncertainty and the magnitude of the estimates. Each point on the plot is from a particular random draw from the PSA.</p>
-<p>Data for plotting a cost-effectiveness plane comes from the <code>delta</code> output generated from the <code>cea_pw</code> function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator.</p>
+<p>Data for plotting a cost-effectiveness plane comes from the <code>delta</code> output generated from the <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator.</p>
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id grp_id       ie       ic
 ## 1:      1           2      1 3.900703 173752.1
@@ -285,7 +285,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 EVPI_g &amp;= E_\theta \left[max_j NMB_g(j, \theta)\right] - max_j E_\theta \left [ NMB_g(j, \theta)\right]. \\
 \end{aligned}
 \]</span></p>
-<p>The <code><a href="https://rdrr.io/pkg/hesim/man/cea.html">cea()</a></code> function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values <span class="math inline">\(k\)</span>. A plot by group of the the EVPI for different values of <span class="math inline">\(k\)</span> is shown below. The kink in the plot represents the value of <span class="math inline">\(k\)</span> where the optimal strategy changes.</p>
+<p>The <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea()</a></code> function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values <span class="math inline">\(k\)</span>. A plot by group of the the EVPI for different values of <span class="math inline">\(k\)</span> is shown below. The kink in the plot represents the value of <span class="math inline">\(k\)</span> where the optimal strategy changes.</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">evpi</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">evpi</span>)) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>()  +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +

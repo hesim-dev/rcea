@@ -70,7 +70,7 @@ c_{j} &= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 $$
 
 # Application
-CEA can be performed using the `hesim::cea()` and `hesim::cea_pw()` functions. `cea()` summarizes results by taking into account each treatment strategy in the analysis, while `cea_pw` summarizes "pairwise" results in which each treatment is compared to a comparator. 
+CEA can be performed using the `hesim::cea()` and `hesim::cea_pw()` functions. `cea()` summarizes results by taking into account each treatment strategy in the analysis, while `cea_pw()` summarizes "pairwise" results in which each treatment is compared to a comparator. 
 
 We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a `hesim::ce` object). 
 
@@ -82,7 +82,7 @@ Each function returns a number of outputs for summarizing a PSA.
 ## Cost-effectiveness plane
 The cost-effectiveness plane plots the incremental effectiveness of a treatment strategy (relative to a comparator) against the incremental cost of the treatment strategy. The plot is useful because it demonstrates both the uncertainty and the magnitude of the estimates. Each point on the plot is from a particular random draw from the PSA.  
 
-Data for plotting a cost-effectiveness plane comes from the `delta` output generated from the `cea_pw` function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator. 
+Data for plotting a cost-effectiveness plane comes from the `delta` output generated from the `cea_pw()` function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator. 
 
 ```{r}
 head(cea_pw_out$delta)

@@ -91,7 +91,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-09-15</h4>
+            <h4 class="date">2020-09-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
@@ -176,38 +176,38 @@
 <div id="sampling-the-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#sampling-the-parameters" class="anchor"></a><span class="header-section-number">3.1</span> Sampling the parameters</h2>
-<p>While Base R can certainly be used to draw samples of the parameters, the functions <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">hesim::define_rng()</a></code> and <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">hesim::eval_rng()</a></code> simplify this process and make the code more readable. Any random number generation function can be used inside the <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng()</a></code> block; the only rule is that returned parameter draws must be returned as a list. However, <code>hesim</code> comes with a number of helpful probability distribution functions (type <code><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">?rng_distributions</a></code> for details) to make your life easier.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">rng_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">define_rng</a></span>({
+<p>While Base R can certainly be used to draw samples of the parameters, the functions <code><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">hesim::define_rng()</a></code> and <code><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">hesim::eval_rng()</a></code> simplify this process and make the code more readable. Any random number generation function can be used inside the <code><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">define_rng()</a></code> block; the only rule is that returned parameter draws must be returned as a list. However, <code>hesim</code> comes with a number of helpful probability distribution functions (type <code><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">?rng_distributions</a></code> for details) to make your life easier.</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">rng_def</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">define_rng</a></span>({
   <span class="no">lrr_se</span> <span class="kw">&lt;-</span> (<span class="no">lrr_upper</span> - <span class="no">lrr_lower</span>)/(<span class="fl">2</span> * <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">qnorm</a></span>(<span class="fl">.975</span>)) <span class="co"># Local object </span>
   <span class="co"># not returned</span>
   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>( <span class="co"># Parameters to return</span>
-    <span class="kw">p_soc</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">dirichlet_rng</a></span>(<span class="no">alpha_soc</span>),
-    <span class="kw">rr_new</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">lognormal_rng</a></span>(<span class="no">lrr_mean</span>, <span class="no">lrr_se</span>),
-    <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">gamma_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">c_medical</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">c_medical</span>),
+    <span class="kw">p_soc</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">dirichlet_rng</a></span>(<span class="no">alpha_soc</span>),
+    <span class="kw">rr_new</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">lognormal_rng</a></span>(<span class="no">lrr_mean</span>, <span class="no">lrr_se</span>),
+    <span class="kw">c_medical</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">gamma_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">c_medical</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">c_medical</span>),
     <span class="kw">c_soc</span> <span class="kw">=</span> <span class="no">c_soc</span>,
     <span class="kw">c_new</span> <span class="kw">=</span> <span class="no">c_new</span>,
-    <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/rng_distributions.html">beta_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">u_mean</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">u_se</span>)
+    <span class="kw">u</span> <span class="kw">=</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/rng_distributions.html">beta_rng</a></span>(<span class="kw">mean</span> <span class="kw">=</span> <span class="no">u_mean</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="no">u_se</span>)
   )
 }, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">1000</span>)
-<span class="no">params_rng</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">eval_rng</a></span>(<span class="no">rng_def</span>, <span class="kw">params</span> <span class="kw">=</span> <span class="no">params</span>)
+<span class="no">params_rng</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">eval_rng</a></span>(<span class="no">rng_def</span>, <span class="kw">params</span> <span class="kw">=</span> <span class="no">params</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span>(<span class="no">params_rng</span>, <span class="st">"n"</span>) <span class="kw">&lt;-</span> <span class="no">rng_def</span>$<span class="no">n</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">params_rng</span>)</pre></body></html></div>
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">params_rng</span>$<span class="no">p_soc</span>))</pre></body></html></div>
-<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8517429 0.1458023    0 0.0024548052 0.5289879 0.3589051 0.10816455
-## [2,] 0.8534226 0.1444667    0 0.0021106284 0.4797398 0.4090167 0.10564675
-## [3,] 0.8708774 0.1281462    0 0.0009763155 0.4885361 0.3903069 0.11746792
-## [4,] 0.8348559 0.1642505    0 0.0008935939 0.5245972 0.3817647 0.09190492
-## [5,] 0.8355291 0.1615047    0 0.0029661681 0.5161982 0.3656527 0.11363447
-## [6,] 0.8378181 0.1608309    0 0.0013510338 0.4904432 0.4147166 0.09129868
+<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1     s1_s2
+## [1,] 0.8639069 0.1352193    0 0.0008737813 0.4989147 0.3935093 0.1031289
+## [2,] 0.8515616 0.1472416    0 0.0011967705 0.5015650 0.3879270 0.1044894
+## [3,] 0.8273019 0.1707147    0 0.0019834189 0.5143876 0.3721340 0.1078137
+## [4,] 0.8648488 0.1346724    0 0.0004788214 0.4874452 0.3952244 0.1114490
+## [5,] 0.8426666 0.1568533    0 0.0004801779 0.5071407 0.3894223 0.1016745
+## [6,] 0.8430490 0.1558120    0 0.0011389287 0.5041320 0.3850182 0.1069290
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.003942426    0     0 0.9591376 0.04086240   0    0    0   1
-## [2,] 0.005596729    0     0 0.9868112 0.01318880   0    0    0   1
-## [3,] 0.003689127    0     0 0.9752593 0.02474066   0    0    0   1
-## [4,] 0.001733126    0     0 0.9764047 0.02359529   0    0    0   1
-## [5,] 0.004514645    0     0 0.9744839 0.02551614   0    0    0   1
-## [6,] 0.003541504    0     0 0.9820476 0.01795240   0    0    0   1</code></pre>
+## [1,] 0.004447143    0     0 0.9759721 0.02402795   0    0    0   1
+## [2,] 0.006018598    0     0 0.9748328 0.02516720   0    0    0   1
+## [3,] 0.005664732    0     0 0.9837037 0.01629631   0    0    0   1
+## [4,] 0.005881390    0     0 0.9820535 0.01794651   0    0    0   1
+## [5,] 0.001762454    0     0 0.9846278 0.01537224   0    0    0   1
+## [6,] 0.003920775    0     0 0.9754011 0.02459889   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
@@ -240,10 +240,10 @@
 <li>
 <code>n_cycles</code>: The number of cycles to simulate the model for.</li>
 </ul>
-<p>To make the code more readable, we will use the function <code><a href="https://rdrr.io/pkg/hesim/man/tpmatrix.html">hesim::tpmatrix()</a></code> which makes it easy to define a transition probability matrix. The symbol <code>C</code> denotes that a given element is the complement of all other elements in that row, ensuring that the probabilities sum to 1.</p>
+<p>To make the code more readable, we will use the function <code><a href="https://hesim-dev.github.io/hesim/reference/tpmatrix.html">hesim::tpmatrix()</a></code> which makes it easy to define a transition probability matrix. The symbol <code>C</code> denotes that a given element is the complement of all other elements in that row, ensuring that the probabilities sum to 1.</p>
 <div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sim_stateprobs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">p0</span>, <span class="no">rr</span>, <span class="no">strategy</span>, <span class="no">n_cycles</span>){
   <span class="no">rr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fifelse.html">ifelse</a></span>(<span class="no">strategy</span> <span class="kw">==</span> <span class="st">"New"</span>, <span class="no">rr</span>, <span class="fl">1</span>)
-  <span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/hesim/man/tpmatrix.html">tpmatrix</a></span>(
+  <span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/tpmatrix.html">tpmatrix</a></span>(
     <span class="no">C</span>,       <span class="no">p0</span>$<span class="no">h_s1</span> * <span class="no">rr</span>,  <span class="no">p0</span>$<span class="no">h_s2</span> * <span class="no">rr</span>,  <span class="no">p0</span>$<span class="no">h_d</span> * <span class="no">rr</span>,
     <span class="no">p0</span>$<span class="no">s1_h</span>, <span class="no">C</span>,             <span class="no">p0</span>$<span class="no">s1_s2</span> * <span class="no">rr</span>, <span class="no">p0</span>$<span class="no">s1_d</span> * <span class="no">rr</span>,
     <span class="no">p0</span>$<span class="no">s2_h</span>, <span class="no">p0</span>$<span class="no">s2_s1</span>,      <span class="no">C</span>,             <span class="no">p0</span>$<span class="no">s2_d</span> * <span class="no">rr</span>,
@@ -273,7 +273,7 @@
 <p>Now that we have created the building blocks for the simulation, we can create our main function to simulate the entire model. 3% discount rates are set by default for costs and QALYs. Most of the function arguments should be self explanatory, but two are worth explaining:</p>
 <ul>
 <li>
-<code>params_rng</code>: The output of <code><a href="https://rdrr.io/pkg/hesim/man/define_rng.html">eval_rng()</a></code> above.</li>
+<code>params_rng</code>: The output of <code><a href="https://hesim-dev.github.io/hesim/reference/define_rng.html">eval_rng()</a></code> above.</li>
 <li>
 <code>data</code>: The data object defined above</li>
 </ul>
