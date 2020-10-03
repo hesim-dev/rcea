@@ -155,8 +155,9 @@ head(sim_out)
 
 ## ---- Cost-effectiveness analysis --------------------------------------------
 ## @knitr ce_output
-ce_out <- sim_out[, .(dqalys = sum(dqalys),
-                      dcosts = sum(dcosts_med) + sum(dcosts_treat)), 
+ce_out <- sim_out[cycle != 0, 
+                  .(dqalys = sum(dqalys),
+                    dcosts = sum(dcosts_med) + sum(dcosts_treat)), 
                   by = c("sample", "strategy")]
 ce_out
 

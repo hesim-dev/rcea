@@ -145,7 +145,7 @@ PV_t = \frac{EV_t}{(1+r)^t}
 <p><span class="math display">\[
 NPV = \sum_{t} PV_t
 \]</span></p>
-<p>It is important to note that in mathematical terms this a discrete approximation to a continuous integral, also known as a Riemann sum. That is, we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we assume that events occur at the start of model cycles (i.e., a left Riemann sum), then expected values will be underestimated; conversely, if we assume that they occur at the end of model cycles (i.e., a right Riemann sum), then they will be overestimated. Another option is to use average of values at the left and right endpoints (i.e., the trapezoid rule). We will assume events occur at the start of model cycles.</p>
+<p>It is important to note that in mathematical terms this a discrete approximation to a continuous integral, also known as a Riemann sum. That is, we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we approximate the integral using values at the start of the interval (i.e., transitions occur at the end of the interval), then it is known as a left Riemann sum; conversely, if we use values at the end of the interval (i.e., transitions happen immediately), then it is known as a right Riemann sum. Life-years are overestimated when using a left Riemann sum and underestimated when using a right Riemann sum. A preferable option is to use an average of values at the left and right endpoints (i.e., the trapezoid rule). That said, we will assume events occur at the start of model cycles for simplicity.</p>
 </div>
 </div>
 <div id="model-parameters" class="section level1">
@@ -239,18 +239,17 @@ NPV = \sum_{t} PV_t
 ## [1,] 0.794104 0.18645 0.01575 0.004596</code></pre>
 <p>A for loop can be used to compute the state vector at each model cycle. We created a function in the <code>rcea</code> package to do this so that we can reuse it. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span></pre></body></html></div>
-<pre><code>## function (x0, p, n_cycles = 85) 
-## {
-##     x &lt;- matrix(NA, ncol = length(x0), nrow = n_cycles)
-##     x &lt;- rbind(x0, x)
-##     colnames(x) &lt;- colnames(p)
-##     rownames(x) &lt;- 0:n_cycles
-##     for (t in 1:n_cycles) {
-##         x[t + 1, ] &lt;- x[t, ] %*% p
-##     }
-##     return(x)
+<pre><code>## function(x0, p, n_cycles = 85){
+##   x &lt;- matrix(NA, ncol = length(x0), nrow = n_cycles) # Initialize Markov trace
+##   x &lt;- rbind(x0, x) # Markov trace at cycle 0 is initial state vector
+##   colnames(x) &lt;- colnames(p) # Columns are the health states
+##   rownames(x) &lt;- 0:n_cycles # Rows are the model cycles
+##   for (t in 1:n_cycles){ # Simulating state vectors at each cycle with for loop
+##     x[t + 1, ] &lt;- x[t, ] %*% p
+##   }
+##   return(x)
 ## }
-## &lt;bytecode: 0x7ff3ffff2df0&gt;
+## &lt;bytecode: 0x7fbb353aaf78&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -278,11 +277,10 @@ NPV = \sum_{t} PV_t
 <a href="#expected-costs-and-quality-adjusted-life-years" class="anchor"></a><span class="header-section-number">4.2</span> Expected costs and quality-adjusted life-years</h2>
 <p>To compute discounted costs and QALYS, it is helpful to write a general function for computing a present value.</p>
 <div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/pv.html">pv</a></span></pre></body></html></div>
-<pre><code>## function (z, dr, t) 
-## {
-##     z/(1 + dr)^t
+<pre><code>## function(z, dr, t) {
+##   z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7ff402b81550&gt;
+## &lt;bytecode: 0x7fbb34d7c0b8&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -369,9 +367,10 @@ NPV = \sum_{t} PV_t
 <div id="cost-effectiveness-analysis" class="section level1">
 <h1 class="hasAnchor">
 <a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">5</span> Cost-effectiveness analysis</h1>
-<p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles.</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r">(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>))/(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>))</pre></body></html></div>
-<pre><code>## [1] 117822</code></pre>
+<p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles. Note that since we are assuming that transitions happen immediately, we exclude costs and QALYs measured at the start of the first model cycle.</p>
+<div class="sourceCode" id="cb35"><html><body><pre class="r">(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>[-<span class="fl">1</span>, ])) /
+(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>[-<span class="fl">1</span>, ]))</pre></body></html></div>
+<pre><code>## [1] 113590.9</code></pre>
 <p>For the sake of presentation, we might want to do a some extra work and create a nice looking table.</p>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">format_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>)
 <span class="no">format_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"f"</span>, <span class="kw">digits</span> <span class="kw">=</span> <span class="fl">2</span>)
@@ -387,6 +386,7 @@ NPV = \sum_{t} PV_t
 
   <span class="co"># Make table</span>
   <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span>(
+    <span class="kw">`Strategy`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>),
     <span class="kw">`Costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_costs0</span>, <span class="no">total_costs1</span>) <span class="kw">%&gt;%</span>
       <span class="fu">format_costs</span>(),
     <span class="kw">`QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_qalys0</span>, <span class="no">total_qalys1</span>) <span class="kw">%&gt;%</span>
@@ -402,10 +402,13 @@ NPV = \sum_{t} PV_t
     <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/footnote.html">footnote</a></span>(<span class="kw">general</span> <span class="kw">=</span> <span class="st">"Costs and QALYs are discounted at 3% per annum."</span>,
              <span class="kw">footnote_as_chunk</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 }
-<span class="fu">make_icer_tbl</span>(<span class="kw">costs0</span> <span class="kw">=</span> <span class="no">dcosts_soc</span>, <span class="kw">costs1</span> <span class="kw">=</span> <span class="no">dcosts_new</span>,
-              <span class="kw">qalys0</span> <span class="kw">=</span> <span class="no">dqalys_soc</span>, <span class="kw">qalys1</span> <span class="kw">=</span> <span class="no">dqalys_new</span>)</pre></body></html></div>
+<span class="fu">make_icer_tbl</span>(<span class="kw">costs0</span> <span class="kw">=</span> <span class="no">dcosts_soc</span>[-<span class="fl">1</span>, ], <span class="kw">costs1</span> <span class="kw">=</span> <span class="no">dcosts_new</span>[-<span class="fl">1</span>, ],
+              <span class="kw">qalys0</span> <span class="kw">=</span> <span class="no">dqalys_soc</span>[-<span class="fl">1</span>, ], <span class="kw">qalys1</span> <span class="kw">=</span> <span class="no">dqalys_new</span>[-<span class="fl">1</span>, ])</pre></body></html></div>
 <table class="table table">
 <thead><tr>
+<th style="text-align:left;">
+Strategy
+</th>
 <th style="text-align:left;">
 Costs
 </th>
@@ -425,10 +428,13 @@ ICER
 <tbody>
 <tr>
 <td style="text-align:left;">
-212,706
+SOC
 </td>
 <td style="text-align:left;">
-22.49
+208,706
+</td>
+<td style="text-align:left;">
+21.49
 </td>
 <td style="text-align:left;">
 –
@@ -442,19 +448,22 @@ ICER
 </tr>
 <tr>
 <td style="text-align:left;">
-491,167
+New
 </td>
 <td style="text-align:left;">
-24.86
+477,167
 </td>
 <td style="text-align:left;">
-278,460
+23.86
+</td>
+<td style="text-align:left;">
+268,460
 </td>
 <td style="text-align:left;">
 2.36
 </td>
 <td style="text-align:left;">
-117,822
+113,590
 </td>
 </tr>
 </tbody>

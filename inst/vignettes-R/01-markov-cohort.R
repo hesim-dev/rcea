@@ -101,7 +101,8 @@ head(dcosts_new)
 
 ## ---- Cost-effectiveness analysis --------------------------------------------
 ## @knitr icer
-(sum(dcosts_new) - sum(dcosts_soc))/(sum(dqalys_new) - sum(dqalys_soc))
+(sum(dcosts_new[-1, ]) - sum(dcosts_soc[-1, ])) /
+(sum(dqalys_new[-1, ]) - sum(dqalys_soc[-1, ]))
 
 ## @knitr icer_tbl
 format_costs <- function(x) formatC(x, format = "d", big.mark = ",")
@@ -118,6 +119,7 @@ make_icer_tbl <- function(costs0, costs1, qalys0, qalys1){
   
   # Make table
   tibble(
+    `Strategy` = c("SOC", "New"),
     `Costs` = c(total_costs0, total_costs1) %>%
       format_costs(), 
     `QALYs` = c(total_qalys0, total_qalys1) %>%
@@ -133,7 +135,7 @@ make_icer_tbl <- function(costs0, costs1, qalys0, qalys1){
     footnote(general = "Costs and QALYs are discounted at 3% per annum.",
              footnote_as_chunk = TRUE)
 }
-make_icer_tbl(costs0 = dcosts_soc, costs1 = dcosts_new,
-              qalys0 = dqalys_soc, qalys1 = dqalys_new)
+make_icer_tbl(costs0 = dcosts_soc[-1, ], costs1 = dcosts_new[-1, ],
+              qalys0 = dqalys_soc[-1, ], qalys1 = dqalys_new[-1, ])
 
 ## ---- Exercises --------------------------------------------------------------

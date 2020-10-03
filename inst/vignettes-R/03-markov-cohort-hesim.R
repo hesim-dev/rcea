@@ -97,11 +97,11 @@ econmod$sim_stateprobs(n_cycles = 85)
 head(econmod$stateprobs_)
 
 ## @knitr sim_qalys
-econmod$sim_qalys(dr = 0.03, lys = TRUE, integrate_method = "riemann_left")
+econmod$sim_qalys(dr = 0.03, lys = TRUE, integrate_method = "riemann_right")
 head(econmod$qalys_)
 
 ## @knitr sim_costs
-econmod$sim_costs(dr = 0.03, integrate_method = "riemann_left")
+econmod$sim_costs(dr = 0.03, integrate_method = "riemann_right")
 head(econmod$costs_)
 
 ## ---- Cost-effectiveness analysis --------------------------------------------

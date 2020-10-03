@@ -62,7 +62,7 @@ $$
 NPV = \sum_{t} PV_t
 $$
 
-It is important to note that in mathematical terms this a discrete approximation to a continuous integral, also known as a Riemann sum. That is, we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we assume that events occur at the start of model cycles (i.e., a left Riemann sum), then expected values will be underestimated; conversely, if we assume that they occur at the end of model cycles (i.e., a right Riemann sum), then they will be overestimated. Another option is to use average of values at the left and right endpoints (i.e., the trapezoid rule). We will assume events occur at the start of model cycles.
+It is important to note that in mathematical terms this a discrete approximation to a continuous integral, also known as a Riemann sum. That is, we only know that an expected value lies within a time interval (e.g., in model cycle 1, between year 0 and 1; in model cycle 2, between year 1 and 2; and so on). If we approximate the integral using values at the start of the interval (i.e., transitions occur at the end of the interval), then it is known as a left Riemann sum; conversely, if we use values at the end of the interval (i.e., transitions happen immediately), then it is known as a right Riemann sum. Life-years are overestimated when using a left Riemann sum and underestimated when using a right Riemann sum. A preferable option is to use an average of values at the left and right endpoints (i.e., the trapezoid rule). That said, we will assume events occur at the start of model cycles for simplicity.
 
 # Model parameters
 ## Transition probabilities
@@ -144,7 +144,7 @@ invisible(sum(x_soc[2, ] * utility)) # Expected utility after 1st cycle
 sum(pv(x_soc[2, ] * utility, .03, 1)) # Expected discounted utility after 1st cycle
 ```
 
-Now let's compute expected (discounted) QALYs for each cycle.
+Now let's compute expected (discounted) QALYs for each cycle.  
 
 ```{r, compute_qalys}
 ```
@@ -156,7 +156,7 @@ We can do the same for costs. The first column is medical costs and the second c
 ```
 
 # Cost-effectiveness analysis
-We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles.
+We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles. Note that since we are assuming that transitions happen immediately, we exclude costs and QALYs measured at the start of the first model cycle.
 
 ```{r, icer}
 ```

@@ -255,34 +255,34 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">stateprobs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id t      prob
 ## 1:      1           1          1      1        1 0 1.0000000
-## 2:      1           1          1      1        1 1 0.8312929
-## 3:      1           1          1      1        1 2 0.7743049
-## 4:      1           1          1      1        1 3 0.7466688
-## 5:      1           1          1      1        1 4 0.7269594
-## 6:      1           1          1      1        1 5 0.7095988</code></pre>
+## 2:      1           1          1      1        1 1 0.8604413
+## 3:      1           1          1      1        1 2 0.8133456
+## 4:      1           1          1      1        1 3 0.7896680
+## 5:      1           1          1      1        1 4 0.7720965
+## 6:      1           1          1      1        1 5 0.7562868</code></pre>
 </div>
 <div id="costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
 <a href="#costs-and-qalys" class="anchor"></a><span class="header-section-number">4.2.2</span> Costs and QALYs</h3>
 <p>Costs and QALYs are computed by integrating the previously simulated state probabilities. To maintain consistency with our prior analyses, we measure costs and QALYs at the start of each model cycle using a left Riemann sum. We use the option <code>lys = TRUE</code> so that life-years are simulated in addition to QALYs.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_right"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr     qalys       lys
-## 1:      1           1          1      1        1 0.03 15.474336 15.474336
-## 2:      1           1          1      1        2 0.03  2.937711  4.125776
-## 3:      1           1          1      1        3 0.03  3.726867  7.552990
-## 4:      1           2          1      1        1 0.03 19.282719 19.282719
-## 5:      1           2          1      1        2 0.03  2.783832  3.909667
-## 6:      1           2          1      1        3 0.03  2.746497  5.566141</code></pre>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
+## 1:      1           1          1      1        1 0.03 16.104130 16.104130
+## 2:      1           1          1      1        2 0.03  2.533607  3.569368
+## 3:      1           1          1      1        3 0.03  3.272406  6.528798
+## 4:      1           2          1      1        1 0.03 19.980770 19.980770
+## 5:      1           2          1      1        2 0.03  2.331256  3.284294
+## 6:      1           2          1      1        3 0.03  2.330478  4.649551</code></pre>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_right"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr  category      costs
-## 1:      1           1          1      1        1 0.03 treatment  30948.671
-## 2:      1           1          1      1        2 0.03 treatment   8251.553
-## 3:      1           1          1      1        3 0.03 treatment  15105.981
-## 4:      1           2          1      1        1 0.03 treatment 231392.630
-## 5:      1           2          1      1        2 0.03 treatment  46916.000
-## 6:      1           2          1      1        3 0.03 treatment  66793.697</code></pre>
+## 1:      1           1          1      1        1 0.03 treatment  32208.260
+## 2:      1           1          1      1        2 0.03 treatment   7138.735
+## 3:      1           1          1      1        3 0.03 treatment  13057.596
+## 4:      1           2          1      1        1 0.03 treatment 239769.238
+## 5:      1           2          1      1        2 0.03 treatment  39411.532
+## 6:      1           2          1      1        3 0.03 treatment  55794.610</code></pre>
 </div>
 </div>
 </div>
@@ -297,10 +297,10 @@
 <p>Although <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the <a href="06-cea.html">CEA tutorial</a>.</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.04 (0.98, 3.09)"           
-## Incremental costs "-" "267,307 (214,509, 298,527)"  
-## Incremental NMB   "-" "-165,267 (-224,940, -89,038)"
-## ICER              "-" "130,982"                     
+## Incremental QALYs "-" "2.05 (1.04, 3.07)"           
+## Incremental costs "-" "256,490 (197,060, 285,206)"  
+## Incremental NMB   "-" "-153,821 (-210,957, -80,092)"
+## ICER              "-" "124,911"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>
