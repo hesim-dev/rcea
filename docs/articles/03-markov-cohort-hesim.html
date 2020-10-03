@@ -16,7 +16,13 @@
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<![endif]--><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-131661920-3"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-131661920-3');
+</script>
 </head>
 <body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
@@ -91,7 +97,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Markov Cohort Model wth hesim</h1>
             
-            <h4 class="date">2020-09-29</h4>
+            <h4 class="date">2020-10-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/03-markov-cohort-hesim.Rmd"><code>vignettes/03-markov-cohort-hesim.Rmd</code></a></small>
       <div class="hidden name"><code>03-markov-cohort-hesim.Rmd</code></div>
@@ -249,11 +255,11 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">stateprobs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id t      prob
 ## 1:      1           1          1      1        1 0 1.0000000
-## 2:      1           1          1      1        1 1 0.8476865
-## 3:      1           1          1      1        1 2 0.7922210
-## 4:      1           1          1      1        1 3 0.7629948
-## 5:      1           1          1      1        1 4 0.7411427
-## 6:      1           1          1      1        1 5 0.7216176</code></pre>
+## 2:      1           1          1      1        1 1 0.8312929
+## 3:      1           1          1      1        1 2 0.7743049
+## 4:      1           1          1      1        1 3 0.7466688
+## 5:      1           1          1      1        1 4 0.7269594
+## 6:      1           1          1      1        1 5 0.7095988</code></pre>
 </div>
 <div id="costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -262,21 +268,21 @@
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr     qalys       lys
-## 1:      1           1          1      1        1 0.03 15.231545 15.231545
-## 2:      1           1          1      1        2 0.03  2.577873  3.606229
-## 3:      1           1          1      1        3 0.03  3.733350  7.517580
-## 4:      1           2          1      1        1 0.03 19.425161 19.425161
-## 5:      1           2          1      1        2 0.03  2.468044  3.452587
-## 6:      1           2          1      1        3 0.03  2.749344  5.536157</code></pre>
+## 1:      1           1          1      1        1 0.03 15.474336 15.474336
+## 2:      1           1          1      1        2 0.03  2.937711  4.125776
+## 3:      1           1          1      1        3 0.03  3.726867  7.552990
+## 4:      1           2          1      1        1 0.03 19.282719 19.282719
+## 5:      1           2          1      1        2 0.03  2.783832  3.909667
+## 6:      1           2          1      1        3 0.03  2.746497  5.566141</code></pre>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_left"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr  category      costs
-## 1:      1           1          1      1        1 0.03 treatment  30463.090
-## 2:      1           1          1      1        2 0.03 treatment   7212.458
-## 3:      1           1          1      1        3 0.03 treatment  15035.159
-## 4:      1           2          1      1        1 0.03 treatment 233101.933
-## 5:      1           2          1      1        2 0.03 treatment  41431.045
-## 6:      1           2          1      1        3 0.03 treatment  66433.880</code></pre>
+## 1:      1           1          1      1        1 0.03 treatment  30948.671
+## 2:      1           1          1      1        2 0.03 treatment   8251.553
+## 3:      1           1          1      1        3 0.03 treatment  15105.981
+## 4:      1           2          1      1        1 0.03 treatment 231392.630
+## 5:      1           2          1      1        2 0.03 treatment  46916.000
+## 6:      1           2          1      1        3 0.03 treatment  66793.697</code></pre>
 </div>
 </div>
 </div>
@@ -291,10 +297,10 @@
 <p>Although <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the <a href="06-cea.html">CEA tutorial</a>.</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.01 (1.03, 2.97)"           
-## Incremental costs "-" "266,641 (211,837, 296,961)"  
-## Incremental NMB   "-" "-165,985 (-220,751, -83,692)"
-## ICER              "-" "132,452"                     
+## Incremental QALYs "-" "2.04 (0.98, 3.09)"           
+## Incremental costs "-" "267,307 (214,509, 298,527)"  
+## Incremental NMB   "-" "-165,267 (-224,940, -89,038)"
+## ICER              "-" "130,982"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>

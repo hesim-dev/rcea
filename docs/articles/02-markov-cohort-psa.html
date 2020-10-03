@@ -16,7 +16,13 @@
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<![endif]--><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-131661920-3"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-131661920-3');
+</script>
 </head>
 <body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
@@ -91,7 +97,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2020-09-29</h4>
+            <h4 class="date">2020-10-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
@@ -194,20 +200,20 @@
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">params_rng</span>)</pre></body></html></div>
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">params_rng</span>$<span class="no">p_soc</span>))</pre></body></html></div>
-<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1     s1_s2
-## [1,] 0.8639069 0.1352193    0 0.0008737813 0.4989147 0.3935093 0.1031289
-## [2,] 0.8515616 0.1472416    0 0.0011967705 0.5015650 0.3879270 0.1044894
-## [3,] 0.8273019 0.1707147    0 0.0019834189 0.5143876 0.3721340 0.1078137
-## [4,] 0.8648488 0.1346724    0 0.0004788214 0.4874452 0.3952244 0.1114490
-## [5,] 0.8426666 0.1568533    0 0.0004801779 0.5071407 0.3894223 0.1016745
-## [6,] 0.8430490 0.1558120    0 0.0011389287 0.5041320 0.3850182 0.1069290
+<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
+## [1,] 0.8451617 0.1541274    0 0.0007108557 0.5043833 0.3874358 0.10520369
+## [2,] 0.8582027 0.1405955    0 0.0012017553 0.5097644 0.4021149 0.08231844
+## [3,] 0.8556083 0.1409273    0 0.0034644577 0.4924645 0.3932160 0.10874793
+## [4,] 0.8497663 0.1493479    0 0.0008858133 0.4867233 0.4051357 0.10407018
+## [5,] 0.8473254 0.1521529    0 0.0005217094 0.5055010 0.3930480 0.09296284
+## [6,] 0.8609503 0.1379051    0 0.0011446613 0.5159744 0.3801832 0.09781842
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.004447143    0     0 0.9759721 0.02402795   0    0    0   1
-## [2,] 0.006018598    0     0 0.9748328 0.02516720   0    0    0   1
-## [3,] 0.005664732    0     0 0.9837037 0.01629631   0    0    0   1
-## [4,] 0.005881390    0     0 0.9820535 0.01794651   0    0    0   1
-## [5,] 0.001762454    0     0 0.9846278 0.01537224   0    0    0   1
-## [6,] 0.003920775    0     0 0.9754011 0.02459889   0    0    0   1</code></pre>
+## [1,] 0.002977188    0     0 0.9786909 0.02130910   0    0    0   1
+## [2,] 0.005802338    0     0 0.9780944 0.02190555   0    0    0   1
+## [3,] 0.005571601    0     0 0.9762629 0.02373711   0    0    0   1
+## [4,] 0.004070838    0     0 0.9771978 0.02280220   0    0    0   1
+## [5,] 0.008488097    0     0 0.9836546 0.01634538   0    0    0   1
+## [6,] 0.006023960    0     0 0.9838623 0.01613772   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">

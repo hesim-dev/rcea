@@ -1,6 +1,7 @@
 template:
   params:
     bootswatch: simplex
+    ganalytics: UA-131661920-3
     
 development:
   mode: auto    
