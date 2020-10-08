@@ -131,5 +131,3 @@ econmod$sim_qalys(dr = .03)
 ce_sim <- econmod$summarize()
 cea_pw_out <- cea_pw(ce_sim, comparator = 1, dr_qalys = .03, dr_costs = .03)
 icer_tbl(cea_pw_out, colnames = strategies$strategy_name)
-
-## ---- Exercises --------------------------------------------------------------

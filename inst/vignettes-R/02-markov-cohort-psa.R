@@ -190,5 +190,3 @@ ggplot(ce_out_wider,
   geom_hline(yintercept = 0) + 
   geom_vline(xintercept = 0) +
   theme_bw()
-
-## ---- Exercises --------------------------------------------------------------

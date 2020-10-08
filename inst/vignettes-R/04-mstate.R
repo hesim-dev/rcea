@@ -151,5 +151,3 @@ cea_pw_out <- cea_pw(ce_sim, comparator = 1,
                        dr_qalys = .03, dr_costs = .03,
                        k = seq(0, 25000, 500))
 icer_tbl(cea_pw_out, colnames = strategies$strategy_name)
-
-## ---- Exercises --------------------------------------------------------------

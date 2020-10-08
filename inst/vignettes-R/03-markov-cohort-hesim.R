@@ -113,5 +113,3 @@ cea_pw_out <- cea_pw(ce_sim, comparator = 1,
 
 ## @knitr icer
 icer_tbl(cea_pw_out, colnames = strategies$strategy_name) 
-
-## ---- Exercises --------------------------------------------------------------
