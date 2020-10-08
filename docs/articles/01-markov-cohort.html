@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-10-03</h4>
+            <h4 class="date">2020-10-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/01-markov-cohort.Rmd"><code>vignettes/01-markov-cohort.Rmd</code></a></small>
       <div class="hidden name"><code>01-markov-cohort.Rmd</code></div>
@@ -239,17 +239,18 @@ NPV = \sum_{t} PV_t
 ## [1,] 0.794104 0.18645 0.01575 0.004596</code></pre>
 <p>A for loop can be used to compute the state vector at each model cycle. We created a function in the <code>rcea</code> package to do this so that we can reuse it. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span></pre></body></html></div>
-<pre><code>## function(x0, p, n_cycles = 85){
-##   x &lt;- matrix(NA, ncol = length(x0), nrow = n_cycles) # Initialize Markov trace
-##   x &lt;- rbind(x0, x) # Markov trace at cycle 0 is initial state vector
-##   colnames(x) &lt;- colnames(p) # Columns are the health states
-##   rownames(x) &lt;- 0:n_cycles # Rows are the model cycles
-##   for (t in 1:n_cycles){ # Simulating state vectors at each cycle with for loop
-##     x[t + 1, ] &lt;- x[t, ] %*% p
-##   }
-##   return(x)
+<pre><code>## function (x0, p, n_cycles = 85) 
+## {
+##     x &lt;- matrix(NA, ncol = length(x0), nrow = n_cycles)
+##     x &lt;- rbind(x0, x)
+##     colnames(x) &lt;- colnames(p)
+##     rownames(x) &lt;- 0:n_cycles
+##     for (t in 1:n_cycles) {
+##         x[t + 1, ] &lt;- x[t, ] %*% p
+##     }
+##     return(x)
 ## }
-## &lt;bytecode: 0x7fbb353aaf78&gt;
+## &lt;bytecode: 0x7fcb209eff30&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -277,10 +278,11 @@ NPV = \sum_{t} PV_t
 <a href="#expected-costs-and-quality-adjusted-life-years" class="anchor"></a><span class="header-section-number">4.2</span> Expected costs and quality-adjusted life-years</h2>
 <p>To compute discounted costs and QALYS, it is helpful to write a general function for computing a present value.</p>
 <div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/pv.html">pv</a></span></pre></body></html></div>
-<pre><code>## function(z, dr, t) {
-##   z/(1 + dr)^t
+<pre><code>## function (z, dr, t) 
+## {
+##     z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7fbb34d7c0b8&gt;
+## &lt;bytecode: 0x7fcb1f634ff0&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
