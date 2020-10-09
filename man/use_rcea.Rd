@@ -7,12 +7,11 @@
 use_rcea(path = ".")
 }
 \arguments{
-\item{path}{The path of the project to put the course materials in.}
+\item{path}{The path of the directory to put the course materials in.}
 }
 \description{
 Add the \code{R} scripts that contain the code for the tutorials in the
-\code{rcea} package to the \code{R} directory from a project created using
-\code{usethis::create_project()}.
+\code{rcea} package to the directory specified by \code{path}.
 }
 \examples{
 \dontrun{

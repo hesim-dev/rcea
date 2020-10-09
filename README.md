@@ -18,14 +18,14 @@ All required `R` packages and course materials can be installed with the followi
 3. Create a new project in your desired directory. 
 
     ```r
-    # Create a project named "rcea-course" within a directory named "Projects"
-    usethis::create_project("~/Projects/rcea-course") 
+    # Create a project named "rcea-exercises" within a directory named "Projects"
+    usethis::create_project("~/Projects/rcea-exercises") 
     ```
 
 4. Add the course materials (`R` scripts for the tutorials) to your new project.
 
     ```r
-    rcea::use_rcea("~/Projects/rcea-course")
+    rcea::use_rcea("~/Projects/rcea-exercises")
     ```
 
 ## Tutorials
