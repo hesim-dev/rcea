@@ -97,7 +97,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Semi-Markov Multi-state Model</h1>
             
-            <h4 class="date">2020-10-08</h4>
+            <h4 class="date">2020-10-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/04-mstate.Rmd"><code>vignettes/04-mstate.Rmd</code></a></small>
       <div class="hidden name"><code>04-mstate.Rmd</code></div>
@@ -396,6 +396,8 @@
 ## Incremental NMB   "-" "-2,280 (-60,588, 34,068)"  
 ## ICER              "-" "50,602"                    
 ## Conclusion        "-" "Not cost-effective"</code></pre>
+<p>Let’s save the cost-effectiveness object so that we can use it in the <a href="06-cea.html">CEA tutorial</a>.</p>
+<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>(<span class="no">ce_sim</span>, <span class="st">"ce_sim.rds"</span>)</pre></body></html></div>
 </div>
   </div>
 

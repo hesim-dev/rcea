@@ -6,7 +6,9 @@ theme_set(theme_minimal()) # Set ggplot2 theme
 
 ## ---- Application ------------------------------------------------------------
 ## @knitr conduct-cea
-ce_sim <- readRDS("ce_sim.rds") # Load cost-effectiveness object
+# First load the cost-effectiveness object saved during the "Semi-Markov 
+# Multi-state Model" tutorial (i.e., from 04-mstate.Rmd)
+ce_sim <- readRDS("ce_sim.rds") 
 head(ce_sim)
 
 wtp <- seq(0, 250000, 500) # Willingness to pay per QALY

@@ -173,6 +173,7 @@ As in the cohort model, cost-effectiveness analyses can be performed seamlessly 
 ```{r, icer}
 ```
 
-```{r, echo = FALSE}
-saveRDS(ce_sim, "ce_sim.rds")
+Let's save the cost-effectiveness object so that we can use it in the [CEA tutorial](06-cea.html).
+
+```{r, save-ce_sim}
 ```

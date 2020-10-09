@@ -97,7 +97,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-10-08</h4>
+            <h4 class="date">2020-10-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -155,7 +155,9 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <a href="#application" class="anchor"></a><span class="header-section-number">3</span> Application</h1>
 <p>CEA can be performed using the <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea()</a></code> and <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea_pw()</a></code> functions. <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea()</a></code> summarizes results by taking into account each treatment strategy in the analysis, while <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> summarizes “pairwise” results in which each treatment is compared to a comparator.</p>
 <p>We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a <code><a href="https://hesim-dev.github.io/hesim/reference/ce.html">hesim::ce</a></code> object).</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"ce_sim.rds"</span>) <span class="co"># Load cost-effectiveness object</span>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># First load the cost-effectiveness object saved during the "Semi-Markov </span>
+<span class="co"># Multi-state Model" tutorial (i.e., from 04-mstate.Rmd)</span>
+<span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"ce_sim.rds"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">ce_sim</span>)</pre></body></html></div>
 <pre><code>## $costs
 ##       category   dr sample strategy_id     costs grp_id
