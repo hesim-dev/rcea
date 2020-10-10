@@ -92,12 +92,12 @@
 
       
 
-      </header><div class="row">
+      </header><script src="04-mstate_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Semi-Markov Multi-state Model</h1>
             
-            <h4 class="date">2020-10-09</h4>
+            <h4 class="date">2020-10-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/04-mstate.Rmd"><code>vignettes/04-mstate.Rmd</code></a></small>
       <div class="hidden name"><code>04-mstate.Rmd</code></div>
@@ -237,7 +237,7 @@
 <p>In the cohort model, we assigned utility and cost values to health states using <code><a href="https://hesim-dev.github.io/hesim/reference/define_tparams.html">hesim::define_tparams()</a></code> within the <code><a href="https://hesim-dev.github.io/hesim/reference/define_model.html">hesim::define_model()</a></code> framework. An alternative (and more direct) approach is to use a <code><a href="https://hesim-dev.github.io/hesim/reference/stateval_tbl.html">hesim::stateval_tbl</a></code>. We will continue to assume that the utility associated with each state follows a beta distribution.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">utility_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/stateval_tbl.html">stateval_tbl</a></span>(
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
-             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">.8</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">.6</span>),
+             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">.8</span>, <span class="fl">.6</span>),
              <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.02</span>, <span class="fl">.05</span>)
   ),
   <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"beta"</span>,
@@ -249,8 +249,8 @@
 <p>Similarly, we continue to assume that medical costs vary by health state and follow a gamma distribution.</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">medcost_tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/stateval_tbl.html">stateval_tbl</a></span>(
   <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">state_id</span> <span class="kw">=</span> <span class="no">states</span>$<span class="no">state_id</span>,
-             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">9500</span>),
-             <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">H</span> <span class="kw">=</span> <span class="fl">2000</span>, <span class="kw">S</span> <span class="kw">=</span> <span class="fl">9500</span>)
+             <span class="kw">mean</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2000</span>, <span class="fl">9500</span>),
+             <span class="kw">se</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2000</span>, <span class="fl">9500</span>)
   ),
   <span class="kw">dist</span> <span class="kw">=</span> <span class="st">"gamma"</span>,
   <span class="kw">hesim_data</span> <span class="kw">=</span> <span class="no">hesim_dat</span>)

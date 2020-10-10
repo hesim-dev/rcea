@@ -56,7 +56,7 @@ psfit_wei <- flexsurvreg_list(fit_pfs_wei, fit_os_wei)
 # Utility
 utility_tbl <- stateval_tbl(
   data.table(state_id = states$state_id,
-             mean = c(H = .8, S = .6),
+             mean = c(.8, S = .6),
              se = c(0.02, .05)
   ),
   dist = "beta",
@@ -66,8 +66,8 @@ print(utility_tbl)
 # Medical costs
 medcost_tbl <- stateval_tbl(
   data.table(state_id = states$state_id,
-             mean = c(H = 2000, S = 9500),
-             se = c(H = 2000, S = 9500)
+             mean = c(2000, 9500),
+             se = c(2000, 9500)
   ),
   dist = "gamma",
   hesim_data = hesim_dat)

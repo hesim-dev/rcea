@@ -92,12 +92,12 @@
 
       
 
-      </header><div class="row">
+      </header><script src="06-cea_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-10-09</h4>
+            <h4 class="date">2020-10-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -227,7 +227,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
                      <span class="kw">labels</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="no">xlim</span>, <span class="no">xlim</span>), <span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(-<span class="fl">6</span>, <span class="fl">6</span>, <span class="fl">2</span>)) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>) +
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span>(<span class="kw">slope</span> <span class="kw">=</span> <span class="fl">50000</span>, <span class="kw">linetype</span> <span class="kw">=</span> <span class="st">"dashed"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span>(<span class="kw">yintercept</span> <span class="kw">=</span> <span class="fl">0</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="kw">xintercept</span> <span class="kw">=</span> <span class="fl">0</span>)</pre></body></html></div>
@@ -248,7 +248,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
                      <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
 <p><img src="06-cea_files/figure-html/ceac-simultaneous-plot-1.png" width="672"></p>
 <p>The probability that the new treatment is the most cost-effective is increasing in WTP.</p>
 </div>
@@ -264,7 +264,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
                      <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
 <p><img src="06-cea_files/figure-html/ceac-pairwise-plot-1.png" width="672"></p>
 </div>
 </div>
@@ -281,16 +281,16 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
                      <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
 <p><img src="06-cea_files/figure-html/ceaf-plot-1.png" width="672"></p>
 </div>
 <div id="value-of-perfect-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#value-of-perfect-information" class="anchor"></a><span class="header-section-number">3.4</span> Value of perfect information</h2>
-<p>A limitation of the prior measures are that they ignore the magnitude of cost or QALY gains. A measure which combines the probability of being most effective with the magnitude of the expected NMB is the expected value of perfect information (EVPI). Intuitively, the EVPI provides an estimate of the amount that a decision maker would be willing to pay to collect additional data and completely eliminate uncertainty. Mathematically, the EVPI is defined as the difference between the maximum expected NMB given perfect information and the maximum expected NMB given current information. In other words, we calculate the NMB for the optimal treatment strategy for each random draw of the parameters and compare that to the NMB for the treatment strategy that is optimal when averaging across all parameters. That is, the EVPI is calculated as,</p>
+<p>A limitation of the prior measures are that they ignore the magnitude of cost or QALY gains. A measure which combines the probability of being most effective with the magnitude of the expected NMB is the expected value of perfect information (EVPI). Intuitively, the EVPI provides an estimate of the amount that a decision maker would be willing to pay to collect additional data and completely eliminate uncertainty. Mathematically, the EVPI is defined as the difference between the maximum expected NMB given perfect information and the maximum expected NMB given current information. In other words, we calculate the NMB for the optimal treatment strategy for each random draw of the parameters and compare that to the NMB for the treatment strategy that is optimal when averaging across all parameters,</p>
 <p><span class="math display">\[
 \begin{aligned}
-EVPI_g &amp;= E_\theta \left[max_j NMB_g(j, \theta)\right] - max_j E_\theta \left [ NMB_g(j, \theta)\right]. \\
+EVPI &amp;= E_\theta \left[max_j NMB(j, \theta)\right] - max_j E_\theta \left [ NMB(j, \theta)\right]. \\
 \end{aligned}
 \]</span></p>
 <p>The <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea()</a></code> function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values <span class="math inline">\(k\)</span>. A plot by group of the the EVPI for different values of <span class="math inline">\(k\)</span> is shown below. The kink in the plot represents the value of <span class="math inline">\(k\)</span> where the optimal strategy changes.</p>
