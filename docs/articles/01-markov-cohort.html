@@ -167,7 +167,7 @@ NPV = \sum_{t} PV_t
 <span class="no">p_s2d</span> <span class="kw">&lt;-</span> <span class="fl">.02</span> <span class="co"># constant probability of dying when Sicker</span></pre></body></html></div>
 <p>These can be used to derive the probabilities of remaining in the same state during a model cycle.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">p_hh</span> <span class="kw">&lt;-</span> <span class="fl">1</span>  - <span class="no">p_hs1</span> - <span class="no">p_hd</span>
-<span class="no">p_s1s1</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s1h</span> - <span class="no">p_s1s2</span>
+<span class="no">p_s1s1</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s1h</span> - <span class="no">p_s1s2</span> - <span class="no">p_s1d</span>
 <span class="no">p_s2s2</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s2d</span></pre></body></html></div>
 <p>Using these probabilities, the transition probability matrix can then be defined.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">p_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(
@@ -183,7 +183,7 @@ NPV = \sum_{t} PV_t
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">p_soc</span>)</pre></body></html></div>
 <pre><code>##        H    S1    S2     D
 ## H  0.848 0.150 0.000 0.002
-## S1 0.500 0.395 0.105 0.006
+## S1 0.500 0.389 0.105 0.006
 ## S2 0.000 0.000 0.980 0.020
 ## D  0.000 0.000 0.000 1.000</code></pre>
 </div>
@@ -237,7 +237,7 @@ NPV = \sum_{t} PV_t
   <span class="no">p_soc</span> <span class="kw">%*%</span>
   <span class="no">p_soc</span></pre></body></html></div>
 <pre><code>##             H      S1      S2        D
-## [1,] 0.794104 0.18645 0.01575 0.004596</code></pre>
+## [1,] 0.794104 0.18555 0.01575 0.004596</code></pre>
 <p>A for loop can be used to compute the state vector at each model cycle. We created a function in the <code>rcea</code> package to do this so that we can reuse it. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span></pre></body></html></div>
 <pre><code>## function (x0, p, n_cycles = 85) 
@@ -251,7 +251,7 @@ NPV = \sum_{t} PV_t
 ##     }
 ##     return(x)
 ## }
-## &lt;bytecode: 0x7fe8724c3c48&gt;
+## &lt;bytecode: 0x7ffe2f83ad60&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -261,10 +261,10 @@ NPV = \sum_{t} PV_t
 <pre><code>##           H        S1         S2           D
 ## 0 1.0000000 0.0000000 0.00000000 0.000000000
 ## 1 0.8480000 0.1500000 0.00000000 0.002000000
-## 2 0.7941040 0.1864500 0.01575000 0.004596000
-## 3 0.7666252 0.1927633 0.03501225 0.007617908
-## 4 0.7464798 0.1911353 0.05455216 0.011007983
-## 5 0.7285826 0.1874704 0.07353032 0.014738798</code></pre>
+## 2 0.7941040 0.1855500 0.01575000 0.004596000
+## 3 0.7661752 0.1912946 0.03491775 0.007612508
+## 4 0.7453638 0.1893399 0.05430532 0.010990981
+## 5 0.7267385 0.1854578 0.07309990 0.014703854</code></pre>
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_new</span>)</pre></body></html></div>
 <pre><code>##           H        S1         S2           D
 ## 0 1.0000000 0.0000000 0.00000000 0.000000000
@@ -283,7 +283,7 @@ NPV = \sum_{t} PV_t
 ## {
 ##     z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7fe87277bc48&gt;
+## &lt;bytecode: 0x7ffe2fc8ed60&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -310,18 +310,18 @@ NPV = \sum_{t} PV_t
 <pre><code>##        [,1]
 ## 0 1.0000000
 ## 1 0.9605000
-## 2 0.9418165
-## 3 0.9287038
-## 4 0.9171074
-## 5 0.9059505</code></pre>
+## 2 0.9411415
+## 3 0.9271050
+## 4 0.9145214
+## 5 0.9023818</code></pre>
 <div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_soc</span>)</pre></body></html></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
 ## 1 0.9325243
-## 2 0.8877524
-## 3 0.8498956
-## 4 0.8148380
-## 5 0.7814809</code></pre>
+## 2 0.8871161
+## 3 0.8484324
+## 4 0.8125404
+## 5 0.7784024</code></pre>
 <div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_new</span>)</pre></body></html></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
@@ -352,10 +352,10 @@ NPV = \sum_{t} PV_t
 <pre><code>##    medical treatment
 ## 0 2000.000  2000.000
 ## 1 2229.126  1937.864
-## 2 2422.715  1878.224
-## 3 2589.382  1820.035
-## 4 2732.794  1763.056
-## 5 2855.236  1707.246</code></pre>
+## 2 2419.321  1876.527
+## 3 2581.884  1816.350
+## 4 2721.140  1757.443
+## 5 2839.541  1699.850</code></pre>
 <div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dcosts_new</span>)</pre></body></html></div>
 <pre><code>##    medical treatment
 ## 0 2000.000  12000.00
@@ -373,7 +373,7 @@ NPV = \sum_{t} PV_t
 <p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles. Note that since we are assuming that transitions happen immediately, we exclude costs and QALYs measured at the start of the first model cycle.</p>
 <div class="sourceCode" id="cb35"><html><body><pre class="r">(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>[-<span class="fl">1</span>, ])) /
 (<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>[-<span class="fl">1</span>, ]))</pre></body></html></div>
-<pre><code>## [1] 150279.7</code></pre>
+<pre><code>## [1] 122946.8</code></pre>
 <p>For the sake of presentation, we might want to do a some extra work and create a nice looking table.</p>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">format_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>)
 <span class="no">format_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"f"</span>, <span class="kw">digits</span> <span class="kw">=</span> <span class="fl">2</span>)
@@ -434,10 +434,10 @@ ICER
 SOC
 </td>
 <td style="text-align:left;">
-208,706
+204,123
 </td>
 <td style="text-align:left;">
-21.49
+21.08
 </td>
 <td style="text-align:left;">
 –
@@ -460,13 +460,13 @@ New
 23.19
 </td>
 <td style="text-align:left;">
-255,683
+260,266
 </td>
 <td style="text-align:left;">
-1.70
+2.12
 </td>
 <td style="text-align:left;">
-150,279
+122,946
 </td>
 </tr>
 </tbody>
