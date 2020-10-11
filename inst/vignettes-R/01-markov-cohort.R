@@ -17,7 +17,7 @@ p_s2d <- .02 # constant probability of dying when Sicker
 
 ## @knitr transition-probability-complements
 p_hh <- 1  - p_hs1 - p_hd
-p_s1s1 <- 1 - p_s1h - p_s1s2 
+p_s1s1 <- 1 - p_s1h - p_s1s2 - p_s1d
 p_s2s2 <- 1 - p_s2d
 
 ## @knitr tpmatrix
@@ -37,7 +37,7 @@ print(p_soc)
 apply_rr <- function(p, rr = .8){
   p["H", "S1"] <- p["H", "S1"] * rr
   p["H", "S2"] <- p["H", "S2"] * rr
-  p["H", "D"] <- p["H", "S2"] * rr
+  p["H", "D"] <- p["H", "D"] * rr
   p["H", "H"] <- 1 - sum(p["H", -1])
   
   p["S1", "S2"] <- p["S1", "S2"] * rr
