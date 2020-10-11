@@ -10,7 +10,7 @@ library("ggplot2")
 ## @knitr tpmatrix
 transitions_soc <- matrix(
   c(848, 150, 0,   2,
-    450, 355, 95,  5,
+    500, 389, 105,  6,
     0,   0,   784, 16,
     0,   0,   0,   23),
   nrow = 4, byrow = TRUE)

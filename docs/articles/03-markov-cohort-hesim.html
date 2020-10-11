@@ -92,12 +92,12 @@
 
       
 
-      </header><div class="row">
+      </header><script src="03-markov-cohort-hesim_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Markov Cohort Model wth hesim</h1>
             
-            <h4 class="date">2020-10-08</h4>
+            <h4 class="date">2020-10-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/03-markov-cohort-hesim.Rmd"><code>vignettes/03-markov-cohort-hesim.Rmd</code></a></small>
       <div class="hidden name"><code>03-markov-cohort-hesim.Rmd</code></div>
@@ -255,11 +255,11 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">stateprobs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id t      prob
 ## 1:      1           1          1      1        1 0 1.0000000
-## 2:      1           1          1      1        1 1 0.8379625
-## 3:      1           1          1      1        1 2 0.7805695
-## 4:      1           1          1      1        1 3 0.7500645
-## 5:      1           1          1      1        1 4 0.7267998
-## 6:      1           1          1      1        1 5 0.7058012</code></pre>
+## 2:      1           1          1      1        1 1 0.8425401
+## 3:      1           1          1      1        1 2 0.7917767
+## 4:      1           1          1      1        1 3 0.7671303
+## 5:      1           1          1      1        1 4 0.7490715
+## 6:      1           1          1      1        1 5 0.7328627</code></pre>
 </div>
 <div id="costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -268,21 +268,21 @@
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_right"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr     qalys       lys
-## 1:      1           1          1      1        1 0.03 13.465551 13.465551
-## 2:      1           1          1      1        2 0.03  2.643724  3.561691
-## 3:      1           1          1      1        3 0.03  3.910159  7.752447
-## 4:      1           2          1      1        1 0.03 15.612583 15.612583
-## 5:      1           2          1      1        2 0.03  2.632139  3.546083
-## 6:      1           2          1      1        3 0.03  3.429930  6.800324</code></pre>
+## 1:      1           1          1      1        1 0.03 15.356942 15.356942
+## 2:      1           1          1      1        2 0.03  3.148628  3.914536
+## 3:      1           1          1      1        3 0.03  3.031853  6.166145
+## 4:      1           2          1      1        1 0.03 18.757795 18.757795
+## 5:      1           2          1      1        2 0.03  2.979188  3.703880
+## 6:      1           2          1      1        3 0.03  2.353430  4.786377</code></pre>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_right"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr  category      costs
-## 1:      1           1          1      1        1 0.03 treatment  26931.102
-## 2:      1           1          1      1        2 0.03 treatment   7123.381
-## 3:      1           1          1      1        3 0.03 treatment  15504.894
-## 4:      1           2          1      1        1 0.03 treatment 187350.995
-## 5:      1           2          1      1        2 0.03 treatment  42553.002
-## 6:      1           2          1      1        3 0.03 treatment  81603.891</code></pre>
+## 1:      1           1          1      1        1 0.03 treatment  30713.883
+## 2:      1           1          1      1        2 0.03 treatment   7829.071
+## 3:      1           1          1      1        3 0.03 treatment  12332.290
+## 4:      1           2          1      1        1 0.03 treatment 225093.544
+## 5:      1           2          1      1        2 0.03 treatment  44446.555
+## 6:      1           2          1      1        3 0.03 treatment  57436.522</code></pre>
 </div>
 </div>
 </div>
@@ -297,10 +297,10 @@
 <p>Although <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the <a href="06-cea.html">CEA tutorial</a>.</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.05 (1.06, 3.06)"           
-## Incremental costs "-" "257,841 (204,466, 286,732)"  
-## Incremental NMB   "-" "-155,463 (-210,982, -78,586)"
-## ICER              "-" "125,927"                     
+## Incremental QALYs "-" "2.06 (1.02, 3.08)"           
+## Incremental costs "-" "256,475 (203,241, 289,648)"  
+## Incremental NMB   "-" "-153,460 (-209,981, -76,656)"
+## ICER              "-" "124,484"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>
