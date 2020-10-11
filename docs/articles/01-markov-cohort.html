@@ -92,12 +92,13 @@
 
       
 
-      </header><script src="01-markov-cohort_files/kePrint-0.0.1/kePrint.js"></script><div class="row">
+      </header><script src="01-markov-cohort_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="01-markov-cohort_files/kePrint-0.0.1/kePrint.js"></script><link href="01-markov-cohort_files/lightable-0.0.1/lightable.css" rel="stylesheet">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-10-08</h4>
+            <h4 class="date">2020-10-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/01-markov-cohort.Rmd"><code>vignettes/01-markov-cohort.Rmd</code></a></small>
       <div class="hidden name"><code>01-markov-cohort.Rmd</code></div>
@@ -194,7 +195,7 @@ NPV = \sum_{t} PV_t
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">apply_rr</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">p</span>, <span class="no">rr</span> <span class="kw">=</span> <span class="fl">.8</span>){
   <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S1"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S1"</span>] * <span class="no">rr</span>
   <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
+  <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"D"</span>] * <span class="no">rr</span>
   <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"H"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p</span>[<span class="st">"H"</span>, -<span class="fl">1</span>])
 
   <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
@@ -250,7 +251,7 @@ NPV = \sum_{t} PV_t
 ##     }
 ##     return(x)
 ## }
-## &lt;bytecode: 0x7fcb209eff30&gt;
+## &lt;bytecode: 0x7fe8724c3c48&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -267,11 +268,11 @@ NPV = \sum_{t} PV_t
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_new</span>)</pre></body></html></div>
 <pre><code>##           H        S1         S2           D
 ## 0 1.0000000 0.0000000 0.00000000 0.000000000
-## 1 0.8800000 0.1200000 0.00000000 0.000000000
-## 2 0.8344000 0.1549440 0.01008000 0.000576000
-## 3 0.8117440 0.1638410 0.02293402 0.001481011
-## 4 0.7962552 0.1647807 0.03632971 0.002634392
-## 5 0.7830949 0.1633084 0.04959002 0.004006615</code></pre>
+## 1 0.8784000 0.1200000 0.00000000 0.001600000
+## 2 0.8315866 0.1547520 0.01008000 0.003581440
+## 3 0.8078416 0.1634244 0.02291789 0.005816068
+## 4 0.7913203 0.1641411 0.03627885 0.008259738
+## 5 0.7771663 0.1624533 0.04948624 0.010894190</code></pre>
 </div>
 <div id="expected-costs-and-quality-adjusted-life-years" class="section level2">
 <h2 class="hasAnchor">
@@ -282,7 +283,7 @@ NPV = \sum_{t} PV_t
 ## {
 ##     z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7fcb1f634ff0&gt;
+## &lt;bytecode: 0x7fe87277bc48&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -324,11 +325,11 @@ NPV = \sum_{t} PV_t
 <div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_new</span>)</pre></body></html></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
-## 1 0.9417476
-## 2 0.9007899
-## 3 0.8658080
-## 4 0.8334058
-## 5 0.8025464</code></pre>
+## 1 0.9401942
+## 2 0.8980022
+## 3 0.8619435
+## 4 0.8285724
+## 5 0.7968343</code></pre>
 </div>
 <div id="costs" class="section level3">
 <h3 class="hasAnchor">
@@ -358,11 +359,11 @@ NPV = \sum_{t} PV_t
 <div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dcosts_new</span>)</pre></body></html></div>
 <pre><code>##    medical treatment
 ## 0 2000.000  12000.00
-## 1 2174.757  11650.49
-## 2 2299.723  11304.64
-## 3 2400.290  10965.44
-## 4 2484.724  10633.76
-## 5 2556.146  10309.83</code></pre>
+## 1 2171.650  11631.84
+## 2 2293.695  11270.64
+## 3 2391.402  10917.83
+## 4 2473.004  10573.78
+## 5 2541.624  10238.54</code></pre>
 </div>
 </div>
 </div>
@@ -372,7 +373,7 @@ NPV = \sum_{t} PV_t
 <p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles. Note that since we are assuming that transitions happen immediately, we exclude costs and QALYs measured at the start of the first model cycle.</p>
 <div class="sourceCode" id="cb35"><html><body><pre class="r">(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>[-<span class="fl">1</span>, ])) /
 (<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>[-<span class="fl">1</span>, ]))</pre></body></html></div>
-<pre><code>## [1] 113590.9</code></pre>
+<pre><code>## [1] 150279.7</code></pre>
 <p>For the sake of presentation, we might want to do a some extra work and create a nice looking table.</p>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">format_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>)
 <span class="no">format_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"f"</span>, <span class="kw">digits</span> <span class="kw">=</span> <span class="fl">2</span>)
@@ -453,19 +454,19 @@ SOC
 New
 </td>
 <td style="text-align:left;">
-477,167
+464,390
 </td>
 <td style="text-align:left;">
-23.86
+23.19
 </td>
 <td style="text-align:left;">
-268,460
+255,683
 </td>
 <td style="text-align:left;">
-2.36
+1.70
 </td>
 <td style="text-align:left;">
-113,590
+150,279
 </td>
 </tr>
 </tbody>

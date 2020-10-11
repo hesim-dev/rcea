@@ -37,7 +37,7 @@ print(p_soc)
 apply_rr <- function(p, rr = .8){
   p["H", "S1"] <- p["H", "S1"] * rr
   p["H", "S2"] <- p["H", "S2"] * rr
-  p["H", "D"] <- p["H", "S2"] * rr
+  p["H", "D"] <- p["H", "D"] * rr
   p["H", "H"] <- 1 - sum(p["H", -1])
   
   p["S1", "S2"] <- p["S1", "S2"] * rr
