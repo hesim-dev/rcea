@@ -7,8 +7,8 @@ Authors@R: c(
     person("Jeroen P.", "Jansen", role = "aut")
     )
 Description: Course materials for applied cost-effectiveness analysis with R.
-URL: https://github.com/hesim-dev/ispor-short-course
-BugReports: https://github.com/hesim-dev/ispor-short-course/issues
+URL: https://hesim-dev.github.io/rcea/, https://github.com/hesim-dev/rcea
+BugReports: https://github.com/hesim-dev/rcea/issues
 License: GPL-3
 LazyData: true
 Depends:
