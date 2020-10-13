@@ -8,5 +8,8 @@ articles:
   04-mstate: 04-mstate.html
   05-psm: 05-psm.html
   06-cea: 06-cea.html
-last_built: 2020-10-13T17:03Z
+last_built: 2020-10-13T18:47Z
+urls:
+  reference: https://hesim-dev.github.io/rcea/reference
+  article: https://hesim-dev.github.io/rcea/articles
 
