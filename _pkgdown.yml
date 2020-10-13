@@ -36,4 +36,5 @@ navbar:
       - text: "Cost-effectiveness Analysis"
         href: articles/06-cea.html 
       - text: "---" 
-      
+  - text: "Slides"
+    href: slides.pdf

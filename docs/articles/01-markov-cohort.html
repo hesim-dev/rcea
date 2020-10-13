@@ -74,10 +74,13 @@
     <li class="divider">
   </ul>
 </li>
+<li>
+  <a href="../slides.pdf">Slides</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/hesim-dev/ispor-short-course/">
+  <a href="https://github.com/hesim-dev/rcea/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -98,9 +101,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-10-11</h4>
+            <h4 class="date">2020-10-13</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/ispor-short-course/blob/master/vignettes/01-markov-cohort.Rmd"><code>vignettes/01-markov-cohort.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/01-markov-cohort.Rmd"><code>vignettes/01-markov-cohort.Rmd</code></a></small>
       <div class="hidden name"><code>01-markov-cohort.Rmd</code></div>
 
     </div>
@@ -251,7 +254,7 @@ NPV = \sum_{t} PV_t
 ##     }
 ##     return(x)
 ## }
-## &lt;bytecode: 0x7f9fd32ba9a0&gt;
+## &lt;bytecode: 0x7f9422c04158&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
@@ -283,7 +286,7 @@ NPV = \sum_{t} PV_t
 ## {
 ##     z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7f9fd34f29a0&gt;
+## &lt;bytecode: 0x7f9423061d58&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
