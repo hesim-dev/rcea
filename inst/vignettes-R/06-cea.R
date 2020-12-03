@@ -42,7 +42,7 @@ ggplot(cea_pw_out$delta,
   scale_x_continuous(limits = c(-xlim, xlim), breaks = seq(-6, 6, 2)) +
   theme(legend.position = "bottom") + 
   scale_colour_discrete(name = "Strategy") +
-  geom_abline(slope = 50000, linetype = "dashed") +
+  geom_abline(slope = 100000, linetype = "dashed") +
   geom_hline(yintercept = 0) + 
   geom_vline(xintercept = 0)
 
