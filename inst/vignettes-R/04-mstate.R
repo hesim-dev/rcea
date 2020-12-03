@@ -58,7 +58,7 @@ for (i in 1:length(wei_fits)){
     Surv(time, status) ~ strategy_name + female,
     data = data,
     subset = (transition_id == i) ,
-    dist = "weibull")
+    dist = "weibullPH")
 }
 wei_fits <- flexsurvreg_list(wei_fits)
 

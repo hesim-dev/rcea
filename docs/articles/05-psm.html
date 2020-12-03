@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -100,7 +100,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Partitioned Survival Model</h1>
             
-            <h4 class="date">2020-10-13</h4>
+            <h4 class="date">2020-12-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/05-psm.Rmd"><code>vignettes/05-psm.Rmd</code></a></small>
       <div class="hidden name"><code>05-psm.Rmd</code></div>
@@ -314,11 +314,11 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">survival_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id patient_wt curve   t  survival
 ## 1:      1           1          1      1       0.25     1 0.0 1.0000000
-## 2:      1           1          1      1       0.25     1 0.1 0.9998911
-## 3:      1           1          1      1       0.25     1 0.2 0.9995020
-## 4:      1           1          1      1       0.25     1 0.3 0.9987883
-## 5:      1           1          1      1       0.25     1 0.4 0.9977234
-## 6:      1           1          1      1       0.25     1 0.5 0.9962883</code></pre>
+## 2:      1           1          1      1       0.25     1 0.1 0.9998292
+## 3:      1           1          1      1       0.25     1 0.2 0.9992196
+## 4:      1           1          1      1       0.25     1 0.3 0.9981030
+## 5:      1           1          1      1       0.25     1 0.4 0.9964389
+## 6:      1           1          1      1       0.25     1 0.5 0.9941987</code></pre>
 <p>We can, in theory, plot these curves for each treatment strategy and patient. To summarize, however, we will plot the average (across patients) survival curves for each treatment strategy. The probabilities of being in the stable, progression, and death states are the area under the PFS curves, the area between the OS and PFS curves, and the area above the OS curve, respectively.</p>
 <p><img src="05-psm_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
 </div>
@@ -329,14 +329,14 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu">sim_stateprobs</span>()
 <span class="no">econmod</span>$<span class="no">stateprobs_</span>[<span class="no">sample</span> <span class="kw">==</span> <span class="fl">1</span> <span class="kw">&amp;</span> <span class="no">state_id</span> <span class="kw">==</span> <span class="fl">2</span> <span class="kw">&amp;</span> <span class="no">t</span> <span class="kw">==</span> <span class="fl">12</span>]</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id patient_wt state_id  t      prob
-## 1:      1           1          1      1       0.25        2 12 0.5012463
-## 2:      1           1          2      1       0.25        2 12 0.6320278
-## 3:      1           1          3      1       0.25        2 12 0.5012463
-## 4:      1           1          4      1       0.25        2 12 0.6320278
-## 5:      1           2          1      1       0.25        2 12 0.5986595
-## 6:      1           2          2      1       0.25        2 12 0.4101350
-## 7:      1           2          3      1       0.25        2 12 0.5986595
-## 8:      1           2          4      1       0.25        2 12 0.4101350</code></pre>
+## 1:      1           1          1      1       0.25        2 12 0.3115353
+## 2:      1           1          2      1       0.25        2 12 0.2206730
+## 3:      1           1          3      1       0.25        2 12 0.3115353
+## 4:      1           1          4      1       0.25        2 12 0.2206730
+## 5:      1           2          1      1       0.25        2 12 0.4933336
+## 6:      1           2          2      1       0.25        2 12 0.4193890
+## 7:      1           2          3      1       0.25        2 12 0.4933336
+## 8:      1           2          4      1       0.25        2 12 0.4193890</code></pre>
 </div>
 <div id="utility-and-costs-1" class="section level3">
 <h3 class="hasAnchor">
@@ -355,10 +355,10 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>)
 <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                         
-## Incremental QALYs "-" "3.60 (3.07, 4.09)"         
-## Incremental costs "-" "201,896 (178,583, 257,932)"
-## Incremental NMB   "-" "-21,790 (-74,323, 10,440)" 
-## ICER              "-" "56,049"                    
+## Incremental QALYs "-" "1.01 (0.85, 1.16)"         
+## Incremental costs "-" "105,899 (99,877, 120,062)" 
+## Incremental NMB   "-" "-55,602 (-69,616, -48,132)"
+## ICER              "-" "105,274"                   
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>

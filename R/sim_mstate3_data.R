@@ -60,7 +60,9 @@ sim_mstate3_data <- function(n = 2000, seed = NULL){
   
   # Parameters for each transition
   get_scale <- function(shape, mean) {
-    return(mean/(gamma(1 + 1/shape)))
+    scale <- mean/(gamma(1 + 1/shape))
+    scale_ph <- scale^{-shape}
+    return(scale_ph)
   }
   
   matrixv <- function(v) {
@@ -79,7 +81,7 @@ sim_mstate3_data <- function(n = 2000, seed = NULL){
     colnames(scale_coefs) <- c("intercept", "new", "female")
     params_surv(coefs = list(shape = log_shape,
                              scale = scale_coefs),
-                dist = "weibull")
+                dist = "weibullPH")
   }
     
   mstate_params <- params_surv_list(

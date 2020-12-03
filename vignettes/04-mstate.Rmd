@@ -63,7 +63,7 @@ Multi-state data consists of one row for each possible transition from a given h
 
 Multi-state models can be fit by estimating a joint survival model with interaction terms for different transition (see the `hesim` [introductory vignette](https://hesim-dev.github.io/hesim/articles/intro.html) for more details) or by fitting separate survival models for each transition. We will take the latter approach and and fit 3 parametric Weibull models. (Note that in an applied example you should compare the performance of multiple distributions. Type `?params_surv` to view the survival distributions supported by `hesim`.) 
 
-```{r, fit-mstate}
+```{r, fit-mstate, warning = FALSE}
 ```
 
 ## Utility and costs
