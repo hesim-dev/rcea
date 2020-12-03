@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -218,7 +218,7 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <span class="no">format_dollar</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) {
   <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>))
 }</pre></body></html></div>
-<p>The dotted line in the plot is the WTP line, with slope equal to the desire value of <span class="math inline">\(k\)</span> (in this case $50,000). For a chosen <span class="math inline">\(k\)</span>, points below the line are cost-effective while those above it are not.</p>
+<p>The dotted line in the plot is the WTP line, with slope equal to the desire value of <span class="math inline">\(k\)</span> (in this case $100,000). For a chosen <span class="math inline">\(k\)</span>, points below the line are cost-effective while those above it are not.</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ylim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ic</span>]) * <span class="fl">1.1</span>
 <span class="no">xlim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ie</span>]) * <span class="fl">1.1</span>)
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>,

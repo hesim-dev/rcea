@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -309,7 +309,7 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <h3 class="hasAnchor">
 <a href="#survival-curves" class="anchor"></a><span class="header-section-number">5.3.1</span> Survival curves</h3>
 <p>Once the PSM has been initialized, the <code>$sim_survival()</code> method can be used to generate survival curves for each endpoint.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">times</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">50</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fl">.1</span>)
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">times</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">20</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fl">.1</span>)
 <span class="no">econmod</span>$<span class="fu">sim_survival</span>(<span class="kw">t</span> <span class="kw">=</span> <span class="no">times</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">survival_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id patient_wt curve   t  survival
@@ -355,10 +355,10 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">.03</span>)
 <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                         
-## Incremental QALYs "-" "1.01 (0.85, 1.16)"         
-## Incremental costs "-" "105,899 (99,877, 120,062)" 
-## Incremental NMB   "-" "-55,602 (-69,616, -48,132)"
-## ICER              "-" "105,274"                   
+## Incremental QALYs "-" "0.99 (0.83, 1.14)"         
+## Incremental costs "-" "105,172 (99,504, 118,350)" 
+## Incremental NMB   "-" "-55,829 (-69,066, -48,682)"
+## ICER              "-" "106,572"                   
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>

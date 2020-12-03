@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -258,11 +258,11 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">stateprobs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id t      prob
 ## 1:      1           1          1      1        1 0 1.0000000
-## 2:      1           1          1      1        1 1 0.8534473
-## 3:      1           1          1      1        1 2 0.7997430
-## 4:      1           1          1      1        1 3 0.7714319
-## 5:      1           1          1      1        1 4 0.7503073
-## 6:      1           1          1      1        1 5 0.7314487</code></pre>
+## 2:      1           1          1      1        1 1 0.8511900
+## 3:      1           1          1      1        1 2 0.7997307
+## 4:      1           1          1      1        1 3 0.7720623
+## 5:      1           1          1      1        1 4 0.7505028
+## 6:      1           1          1      1        1 5 0.7307944</code></pre>
 </div>
 <div id="costs-and-qalys" class="section level3">
 <h3 class="hasAnchor">
@@ -271,21 +271,21 @@
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_qalys</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">lys</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_right"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">qalys_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr     qalys       lys
-## 1:      1           1          1      1        1 0.03 14.659959 14.659959
-## 2:      1           1          1      1        2 0.03  2.656084  3.556628
-## 3:      1           1          1      1        3 0.03  4.126972  6.853798
-## 4:      1           2          1      1        1 0.03 17.322383 17.322383
-## 5:      1           2          1      1        2 0.03  2.600815  3.482619
-## 6:      1           2          1      1        3 0.03  3.484025  5.786034</code></pre>
+## 1:      1           1          1      1        1 0.03 14.364842 14.364842
+## 2:      1           1          1      1        2 0.03  2.465829  3.417486
+## 3:      1           1          1      1        3 0.03  3.639365  8.222516
+## 4:      1           2          1      1        1 0.03 17.066088 17.066088
+## 5:      1           2          1      1        2 0.03  2.436398  3.376697
+## 6:      1           2          1      1        3 0.03  3.037797  6.863376</code></pre>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">econmod</span>$<span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/sim_ev.html">sim_costs</a></span>(<span class="kw">dr</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">integrate_method</span> <span class="kw">=</span> <span class="st">"riemann_right"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">econmod</span>$<span class="no">costs_</span>)</pre></body></html></div>
 <pre><code>##    sample strategy_id patient_id grp_id state_id   dr  category      costs
-## 1:      1           1          1      1        1 0.03 treatment  29319.918
-## 2:      1           1          1      1        2 0.03 treatment   7113.255
-## 3:      1           1          1      1        3 0.03 treatment  13707.597
-## 4:      1           2          1      1        1 0.03 treatment 207868.593
-## 5:      1           2          1      1        2 0.03 treatment  41791.428
-## 6:      1           2          1      1        3 0.03 treatment  69432.411</code></pre>
+## 1:      1           1          1      1        1 0.03 treatment  28729.683
+## 2:      1           1          1      1        2 0.03 treatment   6834.972
+## 3:      1           1          1      1        3 0.03 treatment  16445.032
+## 4:      1           2          1      1        1 0.03 treatment 204793.054
+## 5:      1           2          1      1        2 0.03 treatment  40520.366
+## 6:      1           2          1      1        3 0.03 treatment  82360.514</code></pre>
 </div>
 </div>
 </div>
@@ -300,10 +300,10 @@
 <p>Although <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the <a href="06-cea.html">CEA tutorial</a>.</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer_tbl.html">icer_tbl</a></span>(<span class="no">cea_pw_out</span>, <span class="kw">colnames</span> <span class="kw">=</span> <span class="no">strategies</span>$<span class="no">strategy_name</span>)</pre></body></html></div>
 <pre><code>##                   SOC New                           
-## Incremental QALYs "-" "2.05 (1.00, 3.09)"           
-## Incremental costs "-" "257,811 (207,335, 286,980)"  
-## Incremental NMB   "-" "-155,104 (-211,830, -74,328)"
-## ICER              "-" "125,508"                     
+## Incremental QALYs "-" "2.06 (1.05, 3.07)"           
+## Incremental costs "-" "258,478 (209,277, 286,721)"  
+## Incremental NMB   "-" "-155,528 (-213,380, -78,223)"
+## ICER              "-" "125,535"                     
 ## Conclusion        "-" "Not cost-effective"</code></pre>
 </div>
   </div>

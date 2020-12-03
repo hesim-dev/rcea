@@ -1,7 +1,7 @@
 Package: rcea
 Type: Package
 Title: Cost-effectiveness Modeling with R
-Version: 0.0.2
+Version: 0.1.1
 Authors@R: c(
     person("Devin", "Incerti", , "devin.incerti@gmail.com", role = c("aut", "cre")),
     person("Jeroen P.", "Jansen", role = "aut")

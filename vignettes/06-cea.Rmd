@@ -93,7 +93,7 @@ To make nicer plots, we can write a simple helper function to (i) create labels 
 ```{r, helper-functions}
 ```
 
-The dotted line in the plot is the WTP line, with slope equal to the desire value of $k$ (in this case \$50,000). For a chosen $k$, points below the line are cost-effective while those above it are not. 
+The dotted line in the plot is the WTP line, with slope equal to the desire value of $k$ (in this case \$100,000). For a chosen $k$, points below the line are cost-effective while those above it are not. 
 
 ```{r, ceplane-plot}
 ```

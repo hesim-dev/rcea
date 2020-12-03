@@ -114,7 +114,7 @@ econmod <- Psm$new(survival_models = survmods,
 
 ## ---- Simulate outcomes --- ##
 ## @knitr sim_survival
-times <- seq(0, 50, by = .1)
+times <- seq(0, 20, by = .1)
 econmod$sim_survival(t = times)
 head(econmod$survival_)
 
