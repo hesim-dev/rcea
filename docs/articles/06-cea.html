@@ -100,7 +100,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-12-03</h4>
+            <h4 class="date">2020-12-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -139,7 +139,7 @@ j^{*} = \text{argmax}_j E_{\theta} \left[NMB(j,\theta)\right].
 INMB(\theta) = NMB(j = 1, \theta) - NMB(j = 0, \theta).
 \end{aligned}
 \]</span></p>
-<p>Treatments can be compared in an equivalent manner using the incremental cost-effectiveness ratio (ICER). The most common case occurs when a new treatment is more effective and more costly so that treatment <span class="math inline">\(1\)</span> is preferred to treatment <span class="math inline">\(0\)</span> if the ICER is greater than the willingness to pay threshold <span class="math inline">\(k\)</span>,</p>
+<p>Treatments can be compared in an equivalent manner using the incremental cost-effectiveness ratio (ICER). The most common case occurs when a new treatment is more effective and more costly so that treatment <span class="math inline">\(1\)</span> is preferred to treatment <span class="math inline">\(0\)</span> if the ICER is less than the willingness to pay threshold <span class="math inline">\(k\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
 k &gt; \frac{E_\theta[c_{1} - c_{0}]}{E_\theta[e_{1} - e_{0}]} = ICER.

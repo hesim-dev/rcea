@@ -51,7 +51,7 @@ INMB(\theta) = NMB(j = 1, \theta) - NMB(j = 0, \theta).
 \end{aligned}
 $$
 
-Treatments can be compared in an equivalent manner using the incremental cost-effectiveness ratio (ICER). The most common case occurs when a new treatment is more effective and more costly so that treatment $1$ is preferred to treatment $0$ if the ICER is greater than the willingness to pay threshold $k$,
+Treatments can be compared in an equivalent manner using the incremental cost-effectiveness ratio (ICER). The most common case occurs when a new treatment is more effective and more costly so that treatment $1$ is preferred to treatment $0$ if the ICER is less than the willingness to pay threshold $k$,
 
 $$
 \begin{aligned}
