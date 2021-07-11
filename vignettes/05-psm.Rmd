@@ -7,9 +7,9 @@ output:
     toc: yes
     toc_depth: 2
 pkgdown:
-  as_is: yes
+  as_is: false
 vignette: >
-  %\VignetteIndexEntry{Simple Markov Cohort Model (hesim)}
+  %\VignetteIndexEntry{Partitioned survival model}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -46,11 +46,16 @@ We set up the model in the same way as in the multi-state model, except that sin
 ```{r, hesim_data}
 ```
 
+As in the multi-state modeling tutorial, we will use `get_labels()` to assign labels to the ID variables in order to facilitate nicer presentation of results.
+
+```{r, labels}
+```
+
 # Parameter estimation
 ## Survival models
-Multi-state models estimate the hazards between all transitions in an integrated manner. PSMs are, in contrast, parameterized by estimating separate survival models for different endpoints. The data consists of one row per patient. In the oncology example, the two endpoints are PFS and OS. We created the function `sim_pfs_os_data()` to simulate such data. 
+Multi-state models estimate the hazards between all transitions in an integrated manner. PSMs are, in contrast, parameterized by estimating separate survival models for different endpoints. The data consists of one row per patient. In the oncology example, the two endpoints are PFS and OS. We leverage the function `as_pfs_os()` from the `hesim` package to create such data. 
 
-```{r, sim_pfs_os_data}
+```{r, pfs_os_data}
 ```
 
 To maintain consistency with the multi-state model, we will fit Weibull survival models for both PFS and OS and include an indicator for female as a covariate. The PFS and OS fits are stored in a `hesim::flexsurvreg_list`, which is just a list of models fit using `flexsurv::flexsurvreg()`. 
@@ -128,8 +133,7 @@ ggplot(surv_means, aes(x = t, y = survival, fill = curve)) +
   geom_ribbon(aes(ymin = survival_min, ymax = survival), alpha = .5) +
   xlab("Years") + ylab("Proportion surviving") +
   scale_color_discrete(name = "Survival curve") +
-  guides(fill = FALSE) +
-  theme_bw() +
+  guides(fill = "none") +
   theme(legend.position = "bottom") 
 ```
 

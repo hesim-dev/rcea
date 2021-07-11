@@ -7,7 +7,7 @@ output:
     toc_depth: 2
     number_sections: TRUE
 pkgdown:
-  as_is: true
+  as_is: false
 vignette: >
   %\VignetteIndexEntry{Simple Markov Cohort Model}
   %\VignetteEngine{knitr::rmarkdown}

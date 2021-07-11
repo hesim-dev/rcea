@@ -1,7 +1,7 @@
 Package: rcea
 Type: Package
 Title: Cost-effectiveness Modeling with R
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Devin", "Incerti", , "devin.incerti@gmail.com", role = c("aut", "cre")),
     person("Jeroen P.", "Jansen", role = "aut")
@@ -17,7 +17,7 @@ Imports:
   data.table,
   flexsurv,
   ggplot2,
-  hesim,
+  hesim (>= 0.5.0),
   kableExtra,
   knitr,
   magrittr,
@@ -25,6 +25,7 @@ Imports:
   stats,
   tibble,
   usethis
+Encoding: UTF-8
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
