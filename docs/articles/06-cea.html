@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/hesim-dev/rcea/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -95,12 +95,12 @@
 
       
 
-      </header><script src="06-cea_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="06-cea_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2020-12-23</h4>
+            <h4 class="date">2021-07-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -111,16 +111,17 @@
     
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
+<a href="#overview" class="anchor"></a>Overview</h1>
 <p>The prior tutorials have focused on constructing economic models to simulate disease progression, costs, and quality-adjusted life-years (QALYs). While incremental cost-effectiveness ratios (ICERs) have been computed and probabilistic sensitivity analysis (PSA) has been employed, we have not yet formalized cost-effectiveness analysis (CEA) or represented decision uncertainty.</p>
 <p>In this analysis we will perform a CEA given the output of model from the <a href="04-mstate.html">“Semi-Markov Multi-state Model”</a> tutorial. We will use the CEA functions from <code>hesim</code> to summarize decision uncertainty and <code>ggplot2</code> for visualization. The CEA will be peformed for a single target population, but you can review the <code>hesim</code> tutorial on <a href="https://hesim-dev.github.io/hesim/articles/cea.html">CEA</a> and the references therein for an example of CEA in the context of multiple subgroups.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"hesim"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span>()) <span class="co"># Set ggplot2 theme</span></pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://hesim-dev.github.io/hesim/">"hesim"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org">"ggplot2"</a></span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># Set ggplot2 theme</span></code></pre></div>
 </div>
 <div id="theory" class="section level1">
 <h1 class="hasAnchor">
-<a href="#theory" class="anchor"></a><span class="header-section-number">2</span> Theory</h1>
+<a href="#theory" class="anchor"></a>Theory</h1>
 <p>CEA is based on estimating the net monetary benefit (NMB). For a given parameter set <span class="math inline">\(\theta\)</span>, the NMB with treatment <span class="math inline">\(j\)</span> is computed as the difference between the monetized health gains from an intervention less costs, or,</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -155,141 +156,149 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 </div>
 <div id="application" class="section level1">
 <h1 class="hasAnchor">
-<a href="#application" class="anchor"></a><span class="header-section-number">3</span> Application</h1>
+<a href="#application" class="anchor"></a>Application</h1>
 <p>CEA can be performed using the <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea()</a></code> and <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">hesim::cea_pw()</a></code> functions. <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea()</a></code> summarizes results by taking into account each treatment strategy in the analysis, while <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> summarizes “pairwise” results in which each treatment is compared to a comparator.</p>
 <p>We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a <code><a href="https://hesim-dev.github.io/hesim/reference/ce.html">hesim::ce</a></code> object).</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># First load the cost-effectiveness object saved during the "Semi-Markov </span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># First load the cost-effectiveness object saved during the "Semi-Markov </span>
 <span class="co"># Multi-state Model" tutorial (i.e., from 04-mstate.Rmd)</span>
-<span class="no">ce_sim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"ce_sim.rds"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">ce_sim</span>)</pre></body></html></div>
+<span class="va">ce_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">"ce_sim.rds"</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ce_sim</span><span class="op">)</span></code></pre></div>
 <pre><code>## $costs
 ##       category   dr sample strategy_id     costs grp_id
-##    1:     Drug 0.03      1           1  17082.87      1
-##    2:     Drug 0.03      1           2 106040.66      1
-##    3:     Drug 0.03      2           1  16883.08      1
-##    4:     Drug 0.03      2           2 105109.71      1
-##    5:     Drug 0.03      3           1  16780.45      1
+##    1:     Drug 0.03      1           1  17386.68      1
+##    2:     Drug 0.03      1           2 109537.52      1
+##    3:     Drug 0.03      2           1  17642.51      1
+##    4:     Drug 0.03      2           2 110829.59      1
+##    5:     Drug 0.03      3           1  17870.73      1
 ##   ---                                                  
-## 2996:    total 0.03    498           2 130244.82      1
-## 2997:    total 0.03    499           1  74706.22      1
-## 2998:    total 0.03    499           2 173472.76      1
-## 2999:    total 0.03    500           1  75083.86      1
-## 3000:    total 0.03    500           2 172661.37      1
+## 2996:    total 0.03    498           2 126727.44      1
+## 2997:    total 0.03    499           1  35257.22      1
+## 2998:    total 0.03    499           2 129845.42      1
+## 2999:    total 0.03    500           1  87786.46      1
+## 3000:    total 0.03    500           2 186773.37      1
 ## 
 ## $qalys
 ##         dr sample strategy_id    qalys grp_id
-##    1: 0.00      1           1 6.133374      1
-##    2: 0.00      1           2 7.215232      1
-##    3: 0.00      2           1 5.936088      1
-##    4: 0.00      2           2 7.022106      1
-##    5: 0.00      3           1 6.981504      1
+##    1: 0.00      1           1 7.228697      1
+##    2: 0.00      1           2 8.390153      1
+##    3: 0.00      2           1 7.102679      1
+##    4: 0.00      2           2 8.364673      1
+##    5: 0.00      3           1 7.740389      1
 ##   ---                                        
-## 1996: 0.03    498           2 6.443382      1
-## 1997: 0.03    499           1 5.632151      1
-## 1998: 0.03    499           2 6.752481      1
-## 1999: 0.03    500           1 5.392905      1
-## 2000: 0.03    500           2 6.298375      1</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">wtp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">250000</span>, <span class="fl">500</span>) <span class="co"># Willingness to pay per QALY</span>
-<span class="no">cea_pw_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw</a></span>(<span class="no">ce_sim</span>, <span class="kw">comparator</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="co"># Comparator is SOC (ID = 1)</span>
-                     <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
-                     <span class="no">wtp</span>)
-<span class="no">cea_out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea</a></span>(<span class="no">ce_sim</span>,
-               <span class="kw">dr_qalys</span> <span class="kw">=</span> <span class="fl">0.03</span>, <span class="kw">dr_costs</span> <span class="kw">=</span> <span class="fl">0.03</span>,
-               <span class="kw">k</span> <span class="kw">=</span> <span class="no">wtp</span>)</pre></body></html></div>
+## 1996: 0.03    498           2 7.359889      1
+## 1997: 0.03    499           1 6.769579      1
+## 1998: 0.03    499           2 7.633156      1
+## 1999: 0.03    500           1 6.107734      1
+## 2000: 0.03    500           2 7.088128      1</code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wtp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">250000</span>, <span class="fl">500</span><span class="op">)</span> <span class="co"># Willingness to pay per QALY</span>
+<span class="va">cea_pw_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw</a></span><span class="op">(</span><span class="va">ce_sim</span>, comparator <span class="op">=</span> <span class="fl">1</span>, <span class="co"># Comparator is SOC (ID = 1)</span>
+                     dr_qalys <span class="op">=</span> <span class="fl">0.03</span>, dr_costs <span class="op">=</span> <span class="fl">0.03</span>,
+                     <span class="va">wtp</span><span class="op">)</span>
+<span class="va">cea_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea</a></span><span class="op">(</span><span class="va">ce_sim</span>, 
+               dr_qalys <span class="op">=</span> <span class="fl">0.03</span>, dr_costs <span class="op">=</span> <span class="fl">0.03</span>,
+               k <span class="op">=</span> <span class="va">wtp</span><span class="op">)</span></code></pre></div>
 <p>Each function returns a number of outputs for summarizing a PSA.</p>
 <div id="cost-effectiveness-plane" class="section level2">
 <h2 class="hasAnchor">
-<a href="#cost-effectiveness-plane" class="anchor"></a><span class="header-section-number">3.1</span> Cost-effectiveness plane</h2>
+<a href="#cost-effectiveness-plane" class="anchor"></a>Cost-effectiveness plane</h2>
 <p>The cost-effectiveness plane plots the incremental effectiveness of a treatment strategy (relative to a comparator) against the incremental cost of the treatment strategy. The plot is useful because it demonstrates both the uncertainty and the magnitude of the estimates. Each point on the plot is from a particular random draw from the PSA.</p>
 <p>Data for plotting a cost-effectiveness plane comes from the <code>delta</code> output generated from the <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea_pw()</a></code> function, which, for each sampled parameter set and treatment strategy, estimates differences in costs and QALYs relative to the comparator.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>)</pre></body></html></div>
-<pre><code>##    sample strategy_id grp_id        ie        ic
-## 1:      1           2      1 0.7926748  90250.26
-## 2:      2           2      1 0.8072366  89308.92
-## 3:      3           2      1 0.8213734  88431.28
-## 4:      4           2      1 0.8522574 103627.14
-## 5:      5           2      1 0.8341070  92280.78
-## 6:      6           2      1 1.1075023  94262.85</code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">cea_pw_out</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></code></pre></div>
+<pre><code>##    sample strategy_id grp_id        ie       ic
+## 1:      1           2      1 0.8310605 94408.77
+## 2:      2           2      1 0.9204942 98350.53
+## 3:      3           2      1 0.6953133 91466.52
+## 4:      4           2      1 0.8855292 95162.38
+## 5:      5           2      1 0.7897635 89969.83
+## 6:      6           2      1 0.7921234 86650.04</code></pre>
 <p>To make nicer plots, we can write a simple helper function to (i) create labels for the treatment strategies and (ii) format dollar values (which you might also use the <code>scales</code> package for).</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">strategy_factor</span> <span class="kw">&lt;-</span> <span class="kw">function</span> (<span class="no">x</span>) {
-  <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">x</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>, <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>))
-}
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">strategy_factor</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">x</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SOC"</span>, <span class="st">"New"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
 
-<span class="no">format_dollar</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) {
-  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>))
-}</pre></body></html></div>
+<span class="va">format_dollar</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span><span class="op">(</span><span class="va">x</span>, format <span class="op">=</span> <span class="st">"d"</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 <p>The dotted line in the plot is the WTP line, with slope equal to the desire value of <span class="math inline">\(k\)</span> (in this case $100,000). For a chosen <span class="math inline">\(k\)</span>, points below the line are cost-effective while those above it are not.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ylim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ic</span>]) * <span class="fl">1.1</span>
-<span class="no">xlim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>[, <span class="no">ie</span>]) * <span class="fl">1.1</span>)
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_pw_out</span>$<span class="no">delta</span>,
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">ie</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">ic</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html">geom_jitter</a></span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">.5</span>)  +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Incremental QALYs"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Incremental cost"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="no">ylim</span>, <span class="no">ylim</span>),
-                     <span class="kw">labels</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="no">xlim</span>, <span class="no">xlim</span>), <span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(-<span class="fl">6</span>, <span class="fl">6</span>, <span class="fl">2</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span>(<span class="kw">slope</span> <span class="kw">=</span> <span class="fl">100000</span>, <span class="kw">linetype</span> <span class="kw">=</span> <span class="st">"dashed"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span>(<span class="kw">yintercept</span> <span class="kw">=</span> <span class="fl">0</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="kw">xintercept</span> <span class="kw">=</span> <span class="fl">0</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceplane-plot-1.png" width="672"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">cea_pw_out</span><span class="op">$</span><span class="va">delta</span><span class="op">[</span>, <span class="va">ic</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.1</span>
+<span class="va">xlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">cea_pw_out</span><span class="op">$</span><span class="va">delta</span><span class="op">[</span>, <span class="va">ie</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">cea_pw_out</span><span class="op">$</span><span class="va">delta</span>, 
+       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ie</span>, y <span class="op">=</span> <span class="va">ic</span>, col <span class="op">=</span> <span class="fu">strategy_factor</span><span class="op">(</span><span class="va">strategy_id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html">geom_jitter</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>  <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Incremental QALYs"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Incremental cost"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">ylim</span>, <span class="va">ylim</span><span class="op">)</span>,
+                     labels <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">xlim</span>, <span class="va">xlim</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">6</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Strategy"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="fl">100000</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></code></pre></div>
+<p><img src="06-cea_files/figure-html/ceplane-plot-1.png" width="700"></p>
 </div>
 <div id="cost-effectiveness-acceptability-curves-ceac" class="section level2">
 <h2 class="hasAnchor">
-<a href="#cost-effectiveness-acceptability-curves-ceac" class="anchor"></a><span class="header-section-number">3.2</span> Cost-effectiveness acceptability curves (CEAC)</h2>
+<a href="#cost-effectiveness-acceptability-curves-ceac" class="anchor"></a>Cost-effectiveness acceptability curves (CEAC)</h2>
 <div id="simultanous-comparison" class="section level3">
 <h3 class="hasAnchor">
-<a href="#simultanous-comparison" class="anchor"></a><span class="header-section-number">3.2.1</span> Simultanous comparison</h3>
+<a href="#simultanous-comparison" class="anchor"></a>Simultanous comparison</h3>
 <p>A useful summary measure for quantifying uncertainty is the probability that each treatment strategy is the most cost effective, which is estimated from simulation output as the proportion of simulation draws that each strategy has the highest NMB.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">mce</span>,
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">prob</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Probability most cost-effective"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
-                     <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceac-simultaneous-plot-1.png" width="672"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">cea_out</span><span class="op">$</span><span class="va">mce</span>, 
+       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">prob</span>, col <span class="op">=</span> <span class="fu">strategy_factor</span><span class="op">(</span><span class="va">strategy_id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Probability most cost-effective"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">wtp</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>, 
+                     label <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Strategy"</span><span class="op">)</span></code></pre></div>
+<p><img src="06-cea_files/figure-html/ceac-simultaneous-plot-1.png" width="700"></p>
 <p>The probability that the new treatment is the most cost-effective is increasing in WTP.</p>
 </div>
 <div id="pairwise-comparison" class="section level3">
 <h3 class="hasAnchor">
-<a href="#pairwise-comparison" class="anchor"></a><span class="header-section-number">3.2.2</span> Pairwise comparison</h3>
+<a href="#pairwise-comparison" class="anchor"></a>Pairwise comparison</h3>
 <p>The difference between this plot and the one above is that it compares each strategy to a single comparator rather than considering all strategies simultaneously. Since there are only two treatment strategies the distinction is not meaningful, but it can be important when there are 3 or more treatment strategies.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_pw_out</span>$<span class="no">ceac</span>,
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">prob</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>()  +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Probability most cost-effective"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
-                     <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceac-pairwise-plot-1.png" width="672"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">cea_pw_out</span><span class="op">$</span><span class="va">ceac</span>, 
+       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">prob</span>, col <span class="op">=</span> <span class="fu">strategy_factor</span><span class="op">(</span><span class="va">strategy_id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Probability most cost-effective"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">wtp</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>, 
+                     label <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Strategy"</span><span class="op">)</span></code></pre></div>
+<p><img src="06-cea_files/figure-html/ceac-pairwise-plot-1.png" width="700"></p>
 </div>
 </div>
 <div id="cost-effectiveness-acceptability-frontier-ceaf" class="section level2">
 <h2 class="hasAnchor">
-<a href="#cost-effectiveness-acceptability-frontier-ceaf" class="anchor"></a><span class="header-section-number">3.3</span> Cost-effectiveness acceptability frontier (CEAF)</h2>
+<a href="#cost-effectiveness-acceptability-frontier-ceaf" class="anchor"></a>Cost-effectiveness acceptability frontier (CEAF)</h2>
 <p>One drawback of the CEAC is that the probability of being cost-effective cannot be used to determine the optimal treatment option. Instead, if a decision-makers objective is to maximize health gain, then decisions should be based on the expected NMB. The cost-effectiveness acceptability frontier (CEAF), which plots the probability that the optimal treatment strategy (i.e., the strategy with the highest expected NMB) is cost-effective, is appropriate in this context.</p>
 <p>A CEAF curve can be easily created by using the <code>best</code> column to subset to the treatment strategy with the highest expected NMB for each WTP value.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">mce</span>[<span class="no">best</span> <span class="kw">==</span> <span class="fl">1</span>],
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">prob</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fu">strategy_factor</span>(<span class="no">strategy_id</span>))) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Probability most cost-effective"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
-                     <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Strategy"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/ceaf-plot-1.png" width="672"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">cea_out</span><span class="op">$</span><span class="va">mce</span><span class="op">[</span><span class="va">best</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, 
+       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">prob</span>, col <span class="op">=</span> <span class="fu">strategy_factor</span><span class="op">(</span><span class="va">strategy_id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Probability most cost-effective"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">wtp</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>, 
+                     label <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html">scale_colour_discrete</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Strategy"</span><span class="op">)</span></code></pre></div>
+<p><img src="06-cea_files/figure-html/ceaf-plot-1.png" width="700"></p>
 </div>
 <div id="value-of-perfect-information" class="section level2">
 <h2 class="hasAnchor">
-<a href="#value-of-perfect-information" class="anchor"></a><span class="header-section-number">3.4</span> Value of perfect information</h2>
+<a href="#value-of-perfect-information" class="anchor"></a>Value of perfect information</h2>
 <p>A limitation of the prior measures are that they ignore the magnitude of cost or QALY gains. A measure which combines the probability of being most effective with the magnitude of the expected NMB is the expected value of perfect information (EVPI). Intuitively, the EVPI provides an estimate of the amount that a decision maker would be willing to pay to collect additional data and completely eliminate uncertainty. Mathematically, the EVPI is defined as the difference between the maximum expected NMB given perfect information and the maximum expected NMB given current information. In other words, we calculate the NMB for the optimal treatment strategy for each random draw of the parameters and compare that to the NMB for the treatment strategy that is optimal when averaging across all parameters,</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -297,15 +306,16 @@ EVPI &amp;= E_\theta \left[max_j NMB(j, \theta)\right] - max_j E_\theta \left [ 
 \end{aligned}
 \]</span></p>
 <p>The <code><a href="https://hesim-dev.github.io/hesim/reference/cea.html">cea()</a></code> function performs the EVPI calculation across all simulation draws from the PSA and for a number of WTP values <span class="math inline">\(k\)</span>. A plot by group of the the EVPI for different values of <span class="math inline">\(k\)</span> is shown below. The kink in the plot represents the value of <span class="math inline">\(k\)</span> where the optimal strategy changes.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">cea_out</span>$<span class="no">evpi</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">k</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">evpi</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>()  +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Willingness to pay"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"Expected value of perfect information"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span>(<span class="kw">breaks</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">wtp</span>), <span class="kw">length.out</span> <span class="kw">=</span> <span class="fl">6</span>),
-                     <span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">label</span> <span class="kw">=</span> <span class="no">format_dollar</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">legend.position</span> <span class="kw">=</span> <span class="st">"bottom"</span>)</pre></body></html></div>
-<p><img src="06-cea_files/figure-html/evpi-plot-1.png" width="672"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">cea_out</span><span class="op">$</span><span class="va">evpi</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">evpi</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Expected value of perfect information"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">wtp</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>, 
+                     label <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> </code></pre></div>
+<p><img src="06-cea_files/figure-html/evpi-plot-1.png" width="700"></p>
 </div>
 </div>
   </div>
@@ -325,7 +335,7 @@ EVPI &amp;= E_\theta \left[max_j NMB(j, \theta)\right] - max_j E_\theta \left [ 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

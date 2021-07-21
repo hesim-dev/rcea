@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rcea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/hesim-dev/rcea/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -95,13 +95,13 @@
 
       
 
-      </header><script src="01-markov-cohort_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="01-markov-cohort_files/kePrint-0.0.1/kePrint.js"></script><link href="01-markov-cohort_files/lightable-0.0.1/lightable.css" rel="stylesheet">
+      </header><script src="01-markov-cohort_files/header-attrs-2.9/header-attrs.js"></script><script src="01-markov-cohort_files/kePrint-0.0.1/kePrint.js"></script><link href="01-markov-cohort_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple Markov Cohort Model</h1>
             
-            <h4 class="date">2020-12-03</h4>
+            <h4 class="date">2021-07-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/01-markov-cohort.Rmd"><code>vignettes/01-markov-cohort.Rmd</code></a></small>
       <div class="hidden name"><code>01-markov-cohort.Rmd</code></div>
@@ -112,22 +112,23 @@
     
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a><span class="header-section-number">1</span> Overview</h1>
+<a href="#overview" class="anchor"></a>Overview</h1>
 <p>The most commonly used model for cost-effectiveness analysis (CEA) is the cohort discrete time state transition model (cDTSTM), commonly referred to as a Markov cohort model. In this tutorial we demonstrate implementation with <code>R</code> of the simplest of cDSTMs, a time-homogeneous model with transition probabilities that are constant over time. The entire analysis can be run using <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html">Base R</a> (i.e., without installing any packages). However, we will use the following packages to create a nice looking cost-effectiveness table.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rcea"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"knitr"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"kableExtra"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"magrittr"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tibble"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://hesim-dev.github.io/rcea/">"rcea"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://yihui.org/knitr/">"knitr"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://haozhu233.github.io/kableExtra/">"kableExtra"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://magrittr.tidyverse.org">"magrittr"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://tibble.tidyverse.org/">"tibble"</a></span><span class="op">)</span></code></pre></div>
 <p>As an example, we will consider the 4-state sick-sicker model that has been described in more detail by <a href="https://arxiv.org/abs/2001.07824">Alarid-Escudero et al</a>. The model will be used to compare two treatment strategies, a “New” treatment and the existing “standard of care (SOC)”. The model consists 4 health states. Ordered from worst to best to worst, they are: Healthy (<em>H</em>), Sick (<em>S1</em>), Sicker (<em>S2</em>), and Death (<em>D</em>). Possible transitions from each state are displayed in the figure below.</p>
 <p><img src="sick-sicker.png" width="700px"></p>
 </div>
 <div id="theory" class="section level1">
 <h1 class="hasAnchor">
-<a href="#theory" class="anchor"></a><span class="header-section-number">2</span> Theory</h1>
+<a href="#theory" class="anchor"></a>Theory</h1>
 <div id="transition-probabilities" class="section level2">
 <h2 class="hasAnchor">
-<a href="#transition-probabilities" class="anchor"></a><span class="header-section-number">2.1</span> Transition probabilities</h2>
+<a href="#transition-probabilities" class="anchor"></a>Transition probabilities</h2>
 <p>Transition probabilities are the building blocks of Markov cohort models and used to simulate the probability that a cohort of patients is in each health state at each model cycle. To set notation, let <span class="math inline">\(p_t\)</span> be the transition probability matrix governing transitions from one time period (i.e., model cycle) to the next. <span class="math inline">\(x_t\)</span> is the state occupancy vector at time <span class="math inline">\(t\)</span>. In this example, <span class="math inline">\(p_t\)</span> is a <span class="math inline">\(4 \times 4\)</span> matrix and <span class="math inline">\(x_t\)</span> is a <span class="math inline">\(1 \times 4\)</span> vector containing the proportion of patients in each of the 4 health states.</p>
 <p>At time <span class="math inline">\(0\)</span>, the state vector is <span class="math inline">\(x_0 = (1, 0, 0, 0)\)</span> since all patients are healthy. The state vector at time <span class="math inline">\(t+1\)</span> for each of <span class="math inline">\(T\)</span> model cycles can be computed using matrix multiplication,</p>
 <p><span class="math display">\[
@@ -136,7 +137,7 @@ x_{t+1}= x_t p_t, \quad t = 0,\ldots,T
 </div>
 <div id="costs-and-outcome" class="section level2">
 <h2 class="hasAnchor">
-<a href="#costs-and-outcome" class="anchor"></a><span class="header-section-number">2.2</span> Costs and outcome</h2>
+<a href="#costs-and-outcome" class="anchor"></a>Costs and outcome</h2>
 <p>To perform a CEA, Markov models estimate expected (i.e., average) costs and outcomes for the cohort of interest. In our examples, quality-adjusted life-years (QALYs) will be used as the outcome.</p>
 <p>Costs and QALYs are computed by assigning values to the health states (i.e., “state values”) and weighting the time spent in each state by these state values. For example, if utility in each of the four health states is given by the <span class="math inline">\(4 \times 1\)</span> vector <span class="math inline">\(u = (1, 0.75, 0.5, 0)^T\)</span> and say, <span class="math inline">\(x_1 = (.8, .1, 0.08, 0.02)\)</span>, then the weighted average utility would be given by <span class="math inline">\(x_{1}u = 0.915\)</span>. More generally, we can define a state vector at time <span class="math inline">\(t\)</span> as <span class="math inline">\(z_t\)</span> so that the expected value at time <span class="math inline">\(t\)</span> is given by</p>
 <p><span class="math display">\[
@@ -154,36 +155,39 @@ NPV = \sum_{t} PV_t
 </div>
 <div id="model-parameters" class="section level1">
 <h1 class="hasAnchor">
-<a href="#model-parameters" class="anchor"></a><span class="header-section-number">3</span> Model parameters</h1>
+<a href="#model-parameters" class="anchor"></a>Model parameters</h1>
 <div id="transition-probabilities-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#transition-probabilities-1" class="anchor"></a><span class="header-section-number">3.1</span> Transition probabilities</h2>
+<a href="#transition-probabilities-1" class="anchor"></a>Transition probabilities</h2>
 <div id="standard-of-care" class="section level3">
 <h3 class="hasAnchor">
-<a href="#standard-of-care" class="anchor"></a><span class="header-section-number">3.1.1</span> Standard of care</h3>
+<a href="#standard-of-care" class="anchor"></a>Standard of care</h3>
 <p>The annual transition probabilities for SOC among our cohort of interest, say 25-year old patients, are defined as follows.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">p_hd</span> <span class="kw">&lt;-</span> <span class="fl">0.002</span> <span class="co"># constant probability of dying when Healthy (all-cause mortality)</span>
-<span class="no">p_hs1</span> <span class="kw">&lt;-</span> <span class="fl">0.15</span> <span class="co"># probability of becoming Sick when Healthy</span>
-<span class="no">p_s1h</span> <span class="kw">&lt;-</span> <span class="fl">0.5</span> <span class="co"># probability of becoming Healthy when Sick</span>
-<span class="no">p_s1s2</span> <span class="kw">&lt;-</span> <span class="fl">0.105</span> <span class="co"># probability of becoming Sicker when Sick</span>
-<span class="no">p_s1d</span> <span class="kw">&lt;-</span> <span class="fl">.006</span> <span class="co"># constant probability of dying when Sick</span>
-<span class="no">p_s2d</span> <span class="kw">&lt;-</span> <span class="fl">.02</span> <span class="co"># constant probability of dying when Sicker</span></pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">p_hd</span> <span class="op">&lt;-</span> <span class="fl">0.002</span> <span class="co"># constant probability of dying when Healthy (all-cause mortality)</span>
+<span class="va">p_hs1</span> <span class="op">&lt;-</span> <span class="fl">0.15</span> <span class="co"># probability of becoming Sick when Healthy</span>
+<span class="va">p_s1h</span> <span class="op">&lt;-</span> <span class="fl">0.5</span> <span class="co"># probability of becoming Healthy when Sick</span>
+<span class="va">p_s1s2</span> <span class="op">&lt;-</span> <span class="fl">0.105</span> <span class="co"># probability of becoming Sicker when Sick</span>
+<span class="va">p_s1d</span> <span class="op">&lt;-</span> <span class="fl">.006</span> <span class="co"># constant probability of dying when Sick</span>
+<span class="va">p_s2d</span> <span class="op">&lt;-</span> <span class="fl">.02</span> <span class="co"># constant probability of dying when Sicker</span></code></pre></div>
 <p>These can be used to derive the probabilities of remaining in the same state during a model cycle.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">p_hh</span> <span class="kw">&lt;-</span> <span class="fl">1</span>  - <span class="no">p_hs1</span> - <span class="no">p_hd</span>
-<span class="no">p_s1s1</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s1h</span> - <span class="no">p_s1s2</span> - <span class="no">p_s1d</span>
-<span class="no">p_s2s2</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="no">p_s2d</span></pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">p_hh</span> <span class="op">&lt;-</span> <span class="fl">1</span>  <span class="op">-</span> <span class="va">p_hs1</span> <span class="op">-</span> <span class="va">p_hd</span>
+<span class="va">p_s1s1</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">p_s1h</span> <span class="op">-</span> <span class="va">p_s1s2</span> <span class="op">-</span> <span class="va">p_s1d</span>
+<span class="va">p_s2s2</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">p_s2d</span></code></pre></div>
 <p>Using these probabilities, the transition probability matrix can then be defined.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">p_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">p_hh</span>,  <span class="no">p_hs1</span>,  <span class="fl">0</span>,      <span class="no">p_hd</span>,
-    <span class="no">p_s1h</span>, <span class="no">p_s1s1</span>, <span class="no">p_s1s2</span>, <span class="no">p_s1d</span>,
-    <span class="fl">0</span>,     <span class="fl">0</span>,      <span class="no">p_s2s2</span>, <span class="no">p_s2d</span>,
-    <span class="fl">0</span>,     <span class="fl">0</span>,      <span class="fl">0</span>,      <span class="fl">1</span>),
-  <span class="kw">byrow</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-  <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">4</span>
-)
-<span class="no">state_names</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"H"</span>, <span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"D"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">p_soc</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span>(<span class="no">p_soc</span>) <span class="kw">&lt;-</span> <span class="no">state_names</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">p_soc</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">p_soc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">p_hh</span>,  <span class="va">p_hs1</span>,  <span class="fl">0</span>,      <span class="va">p_hd</span>,
+    <span class="va">p_s1h</span>, <span class="va">p_s1s1</span>, <span class="va">p_s1s2</span>, <span class="va">p_s1d</span>,
+    <span class="fl">0</span>,     <span class="fl">0</span>,      <span class="va">p_s2s2</span>, <span class="va">p_s2d</span>,
+    <span class="fl">0</span>,     <span class="fl">0</span>,      <span class="fl">0</span>,      <span class="fl">1</span><span class="op">)</span>,
+  byrow <span class="op">=</span> <span class="cn">TRUE</span>,
+  nrow <span class="op">=</span> <span class="fl">4</span>, ncol <span class="op">=</span> <span class="fl">4</span>
+<span class="op">)</span>
+<span class="va">state_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"D"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">p_soc</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">p_soc</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">state_names</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">p_soc</span><span class="op">)</span></code></pre></div>
 <pre><code>##        H    S1    S2     D
 ## H  0.848 0.150 0.000 0.002
 ## S1 0.500 0.389 0.105 0.006
@@ -192,57 +196,63 @@ NPV = \sum_{t} PV_t
 </div>
 <div id="new-treatment" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-treatment" class="anchor"></a><span class="header-section-number">3.1.2</span> New treatment</h3>
+<a href="#new-treatment" class="anchor"></a>New treatment</h3>
 <p>In evidence synthesis and cost-effectiveness modeling, treatment effects are typically estimated in relative terms; i.e., the effect of an intervention is assessed relative to a reference treatment. In this case, the SOC is the reference treatment and the effectiveness of the new treatment is assessed relative to the SOC. For simplicity, we will assume that treatment effects are defined in terms of the relative risk, which is assumed to reduce the probability of all transitions to a more severe health state by an equal amount. Note that this is somewhat unrealistic since relative risks are a function of baseline risk and would be unlikely to be equal for each transition. A more appropriate model would define treatment effects in terms of a measure that is invariant to baseline risk such as an odds ratio (which might still vary for each transition).</p>
 <p>The relative risk can then be used to create the transition matrix for the new treatment. We will use assume the relative risk is <span class="math inline">\(0.8\)</span>.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">apply_rr</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">p</span>, <span class="no">rr</span> <span class="kw">=</span> <span class="fl">.8</span>){
-  <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S1"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S1"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"D"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"H"</span>, <span class="st">"H"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p</span>[<span class="st">"H"</span>, -<span class="fl">1</span>])
-
-  <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"S2"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"D"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"S1"</span>, <span class="st">"S1"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p</span>[<span class="st">"S1"</span>, -<span class="fl">2</span>])
-
-  <span class="no">p</span>[<span class="st">"S2"</span>, <span class="st">"D"</span>] <span class="kw">&lt;-</span> <span class="no">p</span>[<span class="st">"S2"</span>, <span class="st">"D"</span>] * <span class="no">rr</span>
-  <span class="no">p</span>[<span class="st">"S2"</span>, <span class="st">"S2"</span>] <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">p</span>[<span class="st">"S2"</span>, -<span class="fl">3</span>])
-
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">p</span>)
-}
-<span class="no">p_new</span> <span class="kw">&lt;-</span> <span class="fu">apply_rr</span>(<span class="no">p_soc</span>, <span class="kw">rr</span> <span class="kw">=</span> <span class="fl">.8</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">apply_rr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">rr</span> <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span><span class="op">{</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"S1"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"S1"</span><span class="op">]</span> <span class="op">*</span> <span class="va">rr</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"S2"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"S2"</span><span class="op">]</span> <span class="op">*</span> <span class="va">rr</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"D"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"D"</span><span class="op">]</span> <span class="op">*</span> <span class="va">rr</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="st">"H"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="st">"H"</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+  
+  <span class="va">p</span><span class="op">[</span><span class="st">"S1"</span>, <span class="st">"S2"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="st">"S1"</span>, <span class="st">"S2"</span><span class="op">]</span> <span class="op">*</span> <span class="va">rr</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"S1"</span>, <span class="st">"D"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="st">"S1"</span>, <span class="st">"D"</span><span class="op">]</span> <span class="op">*</span> <span class="va">rr</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"S1"</span>, <span class="st">"S1"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="st">"S1"</span>, <span class="op">-</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>
+  
+  <span class="va">p</span><span class="op">[</span><span class="st">"S2"</span>, <span class="st">"D"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="st">"S2"</span>, <span class="st">"D"</span><span class="op">]</span> <span class="op">*</span> <span class="va">rr</span>
+  <span class="va">p</span><span class="op">[</span><span class="st">"S2"</span>, <span class="st">"S2"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="st">"S2"</span>, <span class="op">-</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>
+  
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">p_new</span> <span class="op">&lt;-</span> <span class="fu">apply_rr</span><span class="op">(</span><span class="va">p_soc</span>, rr <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="utility-and-costs" class="section level2">
 <h2 class="hasAnchor">
-<a href="#utility-and-costs" class="anchor"></a><span class="header-section-number">3.2</span> Utility and costs</h2>
+<a href="#utility-and-costs" class="anchor"></a>Utility and costs</h2>
 <p>Utility and (annualized) costs are defined below. We consider two types of costs: medical and treatment. Both utility and costs are 0 in the death state. Treatment costs are assumed equal in each health state.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">utility</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">.75</span>, <span class="fl">0.5</span>, <span class="fl">0</span>)
-<span class="no">costs_medical</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2000</span>, <span class="fl">4000</span>, <span class="fl">15000</span>, <span class="fl">0</span>)
-<span class="no">costs_treat_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">2000</span>, <span class="fl">3</span>), <span class="fl">0</span>)
-<span class="no">costs_treat_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">12000</span>, <span class="fl">3</span>), <span class="fl">0</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">utility</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">.75</span>, <span class="fl">0.5</span>, <span class="fl">0</span><span class="op">)</span>
+<span class="va">costs_medical</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fl">4000</span>, <span class="fl">15000</span>, <span class="fl">0</span><span class="op">)</span>
+<span class="va">costs_treat_soc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>
+<span class="va">costs_treat_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">12000</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="simulation" class="section level1">
 <h1 class="hasAnchor">
-<a href="#simulation" class="anchor"></a><span class="header-section-number">4</span> Simulation</h1>
+<a href="#simulation" class="anchor"></a>Simulation</h1>
 <div id="health-state-probabilities" class="section level2">
 <h2 class="hasAnchor">
-<a href="#health-state-probabilities" class="anchor"></a><span class="header-section-number">4.1</span> Health state probabilities</h2>
+<a href="#health-state-probabilities" class="anchor"></a>Health state probabilities</h2>
 <p>To simulate health state probabilities, we must specify a state vector at time 0. Each patient will start in the Healthy state.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">x_init</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_init</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></code></pre></div>
 <p>The state vector during cycle <span class="math inline">\(1\)</span> for SOC is computed using simple matrix multiplication.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">x_init</span> <span class="kw">%*%</span> <span class="no">p_soc</span></pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_init</span> <span class="op">%*%</span> <span class="va">p_soc</span>  </code></pre></div>
 <pre><code>##          H   S1 S2     D
 ## [1,] 0.848 0.15  0 0.002</code></pre>
 <p>We can also easily compute the state vector at cycle 2 for SOC.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">x_init</span> <span class="kw">%*%</span>
-  <span class="no">p_soc</span> <span class="kw">%*%</span>
-  <span class="no">p_soc</span></pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_init</span> <span class="op">%*%</span> 
+  <span class="va">p_soc</span> <span class="op">%*%</span> 
+  <span class="va">p_soc</span> </code></pre></div>
 <pre><code>##             H      S1      S2        D
 ## [1,] 0.794104 0.18555 0.01575 0.004596</code></pre>
 <p>A for loop can be used to compute the state vector at each model cycle. We created a function in the <code>rcea</code> package to do this so that we can reuse it. The model will be simulated until a maximum age of 110; that is, for 85 years for a cohort of 25-year olds.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span></pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">rcea</span><span class="fu">::</span><span class="va"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span></code></pre></div>
 <pre><code>## function (x0, p, n_cycles = 85) 
 ## {
 ##     x &lt;- matrix(NA, ncol = length(x0), nrow = n_cycles)
@@ -254,13 +264,14 @@ NPV = \sum_{t} PV_t
 ##     }
 ##     return(x)
 ## }
-## &lt;bytecode: 0x7fa6eff30438&gt;
+## &lt;bytecode: 0x7fb59ad6dfb8&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <p>We perform the computation for both the SOC and new treatment. As expected, patients remain in less severe health states longer when using the new treatment.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">x_soc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_soc</span>)
-<span class="no">x_new</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span>(<span class="no">x_init</span>, <span class="no">p_new</span>)
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_soc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span><span class="op">(</span><span class="va">x_init</span>, <span class="va">p_soc</span><span class="op">)</span>
+<span class="va">x_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_markov_chain.html">sim_markov_chain</a></span><span class="op">(</span><span class="va">x_init</span>, <span class="va">p_new</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_soc</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">x_soc</span><span class="op">)</span></code></pre></div>
 <pre><code>##           H        S1         S2           D
 ## 0 1.0000000 0.0000000 0.00000000 0.000000000
 ## 1 0.8480000 0.1500000 0.00000000 0.002000000
@@ -268,7 +279,8 @@ NPV = \sum_{t} PV_t
 ## 3 0.7661752 0.1912946 0.03491775 0.007612508
 ## 4 0.7453638 0.1893399 0.05430532 0.010990981
 ## 5 0.7267385 0.1854578 0.07309990 0.014703854</code></pre>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x_new</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">x_new</span><span class="op">)</span></code></pre></div>
 <pre><code>##           H        S1         S2           D
 ## 0 1.0000000 0.0000000 0.00000000 0.000000000
 ## 1 0.8784000 0.1200000 0.00000000 0.001600000
@@ -279,37 +291,41 @@ NPV = \sum_{t} PV_t
 </div>
 <div id="expected-costs-and-quality-adjusted-life-years" class="section level2">
 <h2 class="hasAnchor">
-<a href="#expected-costs-and-quality-adjusted-life-years" class="anchor"></a><span class="header-section-number">4.2</span> Expected costs and quality-adjusted life-years</h2>
+<a href="#expected-costs-and-quality-adjusted-life-years" class="anchor"></a>Expected costs and quality-adjusted life-years</h2>
 <p>To compute discounted costs and QALYS, it is helpful to write a general function for computing a present value.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="kw pkg">rcea</span><span class="kw ns">::</span><span class="no"><a href="../reference/pv.html">pv</a></span></pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">rcea</span><span class="fu">::</span><span class="va"><a href="../reference/pv.html">pv</a></span></code></pre></div>
 <pre><code>## function (z, dr, t) 
 ## {
 ##     z/(1 + dr)^t
 ## }
-## &lt;bytecode: 0x7fa6f1bda238&gt;
+## &lt;bytecode: 0x7fb59b1e1ea8&gt;
 ## &lt;environment: namespace:rcea&gt;</code></pre>
 <div id="qalys" class="section level3">
 <h3 class="hasAnchor">
-<a href="#qalys" class="anchor"></a><span class="header-section-number">4.2.1</span> QALYs</h3>
+<a href="#qalys" class="anchor"></a>QALYs</h3>
 <p>To illustrate a computation, lets start with discounted expected QALYs after the first model cycle.</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">x_soc</span>[<span class="fl">2</span>, ] <span class="co"># State occupancy probabilities after 1st cycle</span></pre></body></html></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x_soc</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span> <span class="co"># State occupancy probabilities after 1st cycle</span></code></pre></div>
 <pre><code>##     H    S1    S2     D 
 ## 0.848 0.150 0.000 0.002</code></pre>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, <span class="fl">1</span>:<span class="fl">3</span>])) <span class="co"># Expected life-years after 1st cycle</span>
-<span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, ] * <span class="no">utility</span>)) <span class="co"># Expected utility after 1st cycle</span>
-<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="fu"><a href="../reference/pv.html">pv</a></span>(<span class="no">x_soc</span>[<span class="fl">2</span>, ] * <span class="no">utility</span>, <span class="fl">.03</span>, <span class="fl">1</span>)) <span class="co"># Expected discounted utility after 1st cycle</span></pre></body></html></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x_soc</span><span class="op">[</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="co"># Expected life-years after 1st cycle</span>
+<span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x_soc</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span> <span class="op">*</span> <span class="va">utility</span><span class="op">)</span><span class="op">)</span> <span class="co"># Expected utility after 1st cycle</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="../reference/pv.html">pv</a></span><span class="op">(</span><span class="va">x_soc</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span> <span class="op">*</span> <span class="va">utility</span>, <span class="fl">.03</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="co"># Expected discounted utility after 1st cycle</span></code></pre></div>
 <pre><code>## [1] 0.9325243</code></pre>
 <p>Now let’s compute expected (discounted) QALYs for each cycle.</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">compute_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">utility</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
-  <span class="no">n_cycles</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">x</span>) - <span class="fl">1</span>
-  <span class="fu"><a href="../reference/pv.html">pv</a></span>(<span class="no">x</span> <span class="kw">%*%</span> <span class="no">utility</span>, <span class="no">dr</span>, <span class="fl">0</span>:<span class="no">n_cycles</span>)
-}
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">compute_qalys</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">utility</span>, <span class="va">dr</span> <span class="op">=</span> <span class="fl">.03</span><span class="op">)</span><span class="op">{</span>
+  <span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>
+  <span class="fu"><a href="../reference/pv.html">pv</a></span><span class="op">(</span><span class="va">x</span> <span class="op">%*%</span> <span class="va">utility</span>, <span class="va">dr</span>, <span class="fl">0</span><span class="op">:</span><span class="va">n_cycles</span><span class="op">)</span>
+<span class="op">}</span>
 
-<span class="no">qalys_soc</span> <span class="kw">&lt;-</span> <span class="no">x_soc</span> <span class="kw">%*%</span> <span class="no">utility</span>
-<span class="no">dqalys_soc</span> <span class="kw">&lt;-</span> <span class="fu">compute_qalys</span>(<span class="no">x_soc</span>, <span class="kw">utility</span> <span class="kw">=</span> <span class="no">utility</span>)
-<span class="no">dqalys_new</span> <span class="kw">&lt;-</span> <span class="fu">compute_qalys</span>(<span class="no">x_new</span>, <span class="kw">utility</span> <span class="kw">=</span> <span class="no">utility</span>)
+<span class="va">qalys_soc</span> <span class="op">&lt;-</span> <span class="va">x_soc</span> <span class="op">%*%</span> <span class="va">utility</span> 
+<span class="va">dqalys_soc</span> <span class="op">&lt;-</span> <span class="fu">compute_qalys</span><span class="op">(</span><span class="va">x_soc</span>, utility <span class="op">=</span> <span class="va">utility</span><span class="op">)</span>
+<span class="va">dqalys_new</span> <span class="op">&lt;-</span> <span class="fu">compute_qalys</span><span class="op">(</span><span class="va">x_new</span>, utility <span class="op">=</span> <span class="va">utility</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">qalys_soc</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">qalys_soc</span><span class="op">)</span></code></pre></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
 ## 1 0.9605000
@@ -317,7 +333,8 @@ NPV = \sum_{t} PV_t
 ## 3 0.9271050
 ## 4 0.9145214
 ## 5 0.9023818</code></pre>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_soc</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dqalys_soc</span><span class="op">)</span></code></pre></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
 ## 1 0.9325243
@@ -325,7 +342,8 @@ NPV = \sum_{t} PV_t
 ## 3 0.8484324
 ## 4 0.8125404
 ## 5 0.7784024</code></pre>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dqalys_new</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dqalys_new</span><span class="op">)</span></code></pre></div>
 <pre><code>##        [,1]
 ## 0 1.0000000
 ## 1 0.9401942
@@ -336,22 +354,23 @@ NPV = \sum_{t} PV_t
 </div>
 <div id="costs" class="section level3">
 <h3 class="hasAnchor">
-<a href="#costs" class="anchor"></a><span class="header-section-number">4.2.2</span> Costs</h3>
+<a href="#costs" class="anchor"></a>Costs</h3>
 <p>We can do the same for costs. The first column is medical costs and the second column is treatment costs.</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="no">compute_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">costs_medical</span>, <span class="no">costs_treat</span>, <span class="no">dr</span> <span class="kw">=</span> <span class="fl">.03</span>){
-  <span class="no">n_cycles</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">x</span>) - <span class="fl">1</span>
-  <span class="no">costs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(
-    <span class="fu"><a href="../reference/pv.html">pv</a></span>(<span class="no">x</span> <span class="kw">%*%</span> <span class="no">costs_medical</span>, <span class="no">dr</span>, <span class="fl">0</span>:<span class="no">n_cycles</span>),
-    <span class="fu"><a href="../reference/pv.html">pv</a></span>(<span class="no">x</span> <span class="kw">%*%</span> <span class="no">costs_treat</span>, <span class="no">dr</span>, <span class="fl">0</span>:<span class="no">n_cycles</span>)
-  )
-  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">costs</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"medical"</span>, <span class="st">"treatment"</span>)
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">costs</span>)
-}
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">compute_costs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">costs_medical</span>, <span class="va">costs_treat</span>, <span class="va">dr</span> <span class="op">=</span> <span class="fl">.03</span><span class="op">)</span><span class="op">{</span>
+  <span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>
+  <span class="va">costs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>
+    <span class="fu"><a href="../reference/pv.html">pv</a></span><span class="op">(</span><span class="va">x</span> <span class="op">%*%</span> <span class="va">costs_medical</span>, <span class="va">dr</span>, <span class="fl">0</span><span class="op">:</span><span class="va">n_cycles</span><span class="op">)</span>,
+    <span class="fu"><a href="../reference/pv.html">pv</a></span><span class="op">(</span><span class="va">x</span> <span class="op">%*%</span> <span class="va">costs_treat</span>, <span class="va">dr</span>, <span class="fl">0</span><span class="op">:</span><span class="va">n_cycles</span><span class="op">)</span>
+  <span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">costs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"medical"</span>, <span class="st">"treatment"</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">costs</span><span class="op">)</span>
+<span class="op">}</span>
 
-<span class="no">dcosts_soc</span> <span class="kw">&lt;-</span> <span class="fu">compute_costs</span>(<span class="no">x_soc</span>, <span class="no">costs_medical</span>, <span class="no">costs_treat_soc</span>)
-<span class="no">dcosts_new</span> <span class="kw">&lt;-</span> <span class="fu">compute_costs</span>(<span class="no">x_new</span>, <span class="no">costs_medical</span>, <span class="no">costs_treat_new</span>)
+<span class="va">dcosts_soc</span> <span class="op">&lt;-</span> <span class="fu">compute_costs</span><span class="op">(</span><span class="va">x_soc</span>, <span class="va">costs_medical</span>, <span class="va">costs_treat_soc</span><span class="op">)</span>
+<span class="va">dcosts_new</span> <span class="op">&lt;-</span> <span class="fu">compute_costs</span><span class="op">(</span><span class="va">x_new</span>, <span class="va">costs_medical</span>, <span class="va">costs_treat_new</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dcosts_soc</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dcosts_soc</span><span class="op">)</span></code></pre></div>
 <pre><code>##    medical treatment
 ## 0 2000.000  2000.000
 ## 1 2229.126  1937.864
@@ -359,7 +378,8 @@ NPV = \sum_{t} PV_t
 ## 3 2581.884  1816.350
 ## 4 2721.140  1757.443
 ## 5 2839.541  1699.850</code></pre>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dcosts_new</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dcosts_new</span><span class="op">)</span></code></pre></div>
 <pre><code>##    medical treatment
 ## 0 2000.000  12000.00
 ## 1 2171.650  11631.84
@@ -372,44 +392,46 @@ NPV = \sum_{t} PV_t
 </div>
 <div id="cost-effectiveness-analysis" class="section level1">
 <h1 class="hasAnchor">
-<a href="#cost-effectiveness-analysis" class="anchor"></a><span class="header-section-number">5</span> Cost-effectiveness analysis</h1>
+<a href="#cost-effectiveness-analysis" class="anchor"></a>Cost-effectiveness analysis</h1>
 <p>We conclude by computing the incremental cost-effectiveness ratio (ICER) with the new treatment relative to SOC. It can be computed by summing the costs and QALYs we simulated in the previous section across all model cycles. Note that since we are assuming that transitions happen immediately, we exclude costs and QALYs measured at the start of the first model cycle.</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r">(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dcosts_soc</span>[-<span class="fl">1</span>, ])) /
-(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_new</span>[-<span class="fl">1</span>, ]) - <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">dqalys_soc</span>[-<span class="fl">1</span>, ]))</pre></body></html></div>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dcosts_new</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dcosts_soc</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span>
+<span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dqalys_new</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dqalys_soc</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 122946.8</code></pre>
 <p>For the sake of presentation, we might want to do a some extra work and create a nice looking table.</p>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">format_costs</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"d"</span>, <span class="kw">big.mark</span> <span class="kw">=</span> <span class="st">","</span>)
-<span class="no">format_qalys</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span>(<span class="no">x</span>, <span class="kw">format</span> <span class="kw">=</span> <span class="st">"f"</span>, <span class="kw">digits</span> <span class="kw">=</span> <span class="fl">2</span>)
-<span class="no">make_icer_tbl</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">costs0</span>, <span class="no">costs1</span>, <span class="no">qalys0</span>, <span class="no">qalys1</span>){
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">format_costs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span><span class="op">(</span><span class="va">x</span>, format <span class="op">=</span> <span class="st">"d"</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>
+<span class="va">format_qalys</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span><span class="op">(</span><span class="va">x</span>, format <span class="op">=</span> <span class="st">"f"</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">make_icer_tbl</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">costs0</span>, <span class="va">costs1</span>, <span class="va">qalys0</span>, <span class="va">qalys1</span><span class="op">)</span><span class="op">{</span>
   <span class="co"># Computations</span>
-  <span class="no">total_costs0</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">costs0</span>)
-  <span class="no">total_costs1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">costs1</span>)
-  <span class="no">total_qalys0</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">qalys0</span>)
-  <span class="no">total_qalys1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">qalys1</span>)
-  <span class="no">incr_total_costs</span> <span class="kw">&lt;-</span> <span class="no">total_costs1</span> - <span class="no">total_costs0</span>
-  <span class="no">inc_total_qalys</span> <span class="kw">&lt;-</span> <span class="no">total_qalys1</span> - <span class="no">total_qalys0</span>
-  <span class="no">icer</span> <span class="kw">&lt;-</span> <span class="no">incr_total_costs</span>/<span class="no">inc_total_qalys</span>
-
+  <span class="va">total_costs0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">costs0</span><span class="op">)</span>
+  <span class="va">total_costs1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">costs1</span><span class="op">)</span>
+  <span class="va">total_qalys0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">qalys0</span><span class="op">)</span>
+  <span class="va">total_qalys1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">qalys1</span><span class="op">)</span>
+  <span class="va">incr_total_costs</span> <span class="op">&lt;-</span> <span class="va">total_costs1</span> <span class="op">-</span> <span class="va">total_costs0</span>
+  <span class="va">inc_total_qalys</span> <span class="op">&lt;-</span> <span class="va">total_qalys1</span> <span class="op">-</span> <span class="va">total_qalys0</span>
+  <span class="va">icer</span> <span class="op">&lt;-</span> <span class="va">incr_total_costs</span><span class="op">/</span><span class="va">inc_total_qalys</span>
+  
   <span class="co"># Make table</span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span>(
-    <span class="kw">`Strategy`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SOC"</span>, <span class="st">"New"</span>),
-    <span class="kw">`Costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_costs0</span>, <span class="no">total_costs1</span>) <span class="kw">%&gt;%</span>
-      <span class="fu">format_costs</span>(),
-    <span class="kw">`QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">total_qalys0</span>, <span class="no">total_qalys1</span>) <span class="kw">%&gt;%</span>
-      <span class="fu">format_qalys</span>(),
-    <span class="kw">`Incremental costs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">incr_total_costs</span> <span class="kw">%&gt;%</span>
-                             <span class="fu">format_costs</span>()),
-    <span class="kw">`Incremental QALYs`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">inc_total_qalys</span> <span class="kw">%&gt;%</span>
-                             <span class="fu">format_qalys</span>()),
-    <span class="kw">`ICER`</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"--"</span>, <span class="no">icer</span> <span class="kw">%&gt;%</span> <span class="fu">format_costs</span>())
-  ) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>() <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span>() <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/footnote.html">footnote</a></span>(<span class="kw">general</span> <span class="kw">=</span> <span class="st">"Costs and QALYs are discounted at 3% per annum."</span>,
-             <span class="kw">footnote_as_chunk</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-}
-<span class="fu">make_icer_tbl</span>(<span class="kw">costs0</span> <span class="kw">=</span> <span class="no">dcosts_soc</span>[-<span class="fl">1</span>, ], <span class="kw">costs1</span> <span class="kw">=</span> <span class="no">dcosts_new</span>[-<span class="fl">1</span>, ],
-              <span class="kw">qalys0</span> <span class="kw">=</span> <span class="no">dqalys_soc</span>[-<span class="fl">1</span>, ], <span class="kw">qalys1</span> <span class="kw">=</span> <span class="no">dqalys_new</span>[-<span class="fl">1</span>, ])</pre></body></html></div>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>
+    `Strategy` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SOC"</span>, <span class="st">"New"</span><span class="op">)</span>,
+    `Costs` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">total_costs0</span>, <span class="va">total_costs1</span><span class="op">)</span> <span class="op">%&gt;%</span>
+      <span class="fu">format_costs</span><span class="op">(</span><span class="op">)</span>, 
+    `QALYs` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">total_qalys0</span>, <span class="va">total_qalys1</span><span class="op">)</span> <span class="op">%&gt;%</span>
+      <span class="fu">format_qalys</span><span class="op">(</span><span class="op">)</span>,
+    `Incremental costs` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"--"</span>, <span class="va">incr_total_costs</span> <span class="op">%&gt;%</span> 
+                             <span class="fu">format_costs</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
+    `Incremental QALYs` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"--"</span>, <span class="va">inc_total_qalys</span> <span class="op">%&gt;%</span> 
+                             <span class="fu">format_qalys</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
+    `ICER` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"--"</span>, <span class="va">icer</span> <span class="op">%&gt;%</span> <span class="fu">format_costs</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/footnote.html">footnote</a></span><span class="op">(</span>general <span class="op">=</span> <span class="st">"Costs and QALYs are discounted at 3% per annum."</span>,
+             footnote_as_chunk <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">make_icer_tbl</span><span class="op">(</span>costs0 <span class="op">=</span> <span class="va">dcosts_soc</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>, costs1 <span class="op">=</span> <span class="va">dcosts_new</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>,
+              qalys0 <span class="op">=</span> <span class="va">dqalys_soc</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>, qalys1 <span class="op">=</span> <span class="va">dqalys_new</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
 <table class="table table">
 <thead><tr>
 <th style="text-align:left;">
@@ -474,7 +496,7 @@ New
 </tr>
 </tbody>
 <tfoot><tr>
-<td style="padding: 0; border: 0;" colspan="100%">
+<td style="padding: 0; " colspan="100%">
 <span style="font-style: italic;">Note: </span> <sup></sup> Costs and QALYs are discounted at 3% per annum.
 </td>
 </tr></tfoot>
@@ -497,7 +519,7 @@ New
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

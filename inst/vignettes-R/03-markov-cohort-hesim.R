@@ -17,6 +17,7 @@ hesim_dat <- hesim_data(
   patients = patients
 )
 print(hesim_dat)
+labs <- get_labels(hesim_dat)
 
 ## ---- Model parameters -------------------------------------------------------
 ## @knitr transitions
@@ -112,4 +113,4 @@ cea_pw_out <- cea_pw(ce_sim, comparator = 1,
                      k = seq(0, 25000, 500))
 
 ## @knitr icer
-icer_tbl(cea_pw_out, colnames = strategies$strategy_name) 
+format(icer(cea_pw_out, k = 50000, labels = labs))

@@ -7,7 +7,7 @@ output:
     toc_depth: 2
     number_sections: TRUE
 pkgdown:
-  as_is: true
+  as_is: false
 vignette: >
   %\VignetteIndexEntry{Semi-Markov Multi-state Model}
   %\VignetteEngine{knitr::rmarkdown}
@@ -52,18 +52,23 @@ As in the cohort model, we must specify the target population and treatment stra
 ```{r, hesim_data}
 ```
 
+`hesim` also provides a convenient function, `get_labels()`, for assigning labels to all the ID variables in order to facilitate nicer presentation of results.
+
+```{r, labels}
+```
+
 # Parameter estimation
 In the cohort examples, we used parameter estimates derived from external sources. An alternative approach is to estimate the parameters directly with `R`. We will take that approach here for the multi-state model and estimate the transition specific hazards using `flexsurv`. Conversely, we will continue to use mean values for utility and costs.
 
 ## Multi-state model
-Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We created the function `sim_mstate_data()` which leverages `hesim` to simulate a hypothetical cohort of 2000 patients for a stable-progression-death model.
+Multi-state data consists of one row for each possible transition from a given health state where only one transition is observed and all others are censored. We use the dataset, `onc3`, which contains simulated data for a stable-progression-death model. To maintain consistency with our prior examples, we restrict the analysis to two treatment strategies, SOC and New. 
 
-```{r, sim_mstate3_data}
+```{r, mstate3_data}
 ```
 
 Multi-state models can be fit by estimating a joint survival model with interaction terms for different transition (see the `hesim` [introductory vignette](https://hesim-dev.github.io/hesim/articles/intro.html) for more details) or by fitting separate survival models for each transition. We will take the latter approach and and fit 3 parametric Weibull models. (Note that in an applied example you should compare the performance of multiple distributions. Type `?params_surv` to view the survival distributions supported by `hesim`.) 
 
-```{r, fit-mstate, warning = FALSE}
+```{r, fit-mstate}
 ```
 
 ## Utility and costs

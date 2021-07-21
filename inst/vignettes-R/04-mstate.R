@@ -5,6 +5,7 @@ library("hesim")
 library("data.table")
 library("ggplot2")
 library("flexsurv")
+theme_set(theme_bw())
 
 set.seed(101) # Make random number generation reproducible
 
@@ -45,9 +46,14 @@ hesim_dat <- hesim_data(
 )
 print(hesim_dat)
 
+## @knitr labels
+labs <- get_labels(hesim_dat)
+
 ## ---- Parameter estimation ---------------------------------------------------
-## @knitr sim_mstate3_data
-data <- rcea::sim_mstate3_data(n = 2000)
+## @knitr mstate3_data
+data <- hesim::onc3[strategy_name != "New 1"]
+data[, strategy_name := droplevels(strategy_name)]
+levels(data$strategy_name) <- c("SOC", "New")
 data[patient_id %in% c(1, 2)]
 
 ## @knitr fit-mstate
@@ -58,7 +64,7 @@ for (i in 1:length(wei_fits)){
     Surv(time, status) ~ strategy_name + female,
     data = data,
     subset = (transition_id == i) ,
-    dist = "weibullPH")
+    dist = "weibull")
 }
 wei_fits <- flexsurvreg_list(wei_fits)
 
@@ -68,8 +74,8 @@ utility_tbl <- stateval_tbl(
              mean = c(.8, .6),
              se = c(0.02, .05)
   ),
-  dist = "beta",
-  hesim_data = hesim_dat)
+  dist = "beta"
+)
 print(utility_tbl)
 
 ## @knitr medcost_tbl
@@ -78,8 +84,8 @@ medcost_tbl <- stateval_tbl(
              mean = c(2000, 9500),
              se = c(2000, 9500)
   ),
-  dist = "gamma",
-  hesim_data = hesim_dat)
+  dist = "gamma"
+)
 print(medcost_tbl)
 
 ## @knitr drugcost_tbl
@@ -93,8 +99,8 @@ drugcost_tbl <- stateval_tbl(
             12000, 12000, 12000, 10000 # Costs with new drop after 3 months in progression state
     )  
   ),
-  dist = "fixed",
-  hesim_data = hesim_dat)
+  dist = "fixed"
+)
 print(drugcost_tbl)
 
 ## ---- Simulation -------------------------------------------------------------
@@ -115,11 +121,15 @@ transmod <- create_IndivCtstmTrans(wei_fits, transmod_data,
 
 ## @knitr utility-cost-models
 # Utility
-utilitymod <- create_StateVals(utility_tbl, n = n_samples)
+utilitymod <- create_StateVals(utility_tbl, n = n_samples,
+                               hesim_data = hesim_dat)
+
 # Costs
 drugcostmod <- create_StateVals(drugcost_tbl, n = n_samples,
-                                time_reset = TRUE)
-medcostmod <- create_StateVals(medcost_tbl, n = n_samples)
+                                time_reset = TRUE, 
+                                hesim_data = hesim_dat)
+medcostmod <- create_StateVals(medcost_tbl, n = n_samples,
+                               hesim_data = hesim_dat)
 costmods <- list(Drug = drugcostmod,
                  Medical = medcostmod)
 
@@ -135,6 +145,7 @@ head(econmod$disprog_)
 
 ## @knitr sim_stateprobs
 econmod$sim_stateprobs(t = seq(0, 30 , 1/12))
+autoplot(econmod$stateprobs_, labels = labs)
 
 ## @knitr sim_qalys
 econmod$sim_qalys(dr = c(0,.03))
@@ -148,9 +159,9 @@ head(econmod$costs_)
 ## @knitr icer
 ce_sim <- econmod$summarize()
 cea_pw_out <- cea_pw(ce_sim, comparator = 1, 
-                       dr_qalys = .03, dr_costs = .03,
-                       k = seq(0, 25000, 500))
-icer_tbl(cea_pw_out, colnames = strategies$strategy_name)
+                     dr_qalys = .03, dr_costs = .03,
+                     k = seq(0, 25000, 500))
+format(icer(cea_pw_out, labels = labs))
 
 ## @knitr save-ce_sim
 saveRDS(ce_sim, "ce_sim.rds")
