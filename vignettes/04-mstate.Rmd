@@ -178,7 +178,7 @@ As in the cohort model, cost-effectiveness analyses can be performed seamlessly 
 ```{r, icer}
 ```
 
-Let's save the cost-effectiveness object so that we can use it in the [CEA tutorial](06-cea.html).
+We will save some output so that we can use it in the [CEA tutorial](06-cea.html).
 
-```{r, save-ce_sim}
+```{r, save}
 ```

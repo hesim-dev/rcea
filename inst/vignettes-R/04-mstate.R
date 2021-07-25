@@ -163,5 +163,5 @@ cea_pw_out <- cea_pw(ce_sim, comparator = 1,
                      k = seq(0, 25000, 500))
 format(icer(cea_pw_out, labels = labs))
 
-## @knitr save-ce_sim
-saveRDS(ce_sim, "ce_sim.rds")
+## @knitr save
+save(ce_sim, hesim_dat,  file = "04-mstate.Rdata")

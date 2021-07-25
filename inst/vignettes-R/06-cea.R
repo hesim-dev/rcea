@@ -2,13 +2,14 @@
 ## @knitr R-setup
 library("hesim")
 library("ggplot2")
+library("magrittr")
 theme_set(theme_minimal()) # Set ggplot2 theme
 
 ## ---- Application ------------------------------------------------------------
 ## @knitr conduct-cea
-# First load the cost-effectiveness object saved during the "Semi-Markov 
+# First load the output saved during the "Semi-Markov 
 # Multi-state Model" tutorial (i.e., from 04-mstate.Rmd)
-ce_sim <- readRDS("ce_sim.rds") 
+load("04-mstate.Rdata")
 head(ce_sim)
 
 wtp <- seq(0, 250000, 500) # Willingness to pay per QALY
@@ -19,7 +20,32 @@ cea_out <- cea(ce_sim,
                dr_qalys = 0.03, dr_costs = 0.03,
                k = wtp)
 
+## ---- Incremental cost-effectiveness ratio -----------------------------------
+## @knitr icer
+labs <- get_labels(hesim_dat)
+icer(cea_pw_out, wtp = 50000, labels = labs) %>%
+  format()
+
 ## ---- Cost-effectiveness plane -----------------------------------------------
+## @knitr ceplane-plot
+plot_ceplane(cea_pw_out, k = 100000, labels = labs)
+
+## ---- Cost-effectiveness acceptability curves --------------------------------
+## @knitr ceac-simultaneous-plot
+plot_ceac(cea_out, labels = labs)
+
+## @knitr ceac-pairwise-plot
+plot_ceac(cea_pw_out, labels = labs)
+
+## ---- Cost-effectiveness acceptability frontier ------------------------------
+## @knitr ceaf-plot
+plot_ceaf(cea_out, labels = labs)
+
+## ---- Value of perfect information -------------------------------------------
+## @knitr evpi-plot
+plot_evpi(cea_out)
+
+## ---- Custom ggplot for cost-effectiveness plane -----------------------------
 ## @knitr helper-functions
 strategy_factor <- function (x) { 
   factor(x, levels = 1:2, labels = c("SOC", "New"))
@@ -29,7 +55,7 @@ format_dollar <- function(x) {
   paste0("$", formatC(x, format = "d", big.mark = ","))
 }
 
-## @knitr ceplane-plot
+## @knitr custom-ceplane-plot
 ylim <- max(cea_pw_out$delta[, ic]) * 1.1
 xlim <- ceiling(max(cea_pw_out$delta[, ie]) * 1.1)
 ggplot(cea_pw_out$delta, 
@@ -46,8 +72,8 @@ ggplot(cea_pw_out$delta,
   geom_hline(yintercept = 0) + 
   geom_vline(xintercept = 0)
 
-## ---- Cost-effectiveness acceptability curves --------------------------------
-## @knitr ceac-simultaneous-plot
+## ---- Custom ggplot for cost-effectiveness acceptability curve ---------------
+## @knitr custom-ceac-simultaneous-plot
 ggplot(cea_out$mce, 
        aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
   geom_line() + 
@@ -58,7 +84,7 @@ ggplot(cea_out$mce,
   theme(legend.position = "bottom") + 
   scale_colour_discrete(name = "Strategy")
 
-## @knitr ceac-pairwise-plot
+## @knitr custom-ceac-pairwise-plot
 ggplot(cea_pw_out$ceac, 
        aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
   geom_line()  + 
@@ -69,8 +95,8 @@ ggplot(cea_pw_out$ceac,
   theme(legend.position = "bottom") +
   scale_colour_discrete(name = "Strategy")
 
-## ---- Cost-effectiveness acceptability frontier ------------------------------
-## @knitr ceaf-plot
+# ---- Custom ggplot for cost-effectiveness acceptability frontier -------------
+## @knitr custom-ceaf-plot
 ggplot(cea_out$mce[best == 1], 
        aes(x = k, y = prob, col = strategy_factor(strategy_id))) +
   geom_line() + 
@@ -81,8 +107,8 @@ ggplot(cea_out$mce[best == 1],
   theme(legend.position = "bottom") + 
   scale_colour_discrete(name = "Strategy")
 
-## ---- Value of perfect information -------------------------------------------
-## @knitr evpi-plot
+# ---- Custom ggplot for value of perfect information --------------------------
+## @knitr custom-evpi-plot
 ggplot(cea_out$evpi, aes(x = k, y = evpi)) +
   geom_line()  + 
   xlab("Willingness to pay") +
