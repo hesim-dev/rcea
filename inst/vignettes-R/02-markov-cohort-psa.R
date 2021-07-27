@@ -155,38 +155,21 @@ head(sim_out)
 
 ## ---- Cost-effectiveness analysis --------------------------------------------
 ## @knitr ce_output
-ce_out <- sim_out[cycle != 0, 
+ce_sim <- sim_out[cycle != 0, 
                   .(dqalys = sum(dqalys),
                     dcosts = sum(dcosts_med) + sum(dcosts_treat)), 
                   by = c("sample", "strategy")]
-ce_out
+ce_sim
+
+## @knitr save
+saveRDS(ce_sim,  file = "markov-cohort-ce_sim.rds")
 
 ## @knitr ce_output_wider
-ce_out_wider <- dcast(ce_out, sample ~ strategy, 
+ce_sim_wider <- dcast(ce_sim, sample ~ strategy, 
                       value.var = c("dqalys", "dcosts"))
-ce_out_wider
+ce_sim_wider
 
 ## @knitr icer
-ce_out_wider[, idcosts := dcosts_New - dcosts_SOC]
-ce_out_wider[, idqalys := dqalys_New - dqalys_SOC]
-ce_out_wider[, .(icer = mean(idcosts)/mean(idqalys))]
-
-## @knitr ceplane
-format_dollar <- function(x) {
-  paste0("$", formatC(x, format = "d", big.mark = ","))
-}
-
-ylim <- max(ce_out_wider$idcosts) * 1.2
-xlim <- max(ce_out_wider$idqalys) * 1.2
-ggplot(ce_out_wider, 
-       aes(x = idqalys, y = idcosts)) + 
-  geom_jitter(size = .5)  + 
-  xlab("Incremental QALYs") + 
-  ylab("Incremental cost") +
-  scale_y_continuous(limits = c(-ylim, ylim),
-                     labels = format_dollar) +
-  scale_x_continuous(limits = c(-xlim, xlim), breaks = seq(-6, 6, 2)) +
-  geom_abline(slope = 100000, linetype = "dashed") +
-  geom_hline(yintercept = 0) + 
-  geom_vline(xintercept = 0) +
-  theme_bw()
+ce_sim_wider[, idcosts := dcosts_New - dcosts_SOC]
+ce_sim_wider[, idqalys := dqalys_New - dqalys_SOC]
+ce_sim_wider[, .(icer = mean(idcosts)/mean(idqalys))]

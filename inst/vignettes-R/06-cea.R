@@ -6,19 +6,32 @@ library("magrittr")
 theme_set(theme_minimal()) # Set ggplot2 theme
 
 ## ---- Application ------------------------------------------------------------
-## @knitr conduct-cea
-# First load the output saved during the "Semi-Markov 
-# Multi-state Model" tutorial (i.e., from 04-mstate.Rmd)
-load("04-mstate.Rdata")
-head(ce_sim)
+## @knitr load-ce
+markov_ce <- readRDS("markov-cohort-ce_sim.rds")
+markov_ce
 
+## @knitr load-hesim-ce
+markov_hesim_ce <- readRDS("markov-cohort-hesim-ce_sim.rds")
+hesim_dat <- readRDS("markov-cohort-hesim_data.rds")
+markov_hesim_ce
+
+## @knitr conduct-cea
 wtp <- seq(0, 250000, 500) # Willingness to pay per QALY
-cea_pw_out <- cea_pw(ce_sim, comparator = 1, # Comparator is SOC (ID = 1)
+cea_pw_out <- cea_pw(markov_hesim_ce, 
+                     comparator = 1, # Comparator is SOC (ID = 1)
                      dr_qalys = 0.03, dr_costs = 0.03,
                      wtp)
-cea_out <- cea(ce_sim, 
+cea_out <- cea(markov_hesim_ce, 
                dr_qalys = 0.03, dr_costs = 0.03,
                k = wtp)
+
+## @knitr conduct-cea-default
+cea_pw_out2 <- cea_pw(markov_ce, comparator = "SOC",
+                      k = wtp,
+                      sample = "sample", strategy = "strategy",
+                      e = "dqalys", c = "dcosts")
+cea_pw_out$summary
+cea_pw_out2$summary
 
 ## ---- Incremental cost-effectiveness ratio -----------------------------------
 ## @knitr icer

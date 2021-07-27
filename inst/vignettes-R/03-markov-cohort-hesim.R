@@ -106,8 +106,12 @@ econmod$sim_costs(dr = 0.03, integrate_method = "riemann_right")
 head(econmod$costs_)
 
 ## ---- Cost-effectiveness analysis --------------------------------------------
-## @knitr cea
+## @knitr ce
 ce_sim <- econmod$summarize()
+saveRDS(ce_sim,  file = "markov-cohort-hesim-ce_sim.rds")
+saveRDS(hesim_dat,  file = "markov-cohort-hesim_data.rds")
+
+## @knitr cea
 cea_pw_out <- cea_pw(ce_sim, comparator = 1, 
                      dr_qalys = 0.03, dr_costs = 0.03,
                      k = seq(0, 25000, 500))

@@ -173,12 +173,7 @@ Costs for each category are simulated in a similar fashion.
 ```
 
 # Cost-effectiveness analysis
-As in the cohort model, cost-effectiveness analyses can be performed seamlessly from the simulation output.
+As in the cohort model, cost-effectiveness analyses can be performed seamlessly from the simulation output. 
 
 ```{r, icer}
-```
-
-We will save some output so that we can use it in the [CEA tutorial](06-cea.html).
-
-```{r, save}
 ```

@@ -104,12 +104,17 @@ Costs and QALYs are computed by integrating the previously simulated state proba
 ```
 
 # Cost-effectiveness analysis
-Cost-effectiveness analyses (CEAs) can be performed directly from the simulation output with `hesim`. Other R packages such as [BCEA](https://sites.google.com/a/statistica.it/gianluca/bcea) could also be considered. Here, we will consider a pairwise comparison between the new treatment and SOC with the `hesim::cea_pw()` function.
+Cost-effectiveness analyses (CEAs) can be performed directly from the simulation output with `hesim`. Other R packages such as [BCEA](https://sites.google.com/a/statistica.it/gianluca/bcea) could also be considered. To perform the CEA, we will first need to sum costs and QALYs across health states.
+
+```{r, ce}
+```
+
+The analysis can then be performed directly from this output using the `hesim::cea()` and `hesim::cea_pw()` functions. The former considers all treatment strategies simultaneously while the latter makes pairwise comparisons of each treatment strategies to a comparator (in our example the SOC). A complete analysis will be provided in the [CEA tutorial](06-cea.html) using the output saved above; for now, we perform a simple pairwise analysis:
 
 ```{r, cea}
 ```
 
-Although `cea_pw()` allows users to summarize output from a PSA we will just create an ICER table using means for now. A complete analysis is provided in the [CEA tutorial](06-cea.html).
+While `cea_pw()` allows users to summarize output from a PSA we will just create an ICER table using means for now.
 
 ```{r, icer}
 ```

@@ -70,11 +70,26 @@ c_{j} &= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 $$
 
 # Application
-CEA can be performed using the `hesim::cea()` and `hesim::cea_pw()` functions. `cea()` summarizes results by taking into account each treatment strategy in the analysis, while `cea_pw()` summarizes "pairwise" results in which each treatment is compared to a comparator. 
+CEA can be performed using the `hesim::cea()` and `hesim::cea_pw()` functions. `cea()` summarizes results by taking into account each treatment strategy in the analysis, while `cea_pw()` summarizes "pairwise" results in which each treatment is compared to a comparator. Both functions return a number of outputs for summarizing a PSA.
 
-We will use these functions to analyze the distribution of costs and QALYs produced from the simulation of the semi-Markov CTSTM (a `hesim::ce` object). Each function returns a number of outputs for summarizing a PSA.
+The functions are generic functions, meaning that their implementation depends on the class of their input. The default method works on a generic data frame object like we simulated in the [non-`hesim` Markov cohort modeling tutorial](02-markov-cohort-psa.html).
+
+```{r, load-ce}
+```
+
+However, when a simulation has been conducted with `hesim`, it is typically more convenient to use the `hesim::ce` object generated from the economic model (as in the [`hesim` Markov cohort modeling tutorial](03-markov-cohort-hesim.html)).
+
+```{r, load-hesim-ce}
+```
+
+We focus our illustration on the case where the input is a `hesim::ce` object. 
 
 ```{r, conduct-cea}
+```
+
+For completeness, we note that results would be nearly identical using the default method.
+
+```{r, conduct-cea-default}
 ```
 
 
@@ -85,6 +100,7 @@ The output of `cea_pw()` can be used to create an ICER table with `icer()`, whic
 ```{r, icer}
 ```
 
+Note that `get_labels()` was used to create labels for the identification variables in the `hesim_data()` object. This is useful because it can be passed to summary functions (e.g., `icer()`) as well as plotting functions (as will be shown below).
 
 ## Representing decision uncertainty
 There are a number of measures that are typically used to represent decision uncertainty including cost-effectiveness planes, cost-effectiveness acceptability curves (CEACs), cost-effectiveness acceptability frontiers (CEAFs), and the expected value of perfect information (EVPI). `ggplot2` graphics can be quickly generated with `hesim` using the functions `plot_ceplane()`, `plot_ceac()`, `plot_ceaf()`, and `plot_evpi()`. Users who desire more control over plotting may also create custom plots using the output of `cea()` and `cea_pw()` as demonstrated [below](#custom-plotting).

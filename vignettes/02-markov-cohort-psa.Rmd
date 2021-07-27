@@ -125,22 +125,20 @@ A cost-effectiveness analysis (CEA) can be performed using the simulation output
 ```{r, ce_output}
 ```
 
-In the two treatment strategy case its simpler to "widen" the data so that we can easily compute incremental QALYs and incremental costs.
+In the [CEA tutorial](06-cea.html), we provide a formal treatment of CEA and show how to analyze such output within such a framework. To do so, we will need to save the results for later.
+
+```{r, save}
+```
+
+For now, we will simply compute an incremental cost-effectiveness ratio (ICER). In the two treatment strategy case its simpler to "widen" the data so that we can easily compute incremental QALYs and incremental costs,
 
 ```{r, ce_output_wider}
 ```
 
-The ICER is computed by taking means across all parameter samples. 
+with the ICER computed by taking means across all parameter samples. 
 
 ```{r, icer}
 ```
-
-We can also use a cost-effectiveness plane to visually represent uncertainty in incremental QALYs and incremental costs. The dotted line represents willingness to pay for a QALY (in this example, \$100,000) and points below the line are cost-effective while points above the line are not. 
-
-```{r, ceplane, echo = FALSE}
-```
-
-A more formal and thorough treatment of CEA and decision uncertainty is given in the [CEA tutorial](06-cea.html).
 
 # Appendix
 ## Dirichlet distribution

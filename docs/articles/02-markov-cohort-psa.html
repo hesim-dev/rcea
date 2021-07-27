@@ -100,7 +100,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2021-07-10</h4>
+            <h4 class="date">2021-07-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
@@ -208,20 +208,20 @@
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">params_rng</span><span class="op">$</span><span class="va">p_soc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8519438 0.1471557    0 0.0009005161 0.4882239 0.4081225 0.09699179
-## [2,] 0.8411958 0.1556290    0 0.0031751824 0.5018590 0.3868445 0.09745150
-## [3,] 0.8349970 0.1640609    0 0.0009420284 0.5040068 0.3867619 0.10337995
-## [4,] 0.8206621 0.1764232    0 0.0029146667 0.4795831 0.4077012 0.10981122
-## [5,] 0.8592362 0.1370317    0 0.0037320894 0.4902902 0.4047308 0.09925673
-## [6,] 0.8140408 0.1844431    0 0.0015161623 0.5062099 0.3902495 0.09857428
+<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1     s1_s2
+## [1,] 0.8441828 0.1526883    0 0.0031289248 0.4961250 0.3852257 0.1105759
+## [2,] 0.8499752 0.1484186    0 0.0016062318 0.5055253 0.3784631 0.1043550
+## [3,] 0.8536119 0.1449293    0 0.0014588214 0.5105620 0.3808685 0.1069941
+## [4,] 0.8488751 0.1495411    0 0.0015838635 0.4676119 0.4128457 0.1120758
+## [5,] 0.8597219 0.1398461    0 0.0004320694 0.5163100 0.3749089 0.1049048
+## [6,] 0.8489563 0.1494337    0 0.0016100048 0.5106406 0.3899817 0.0937811
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.006661795    0     0 0.9824612 0.01753877   0    0    0   1
-## [2,] 0.013844969    0     0 0.9807740 0.01922595   0    0    0   1
-## [3,] 0.005851342    0     0 0.9837904 0.01620964   0    0    0   1
-## [4,] 0.002904471    0     0 0.9705863 0.02941366   0    0    0   1
-## [5,] 0.005722257    0     0 0.9779662 0.02203375   0    0    0   1
-## [6,] 0.004966321    0     0 0.9805857 0.01941427   0    0    0   1</code></pre>
+## [1,] 0.008073377    0     0 0.9813863 0.01861367   0    0    0   1
+## [2,] 0.011656682    0     0 0.9873083 0.01269174   0    0    0   1
+## [3,] 0.001575426    0     0 0.9834758 0.01652423   0    0    0   1
+## [4,] 0.007466552    0     0 0.9857804 0.01421957   0    0    0   1
+## [5,] 0.003876368    0     0 0.9694591 0.03054091   0    0    0   1
+## [6,] 0.005596618    0     0 0.9812236 0.01877638   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
@@ -397,11 +397,11 @@
 <a href="#cost-effectiveness-analysis" class="anchor"></a>Cost-effectiveness analysis</h1>
 <p>A cost-effectiveness analysis (CEA) can be performed using the simulation output. A PSA is typically used to represent decision uncertainty using the distribution of (discounted) QALYs and (discounted) total costs. As such, will compute mean discounted QALYs and discounted costs by parameter sample and treatment strategy. As in the previous tutorial, we assume that transitions occur immediately and therefore exclude costs and QALYs measured at the start of the first model cycle.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ce_out</span> <span class="op">&lt;-</span> <span class="va">sim_out</span><span class="op">[</span><span class="va">cycle</span> <span class="op">!=</span> <span class="fl">0</span>, 
+<code class="sourceCode R"><span class="va">ce_sim</span> <span class="op">&lt;-</span> <span class="va">sim_out</span><span class="op">[</span><span class="va">cycle</span> <span class="op">!=</span> <span class="fl">0</span>, 
                   <span class="fu">.</span><span class="op">(</span>dqalys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dqalys</span><span class="op">)</span>,
                     dcosts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dcosts_med</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dcosts_treat</span><span class="op">)</span><span class="op">)</span>, 
                   by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sample"</span>, <span class="st">"strategy"</span><span class="op">)</span><span class="op">]</span>
-<span class="va">ce_out</span></code></pre></div>
+<span class="va">ce_sim</span></code></pre></div>
 <pre><code>##       sample strategy   dqalys    dcosts
 ##    1:      1      New 22.46453 424193.11
 ##    2:      1      SOC 19.79403 171692.25
@@ -414,11 +414,14 @@
 ## 1998:    999      SOC 22.45038 296303.99
 ## 1999:   1000      New 22.92601 469550.31
 ## 2000:   1000      SOC 20.85917 212142.96</code></pre>
-<p>In the two treatment strategy case its simpler to “widen” the data so that we can easily compute incremental QALYs and incremental costs.</p>
+<p>In the <a href="06-cea.html">CEA tutorial</a>, we provide a formal treatment of CEA and show how to analyze such output within such a framework. To do so, we will need to save the results for later.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ce_out_wider</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">dcast</a></span><span class="op">(</span><span class="va">ce_out</span>, <span class="va">sample</span> <span class="op">~</span> <span class="va">strategy</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">ce_sim</span>,  file <span class="op">=</span> <span class="st">"markov-cohort-ce_sim.rds"</span><span class="op">)</span></code></pre></div>
+<p>For now, we will simply compute an incremental cost-effectiveness ratio (ICER). In the two treatment strategy case its simpler to “widen” the data so that we can easily compute incremental QALYs and incremental costs,</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ce_sim_wider</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">dcast</a></span><span class="op">(</span><span class="va">ce_sim</span>, <span class="va">sample</span> <span class="op">~</span> <span class="va">strategy</span>, 
                       value.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dqalys"</span>, <span class="st">"dcosts"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ce_out_wider</span></code></pre></div>
+<span class="va">ce_sim_wider</span></code></pre></div>
 <pre><code>##       sample dqalys_New dqalys_SOC dcosts_New dcosts_SOC
 ##    1:      1   22.46453   19.79403   424193.1  171692.25
 ##    2:      2   24.63744   21.75544   411513.5  139341.69
@@ -431,16 +434,13 @@
 ##  998:    998   22.27161   20.36152   345012.4   74070.17
 ##  999:    999   24.32977   22.45038   547848.3  296303.99
 ## 1000:   1000   22.92601   20.85917   469550.3  212142.96</code></pre>
-<p>The ICER is computed by taking means across all parameter samples.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ce_out_wider</span><span class="op">[</span>, <span class="va">idcosts</span> <span class="op">:=</span> <span class="va">dcosts_New</span> <span class="op">-</span> <span class="va">dcosts_SOC</span><span class="op">]</span>
-<span class="va">ce_out_wider</span><span class="op">[</span>, <span class="va">idqalys</span> <span class="op">:=</span> <span class="va">dqalys_New</span> <span class="op">-</span> <span class="va">dqalys_SOC</span><span class="op">]</span>
-<span class="va">ce_out_wider</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>icer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">idcosts</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">idqalys</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<p>with the ICER computed by taking means across all parameter samples.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ce_sim_wider</span><span class="op">[</span>, <span class="va">idcosts</span> <span class="op">:=</span> <span class="va">dcosts_New</span> <span class="op">-</span> <span class="va">dcosts_SOC</span><span class="op">]</span>
+<span class="va">ce_sim_wider</span><span class="op">[</span>, <span class="va">idqalys</span> <span class="op">:=</span> <span class="va">dqalys_New</span> <span class="op">-</span> <span class="va">dqalys_SOC</span><span class="op">]</span>
+<span class="va">ce_sim_wider</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>icer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">idcosts</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">idqalys</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <pre><code>##        icer
 ## 1: 125028.7</code></pre>
-<p>We can also use a cost-effectiveness plane to visually represent uncertainty in incremental QALYs and incremental costs. The dotted line represents willingness to pay for a QALY (in this example, $100,000) and points below the line are cost-effective while points above the line are not.</p>
-<p><img src="02-markov-cohort-psa_files/figure-html/ceplane-1.png" width="700"></p>
-<p>A more formal and thorough treatment of CEA and decision uncertainty is given in the <a href="06-cea.html">CEA tutorial</a>.</p>
 </div>
 <div id="appendix" class="section level1">
 <h1 class="hasAnchor">
