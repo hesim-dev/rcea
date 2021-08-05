@@ -39,4 +39,6 @@ navbar:
         href: articles/06-cea.html 
       - text: "---" 
   - text: "Slides"
-    href: slides.pdf
+    menu:
+      - text: "3 hour course"
+        href: slides-3hr.pdf
