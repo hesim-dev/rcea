@@ -86,7 +86,7 @@ Survival predictions are made as a function of the fitted Weibull models and inp
 ```{r, survival-models-data}
 ```
 
-In addition, we must also specify arguments related to the PSA. As mentioned above, we sample the parameters via bootstrapping, whereby the survival models are refit repeatedly to resamples of the estimation dataset. The advantage of this approach is that it preserves the correlation between PFS and OS and ensures that the curves do not cross.
+In addition, we must also specify arguments related to the PSA. As mentioned above, we sample the parameters via bootstrapping, whereby the survival models are refit repeatedly to resamples of the estimation dataset. The advantage of this approach is that it preserves the correlation between PFS and OS and reduces the chances that the curves cross.
 
 ```{r, survival-models, cache = TRUE}
 ```

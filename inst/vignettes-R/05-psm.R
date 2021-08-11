@@ -48,7 +48,7 @@ surv_est_data <- as_pfs_os(onc3, patient_vars = c("patient_id", "female", "age",
 surv_est_data[patient_id %in% c(1, 2)]
 
 ## @knitr fit-survival-models
-fit_pfs_wei <- flexsurv::flexsurvreg(
+fit_pfs_wei <- flexsurvreg(
   Surv(pfs_time, pfs_status) ~ strategy_name + female,
   data = surv_est_data,
   dist = "weibull")

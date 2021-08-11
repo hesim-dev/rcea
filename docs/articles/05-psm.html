@@ -109,7 +109,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Partitioned Survival Model</h1>
             
-            <h4 class="date">2021-08-04</h4>
+            <h4 class="date">2021-08-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/05-psm.Rmd"><code>vignettes/05-psm.Rmd</code></a></small>
       <div class="hidden name"><code>05-psm.Rmd</code></div>
@@ -219,7 +219,7 @@ C &amp; p_1 - p_2 &amp; p_2\\
 ## 2:  7.497464</code></pre>
 <p>To maintain consistency with the multi-state model, we will fit Weibull survival models for both PFS and OS and include an indicator for female as a covariate. The PFS and OS fits are stored in a <code><a href="https://hesim-dev.github.io/hesim/reference/flexsurvreg_list.html">hesim::flexsurvreg_list</a></code>, which is just a list of models fit using <code><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurv::flexsurvreg()</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_pfs_wei</span> <span class="op">&lt;-</span> <span class="fu">flexsurv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">fit_pfs_wei</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/flexsurv/man/flexsurvreg.html">flexsurvreg</a></span><span class="op">(</span>
   <span class="fu">Surv</span><span class="op">(</span><span class="va">pfs_time</span>, <span class="va">pfs_status</span><span class="op">)</span> <span class="op">~</span> <span class="va">strategy_name</span> <span class="op">+</span> <span class="va">female</span>,
   data <span class="op">=</span> <span class="va">surv_est_data</span>,
   dist <span class="op">=</span> <span class="st">"weibull"</span><span class="op">)</span>
@@ -301,7 +301,7 @@ C &amp; p_1 - p_2 &amp; p_2\\
 ## 6:           2          2           New       0.25  45      1
 ## 7:           2          3           New       0.25  65      0
 ## 8:           2          4           New       0.25  65      1</code></pre>
-<p>In addition, we must also specify arguments related to the PSA. As mentioned above, we sample the parameters via bootstrapping, whereby the survival models are refit repeatedly to resamples of the estimation dataset. The advantage of this approach is that it preserves the correlation between PFS and OS and ensures that the curves do not cross.</p>
+<p>In addition, we must also specify arguments related to the PSA. As mentioned above, we sample the parameters via bootstrapping, whereby the survival models are refit repeatedly to resamples of the estimation dataset. The advantage of this approach is that it preserves the correlation between PFS and OS and reduces the chances that the curves cross.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">survmods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/create_PsmCurves.html">create_PsmCurves</a></span><span class="op">(</span><span class="va">psfit_wei</span>, 
                              input_data <span class="op">=</span> <span class="va">survmods_data</span>, 
