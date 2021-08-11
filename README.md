@@ -42,3 +42,18 @@ The course contains six tutorials:
 5. **Partitioned Survival Model**: The data from the fourth tutorial is refit using partitioned survival analysis and state probabilities are computed using the "area under the curve" technique.
 
 6. **Cost-effectiveness Analysis (CEA)**: CEA is performed using the cost and QALY output of the PSA from the fourth tutorial. A number of methods are used to represent decision uncertainty (e.g. cost-effectiveness planes, cost-effectiveness acceptability curves, and cost-effectiveness acceptability frontiers), and value of information analysis is conducted. 
+
+## Learning R
+For those new to `R`, we recommend the following free online resources:
+
+* [R for Data Science](https://r4ds.had.co.nz/) teaches `R` for data science with the [`tidyverse`](https://www.tidyverse.org/).
+
+* [An introduction to `R`](https://cran.r-project.org/doc/manuals/r-devel/R-intro.pdf) is official [CRAN](https://cran.r-project.org/) documentation covering foundational concepts and use of base `R`. 
+
+A list of additional resources is also available [here](https://stackoverflow.com/tags/r/info).
+
+## data.table
+We use [`data.table`](https://rdatatable.gitlab.io/data.table/) to summarize output because it is very fast when working with large datasets, as is often produced by simulation models. For those more familiar with [`dplyr`](https://dplyr.tidyverse.org/), a nice comparison between `dplyr` and `data.table` can be found [here](https://atrebas.github.io/post/2019-03-03-datatable-dplyr/).
+
+
+
