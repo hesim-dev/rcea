@@ -173,3 +173,23 @@ ce_sim_wider
 ce_sim_wider[, idcosts := dcosts_New - dcosts_SOC]
 ce_sim_wider[, idqalys := dqalys_New - dqalys_SOC]
 ce_sim_wider[, .(icer = mean(idcosts)/mean(idqalys))]
+
+## @knitr ceplane
+format_dollar <- function(x) {
+  paste0("$", formatC(x, format = "d", big.mark = ","))
+}
+
+ylim <- max(ce_sim_wider$idcosts) * 1.2
+xlim <- max(ce_sim_wider$idqalys) * 1.2
+ggplot(ce_sim_wider, 
+       aes(x = idqalys, y = idcosts)) + 
+  geom_jitter(size = .5)  + 
+  xlab("Incremental QALYs") + 
+  ylab("Incremental cost") +
+  scale_y_continuous(limits = c(-ylim, ylim),
+                     labels = format_dollar) +
+  scale_x_continuous(limits = c(-xlim, xlim), breaks = seq(-6, 6, 2)) +
+  geom_abline(slope = 100000, linetype = "dashed") +
+  geom_hline(yintercept = 0) + 
+  geom_vline(xintercept = 0) +
+  theme_bw()

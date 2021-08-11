@@ -109,7 +109,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Incorporating Probabilistic Sensitivity Analysis</h1>
             
-            <h4 class="date">2021-08-04</h4>
+            <h4 class="date">2021-08-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/02-markov-cohort-psa.Rmd"><code>vignettes/02-markov-cohort-psa.Rmd</code></a></small>
       <div class="hidden name"><code>02-markov-cohort-psa.Rmd</code></div>
@@ -145,7 +145,7 @@
     <span class="fl">0</span>,   <span class="fl">0</span>,   <span class="fl">0</span>,   <span class="fl">23</span><span class="op">)</span>,
   nrow <span class="op">=</span> <span class="fl">4</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">state_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"D"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">transitions_soc</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">transitions_soc</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">state_names</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">transitions_soc</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">transitions_soc</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">state_names</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="relative-risk" class="section level2">
 <h2 class="hasAnchor">
@@ -217,20 +217,20 @@
 <pre><code>## [1] "p_soc"     "rr_new"    "c_medical" "c_soc"     "c_new"     "u"</code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">params_rng</span><span class="op">$</span><span class="va">p_soc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1      s1_s2
-## [1,] 0.8541571 0.1424502    0 0.0033926566 0.4868790 0.4016461 0.10576229
-## [2,] 0.8607750 0.1389353    0 0.0002896943 0.4868536 0.3951686 0.10940094
-## [3,] 0.8518183 0.1469233    0 0.0012584144 0.5089587 0.3778116 0.10943960
-## [4,] 0.8358959 0.1623765    0 0.0017276825 0.4929934 0.4112640 0.09166214
-## [5,] 0.8454406 0.1518148    0 0.0027445731 0.5047937 0.3856543 0.10613167
-## [6,] 0.8457540 0.1539843    0 0.0002617223 0.5107106 0.3761020 0.10680608
+<pre><code>##            h_h      h_s1 h_s2          h_d      s1_h     s1_s1     s1_s2
+## [1,] 0.8499469 0.1488959    0 0.0011571988 0.5028940 0.3633169 0.1259035
+## [2,] 0.8433833 0.1558739    0 0.0007427497 0.4979816 0.3910816 0.1071789
+## [3,] 0.8560799 0.1424954    0 0.0014246317 0.5123601 0.3767425 0.1042901
+## [4,] 0.8644085 0.1348317    0 0.0007597621 0.4792141 0.4042519 0.1099215
+## [5,] 0.8404084 0.1590574    0 0.0005341871 0.5107432 0.3749376 0.1099605
+## [6,] 0.8425292 0.1544451    0 0.0030256300 0.5206876 0.3787221 0.0918661
 ##             s1_d s2_h s2_s1     s2_s2       s2_d d_h d_s1 d_s2 d_d
-## [1,] 0.005712618    0     0 0.9768007 0.02319932   0    0    0   1
-## [2,] 0.008576892    0     0 0.9836894 0.01631061   0    0    0   1
-## [3,] 0.003790082    0     0 0.9739318 0.02606816   0    0    0   1
-## [4,] 0.004080446    0     0 0.9806009 0.01939912   0    0    0   1
-## [5,] 0.003420347    0     0 0.9794937 0.02050627   0    0    0   1
-## [6,] 0.006381376    0     0 0.9859233 0.01407666   0    0    0   1</code></pre>
+## [1,] 0.007885599    0     0 0.9761439 0.02385606   0    0    0   1
+## [2,] 0.003757925    0     0 0.9840512 0.01594880   0    0    0   1
+## [3,] 0.006607309    0     0 0.9729140 0.02708601   0    0    0   1
+## [4,] 0.006612514    0     0 0.9894337 0.01056634   0    0    0   1
+## [5,] 0.004358767    0     0 0.9747321 0.02526787   0    0    0   1
+## [6,] 0.008724171    0     0 0.9760044 0.02399558   0    0    0   1</code></pre>
 </div>
 <div id="simulating-the-markov-model" class="section level2">
 <h2 class="hasAnchor">
@@ -404,7 +404,7 @@
 <div id="cost-effectiveness-analysis" class="section level1">
 <h1 class="hasAnchor">
 <a href="#cost-effectiveness-analysis" class="anchor"></a>Cost-effectiveness analysis</h1>
-<p>A cost-effectiveness analysis (CEA) can be performed using the simulation output. A PSA is typically used to represent decision uncertainty using the distribution of (discounted) QALYs and (discounted) total costs. As such, will compute mean discounted QALYs and discounted costs by parameter sample and treatment strategy. As in the previous tutorial, we assume that transitions occur immediately and therefore exclude costs and QALYs measured at the start of the first model cycle.</p>
+<p>A cost-effectiveness analysis (CEA) can be performed using the simulation output. A PSA is typically used to represent decision uncertainty using the distribution of (discounted) QALYs and (discounted) total costs. As such, we will compute mean discounted QALYs and discounted costs by parameter sample and treatment strategy. As in the previous tutorial, we assume that transitions occur immediately and therefore exclude costs and QALYs measured at the start of the first model cycle.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ce_sim</span> <span class="op">&lt;-</span> <span class="va">sim_out</span><span class="op">[</span><span class="va">cycle</span> <span class="op">!=</span> <span class="fl">0</span>, 
                   <span class="fu">.</span><span class="op">(</span>dqalys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">dqalys</span><span class="op">)</span>,
@@ -426,7 +426,7 @@
 <p>In the <a href="06-cea.html">CEA tutorial</a>, we provide a formal treatment of CEA and show how to analyze such output within such a framework. To do so, we will need to save the results for later.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">ce_sim</span>,  file <span class="op">=</span> <span class="st">"markov-cohort-ce_sim.rds"</span><span class="op">)</span></code></pre></div>
-<p>For now, we will simply compute an incremental cost-effectiveness ratio (ICER). In the two treatment strategy case its simpler to “widen” the data so that we can easily compute incremental QALYs and incremental costs,</p>
+<p>In the two treatment strategy case its simpler to “widen” the data so that we can easily compute incremental QALYs and incremental costs.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ce_sim_wider</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">dcast</a></span><span class="op">(</span><span class="va">ce_sim</span>, <span class="va">sample</span> <span class="op">~</span> <span class="va">strategy</span>, 
                       value.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dqalys"</span>, <span class="st">"dcosts"</span><span class="op">)</span><span class="op">)</span>
@@ -443,13 +443,34 @@
 ##  998:    998   22.27161   20.36152   345012.4   74070.17
 ##  999:    999   24.32977   22.45038   547848.3  296303.99
 ## 1000:   1000   22.92601   20.85917   469550.3  212142.96</code></pre>
-<p>with the ICER computed by taking means across all parameter samples.</p>
+<p>The ICER is computed by taking means across all parameter samples.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ce_sim_wider</span><span class="op">[</span>, <span class="va">idcosts</span> <span class="op">:=</span> <span class="va">dcosts_New</span> <span class="op">-</span> <span class="va">dcosts_SOC</span><span class="op">]</span>
 <span class="va">ce_sim_wider</span><span class="op">[</span>, <span class="va">idqalys</span> <span class="op">:=</span> <span class="va">dqalys_New</span> <span class="op">-</span> <span class="va">dqalys_SOC</span><span class="op">]</span>
 <span class="va">ce_sim_wider</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>icer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">idcosts</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">idqalys</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <pre><code>##        icer
 ## 1: 125028.7</code></pre>
+<p>We can also use a cost-effectiveness plane to visually represent uncertainty in incremental QALYs and incremental costs. The dotted line represents willingness to pay for a QALY (in this example, $100,000) and points below the line are cost-effective while points above the line are not.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">format_dollar</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html">formatC</a></span><span class="op">(</span><span class="va">x</span>, format <span class="op">=</span> <span class="st">"d"</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">ce_sim_wider</span><span class="op">$</span><span class="va">idcosts</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.2</span>
+<span class="va">xlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">ce_sim_wider</span><span class="op">$</span><span class="va">idqalys</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.2</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">ce_sim_wider</span>, 
+       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">idqalys</span>, y <span class="op">=</span> <span class="va">idcosts</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html">geom_jitter</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>  <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Incremental QALYs"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Incremental cost"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">ylim</span>, <span class="va">ylim</span><span class="op">)</span>,
+                     labels <span class="op">=</span> <span class="va">format_dollar</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">xlim</span>, <span class="va">xlim</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">6</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="fl">100000</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="02-markov-cohort-psa_files/figure-html/ceplane-1.png" width="700"></p>
 </div>
 <div id="appendix" class="section level1">
 <h1 class="hasAnchor">
