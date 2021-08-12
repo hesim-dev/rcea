@@ -345,6 +345,10 @@ C &amp; p_1 - p_2 &amp; p_2\\
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, by <span class="op">=</span> <span class="fl">.1</span><span class="op">)</span>
 <span class="va">econmod</span><span class="op">$</span><span class="fu">sim_survival</span><span class="op">(</span>t <span class="op">=</span> <span class="va">times</span><span class="op">)</span>
+<span class="va">labs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+  <span class="va">labs</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>curve <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PFS"</span> <span class="op">=</span> <span class="fl">1</span>, <span class="st">"OS"</span> <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">econmod</span><span class="op">$</span><span class="va">survival_</span>, ci <span class="op">=</span> <span class="cn">TRUE</span>,
          labels <span class="op">=</span> <span class="va">labs</span><span class="op">)</span></code></pre></div>
 <p><img src="05-psm_files/figure-html/sim_survival-1.png" width="700"></p>

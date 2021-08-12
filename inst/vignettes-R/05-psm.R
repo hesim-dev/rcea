@@ -128,6 +128,10 @@ econmod <- Psm$new(survival_models = survmods,
 ## @knitr sim_survival
 times <- seq(0, 50, by = .1)
 econmod$sim_survival(t = times)
+labs <- c(
+  labs,
+  list(curve = c("PFS" = 1, "OS" = 2))
+)
 autoplot(econmod$survival_, ci = TRUE,
          labels = labs)
 
