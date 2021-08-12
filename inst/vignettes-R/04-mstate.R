@@ -64,7 +64,7 @@ for (i in 1:length(wei_fits)){
     Surv(time, status) ~ strategy_name + female,
     data = data,
     subset = (transition_id == i) ,
-    dist = "gengamma")
+    dist = "weibull")
 }
 wei_fits <- flexsurvreg_list(wei_fits)
 
@@ -116,7 +116,7 @@ head(transmod_data)
 ## @knitr transition-model
 transmod <- create_IndivCtstmTrans(wei_fits, transmod_data,
                                    trans_mat = tmat, n = n_samples,
-                                   clock = "forward",
+                                   clock = "reset",
                                    start_age = patients$age)
 
 ## @knitr utility-cost-models
