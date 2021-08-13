@@ -157,15 +157,50 @@
 <a href="#learning-r" class="anchor"></a>Learning R</h2>
 <p>For those new to <code>R</code>, we recommend the following free online resources:</p>
 <ul>
-<li><p><a href="https://r4ds.had.co.nz/">R for Data Science</a> teaches <code>R</code> for data science with the <a href="https://www.tidyverse.org/"><code>tidyverse</code></a>.</p></li>
-<li><p><a href="https://cran.r-project.org/doc/manuals/r-devel/R-intro.pdf">An introduction to <code>R</code></a> is official <a href="https://cran.r-project.org/">CRAN</a> documentation covering foundational concepts and use of base <code>R</code>.</p></li>
+<li><p><a href="https://r4ds.had.co.nz/"><em>R for Data Science</em></a> teaches <code>R</code> for data science with the <a href="https://www.tidyverse.org/"><code>tidyverse</code></a>.</p></li>
+<li><p><a href="https://cran.r-project.org/doc/manuals/r-devel/R-intro.pdf"><em>An introduction to <code>R</code></em></a> is official <a href="https://cran.r-project.org/">CRAN</a> documentation covering foundational concepts and use of base <code>R</code>.</p></li>
 </ul>
 <p>A list of additional resources is also available <a href="https://stackoverflow.com/tags/r/info">here</a>.</p>
 </div>
-<div id="datatable" class="section level2">
+<div id="general-r-packages" class="section level2">
 <h2 class="hasAnchor">
-<a href="#datatable" class="anchor"></a>data.table</h2>
+<a href="#general-r-packages" class="anchor"></a>General R packages</h2>
+<p>One of the advantages of <code>R</code> is that there are huge number of publicly available add-on packages. We make use of a number of them, in addition to <code>hesim</code>.</p>
+<div id="datatable" class="section level3">
+<h3 class="hasAnchor">
+<a href="#datatable" class="anchor"></a>data.table</h3>
 <p>We use <a href="https://rdatatable.gitlab.io/data.table/"><code>data.table</code></a> to summarize output because it is very fast when working with large datasets, as is often produced by simulation models. For those more familiar with <a href="https://dplyr.tidyverse.org/"><code>dplyr</code></a>, a nice comparison between <code>dplyr</code> and <code>data.table</code> can be found <a href="https://atrebas.github.io/post/2019-03-03-datatable-dplyr/">here</a>.</p>
+</div>
+<div id="ggplot2" class="section level3">
+<h3 class="hasAnchor">
+<a href="#ggplot2" class="anchor"></a>ggplot2</h3>
+<p>A major benefit of <code>R</code> is its graphing capabilities and <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> is the most popular package for creating visualizations.</p>
+</div>
+<div id="flexsurv" class="section level3">
+<h3 class="hasAnchor">
+<a href="#flexsurv" class="anchor"></a>flexsurv</h3>
+<p><code>flexsurv</code> can be used to fit parametric and spline-based survival models. You can learn more from the vignettes and reference guide on the <a href="https://cran.r-project.org/web/packages/flexsurv/index.html">CRAN website</a> or from the <em>Journal of Statistical Software</em> <a href="https://www.jstatsoft.org/article/view/v070i08">publication</a>.</p>
+</div>
+<div id="r-markdown" class="section level3">
+<h3 class="hasAnchor">
+<a href="#r-markdown" class="anchor"></a>R Markdown</h3>
+<p>The tutorials on this site are built from <code>R</code> Markdown files that include both plain text and embedded code. You can learn more about creating reproducible documents with <code>R</code> using R Markdown <a href="https://rmarkdown.rstudio.com/">here</a>. We highly recommend you use <code>R</code> Markdown to share the results of your economic models since it increases transparency and reproducibility. As an additional step, you might consider creating an <code>R</code> package for your model and creating a website for it with <a href="https://pkgdown.r-lib.org/"><code>pkgdown</code></a> (as we have done on this site).</p>
+</div>
+<div id="kableextra" class="section level3">
+<h3 class="hasAnchor">
+<a href="#kableextra" class="anchor"></a>kableExtra</h3>
+<p>If you use <code>R</code> Markdown, you will probably want to make nice HTML or PDF tables. A great way to do this is with the <code>kableExtra</code>(<a href="https://haozhu233.github.io/kableExtra/" class="uri">https://haozhu233.github.io/kableExtra/</a>) package.</p>
+</div>
+<div id="r6" class="section level3">
+<h3 class="hasAnchor">
+<a href="#r6" class="anchor"></a>R6</h3>
+<p><code>R6</code> is an object oriented programming paradigm. It’s less traditional <code>R</code>, but we think it is a nice fit for health economic modeling, where it is helpful to write modular code and to build models by combining multiple objects. Indeed economic models in <code>hesim</code> are <code>R6</code> classes. You can learn more about <code>R6</code> on the package <a href="https://r6.r-lib.org/index.html">website</a> or in the <em>Advanced R</em> textbook <a href="https://adv-r.hadley.nz/r6.html">here</a>.</p>
+</div>
+</div>
+<div id="health-economic-r-packages" class="section level2">
+<h2 class="hasAnchor">
+<a href="#health-economic-r-packages" class="anchor"></a>Health economic R packages</h2>
+<p>There are also a number of packages related to health economics. A nice compilation of them is available <a href="https://github.com/n8thangreen/health_economics_R_packages">here</a>.</p>
 </div>
 </div>
   </div>

@@ -46,14 +46,35 @@ The course contains six tutorials:
 ## Learning R
 For those new to `R`, we recommend the following free online resources:
 
-* [R for Data Science](https://r4ds.had.co.nz/) teaches `R` for data science with the [`tidyverse`](https://www.tidyverse.org/).
+* [*R for Data Science*](https://r4ds.had.co.nz/) teaches `R` for data science with the [`tidyverse`](https://www.tidyverse.org/).
 
-* [An introduction to `R`](https://cran.r-project.org/doc/manuals/r-devel/R-intro.pdf) is official [CRAN](https://cran.r-project.org/) documentation covering foundational concepts and use of base `R`. 
+* [*An introduction to `R`*](https://cran.r-project.org/doc/manuals/r-devel/R-intro.pdf) is official [CRAN](https://cran.r-project.org/) documentation covering foundational concepts and use of base `R`. 
 
 A list of additional resources is also available [here](https://stackoverflow.com/tags/r/info).
 
-## data.table
+## General R packages
+One of the advantages of `R` is that there are huge number of publicly available add-on packages. We make use of a number of them, in addition to `hesim`.
+
+### data.table
 We use [`data.table`](https://rdatatable.gitlab.io/data.table/) to summarize output because it is very fast when working with large datasets, as is often produced by simulation models. For those more familiar with [`dplyr`](https://dplyr.tidyverse.org/), a nice comparison between `dplyr` and `data.table` can be found [here](https://atrebas.github.io/post/2019-03-03-datatable-dplyr/).
+
+### ggplot2
+A major benefit of `R` is its graphing capabilities and [`ggplot2`](https://ggplot2.tidyverse.org/) is the most popular package for creating visualizations.
+
+### flexsurv
+`flexsurv` can be used to fit parametric and spline-based survival models. You can learn more from the vignettes and reference guide on the [CRAN website](https://cran.r-project.org/web/packages/flexsurv/index.html) or from the *Journal of Statistical Software* [publication](https://www.jstatsoft.org/article/view/v070i08).
+
+### R Markdown
+The tutorials on this site are built from `R` Markdown files that include both plain text and embedded code. You can learn more about creating reproducible documents with `R` using R Markdown [here](https://rmarkdown.rstudio.com/). We highly recommend you use `R` Markdown to share the results of your economic models since it increases transparency and reproducibility. As an additional step, you might consider creating an `R` package for your model and creating a website for it with [`pkgdown`](https://pkgdown.r-lib.org/) (as we have done on this site).
+
+### kableExtra
+If you use `R` Markdown, you will probably want to make nice HTML or PDF tables. A great way to do this is with the `kableExtra`(https://haozhu233.github.io/kableExtra/) package.
+
+### R6
+`R6` is an object oriented programming paradigm. It's less traditional `R`, but we think it is a nice fit for health economic modeling, where it is helpful to write modular code and to build models by combining multiple objects. Indeed economic models in `hesim` are `R6` classes. You can learn more about `R6` on the package [website](https://r6.r-lib.org/index.html) or in the *Advanced R* textbook [here](https://adv-r.hadley.nz/r6.html).   
+## Health economic R packages
+There are also a number of packages related to health economics. A nice compilation of them is available [here](https://github.com/n8thangreen/health_economics_R_packages).
+
 
 
 
