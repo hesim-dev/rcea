@@ -84,6 +84,9 @@
 <li>
       <a href="../slides-3hr.pdf">3 hour course</a>
     </li>
+    <li>
+      <a href="../slides-4hr.pdf">4 hour course</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -109,7 +112,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cost-effectiveness Analysis</h1>
             
-            <h4 class="date">2021-08-04</h4>
+            <h4 class="date">2021-08-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/hesim-dev/rcea/blob/master/vignettes/06-cea.Rmd"><code>vignettes/06-cea.Rmd</code></a></small>
       <div class="hidden name"><code>06-cea.Rmd</code></div>
@@ -191,31 +194,31 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <span class="va">markov_hesim_ce</span></code></pre></div>
 <pre><code>## $costs
 ##        category   dr sample strategy_id     costs grp_id
-##    1: treatment 0.03      1           1  53272.58      1
-##    2: treatment 0.03      1           2 330925.52      1
-##    3: treatment 0.03      2           1  49685.44      1
-##    4: treatment 0.03      2           2 315636.64      1
-##    5: treatment 0.03      3           1  49983.99      1
+##    1: treatment 0.03      1           1  53080.88      1
+##    2: treatment 0.03      1           2 332405.01      1
+##    3: treatment 0.03      2           1  51515.33      1
+##    4: treatment 0.03      2           2 330330.38      1
+##    5: treatment 0.03      3           1  49739.19      1
 ##   ---                                                   
-## 5996:     total 0.03    998           2 371639.20      1
-## 5997:     total 0.03    999           1 114724.96      1
-## 5998:     total 0.03    999           2 390186.33      1
-## 5999:     total 0.03   1000           1 107080.22      1
-## 6000:     total 0.03   1000           2 385990.13      1
+## 5996:     total 0.03    998           2 636329.42      1
+## 5997:     total 0.03    999           1  72277.30      1
+## 5998:     total 0.03    999           2 348862.87      1
+## 5999:     total 0.03   1000           1  98696.43      1
+## 6000:     total 0.03   1000           2 359055.98      1
 ## 
 ## $qalys
 ##         dr sample strategy_id    qalys grp_id
-##    1: 0.03      1           1 21.90063      1
-##    2: 0.03      1           2 23.36334      1
-##    3: 0.03      2           1 20.03105      1
-##    4: 0.03      2           2 21.97549      1
-##    5: 0.03      3           1 21.17731      1
+##    1: 0.03      1           1 22.51374      1
+##    2: 0.03      1           2 24.33262      1
+##    3: 0.03      2           1 21.82532      1
+##    4: 0.03      2           2 24.30805      1
+##    5: 0.03      3           1 20.86320      1
 ##   ---                                        
-## 1996: 0.03    998           2 21.84343      1
-## 1997: 0.03    999           1 21.29260      1
-## 1998: 0.03    999           2 24.65334      1
-## 1999: 0.03   1000           1 21.07904      1
-## 2000: 0.03   1000           2 23.37787      1
+## 1996: 0.03    998           2 23.22127      1
+## 1997: 0.03    999           1 20.53312      1
+## 1998: 0.03    999           2 23.04054      1
+## 1999: 0.03   1000           1 19.77835      1
+## 2000: 0.03   1000           2 22.06166      1
 ## 
 ## attr(,"class")
 ## [1] "ce"</code></pre>
@@ -237,9 +240,9 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
                       e <span class="op">=</span> <span class="st">"dqalys"</span>, c <span class="op">=</span> <span class="st">"dcosts"</span><span class="op">)</span>
 <span class="va">cea_pw_out</span><span class="op">$</span><span class="va">summary</span></code></pre></div>
 <pre><code>##    strategy_id grp_id  ie_mean ie_lower ie_upper  ic_mean ic_lower ic_upper
-## 1:           2      1 2.031167 1.019717 3.129363 257258.6 197619.2 286633.5
+## 1:           2      1 2.046011 1.045688 3.073314 257392.6 200710.6 288832.9
 ##        icer
-## 1: 126655.6</code></pre>
+## 1: 125802.2</code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cea_pw_out2</span><span class="op">$</span><span class="va">summary</span></code></pre></div>
 <pre><code>##    strategy grp  ie_mean ie_lower ie_upper  ic_mean ic_lower ic_upper     icer
@@ -253,10 +256,10 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/icer.html">icer</a></span><span class="op">(</span><span class="va">cea_pw_out</span>, wtp <span class="op">=</span> <span class="fl">50000</span>, labels <span class="op">=</span> <span class="va">labs</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>##              Outcome                          New
-## 1: Incremental QALYs            2.03 (1.02, 3.13)
-## 2: Incremental costs   257,259 (197,619, 286,634)
-## 3:   Incremental NMB -155,700 (-213,790, -62,915)
-## 4:              ICER                      126,656</code></pre>
+## 1: Incremental QALYs            2.05 (1.05, 3.07)
+## 2: Incremental costs   257,393 (200,711, 288,833)
+## 3:   Incremental NMB -155,092 (-210,411, -75,154)
+## 4:              ICER                      125,802</code></pre>
 <p>Note that <code><a href="https://hesim-dev.github.io/hesim/reference/get_labels.html">get_labels()</a></code> was used to create labels for the identification variables in the <code><a href="https://hesim-dev.github.io/hesim/reference/hesim_data.html">hesim_data()</a></code> object. This is useful because it can be passed to summary functions (e.g., <code><a href="https://hesim-dev.github.io/hesim/reference/icer.html">icer()</a></code>) as well as plotting functions (as will be shown below).</p>
 </div>
 <div id="representing-decision-uncertainty" class="section level2">
@@ -271,12 +274,12 @@ c_{j} &amp;= [c_{j}^1, c_{j}^2, \dots, c_{j}^m].
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">cea_pw_out</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></code></pre></div>
 <pre><code>##    sample strategy_id grp_id       ie       ic
-## 1:      1           2      1 1.462700 266131.6
-## 2:      2           2      1 1.944447 262300.4
-## 3:      3           2      1 2.502741 252431.6
-## 4:      4           2      1 2.523055 257055.5
-## 5:      5           2      1 2.442860 228673.5
-## 6:      6           2      1 2.589476 261757.7</code></pre>
+## 1:      1           2      1 1.818878 250483.6
+## 2:      2           2      1 2.482730 244696.0
+## 3:      3           2      1 1.820730 259581.0
+## 4:      4           2      1 1.094451 281016.0
+## 5:      5           2      1 2.188967 258238.0
+## 6:      6           2      1 2.661375 247998.2</code></pre>
 <p>The dotted line in the plot is the WTP line, with slope equal to the desire value of <span class="math inline">\(k\)</span> (in this case $100,000). For a chosen <span class="math inline">\(k\)</span>, points below the line are cost-effective while those above it are not.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://hesim-dev.github.io/hesim/reference/plot_ceplane.html">plot_ceplane</a></span><span class="op">(</span><span class="va">cea_pw_out</span>, k <span class="op">=</span> <span class="fl">100000</span>, labels <span class="op">=</span> <span class="va">labs</span><span class="op">)</span></code></pre></div>

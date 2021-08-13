@@ -42,3 +42,5 @@ navbar:
     menu:
       - text: "3 hour course"
         href: slides-3hr.pdf
+      - text: "4 hour course"
+        href: slides-4hr.pdf
